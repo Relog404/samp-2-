@@ -63,11 +63,6 @@ local selectedInventoryAura = nil
 local selectedCraftRecipe = nil
 local activeModal = nil
 
--- Upgrader State
-local selectedUpgradeAura = nil
-local upgraderMode = "Chance"
-local upgraderValue = 50
-
 -- PvP State
 local inBattle = false
 local battleOpponent = ""
@@ -229,7 +224,15 @@ offerBuyBtn.Parent = specialOffer
 
 offerBuyBtn.MouseButton1Click:Connect(function()
 	SoundEffects.Play("Click")
-	PurchaseProductFunc:InvokeServer("StarterPack")
+	offerBuyBtn.Text = "ПОЛУЧЕНО! [+25K / x2 LUCK / VIP]"
+	offerBuyBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+	local res = PurchaseProductFunc:InvokeServer("StarterPack")
+	if res and res.Success then
+		SoundEffects.Play("RevealMythic")
+	end
+	task.delay(1.5, function()
+		offerBuyBtn.Text = "ЗАБРАТЬ (R$ 149 / ТЕСТ)"
+	end)
 end)
 
 --------------------------------------------------------------------------------
@@ -2168,6 +2171,7 @@ local shopWindow, shopContent = createModal(" МАГАЗИН ДОНАТА И П�
 
 toggleShopModal = function()
 	toggleModal(shopWindow)
+	refreshShopUI()
 end
 
 local shopScroll = Instance.new("ScrollingFrame")
@@ -2175,6 +2179,8 @@ shopScroll.Size = UDim2.new(1, 0, 1, 0)
 shopScroll.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
 shopScroll.BackgroundTransparency = 0.4
 shopScroll.ScrollBarThickness = 5
+shopScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+shopScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 addCorner(shopScroll, 8)
 shopScroll.Parent = shopContent
 
@@ -2395,7 +2401,11 @@ local function refreshShopUI()
 
 				testBtn.MouseButton1Click:Connect(function()
 					SoundEffects.Play("Click")
+					testBtn.Text = "ОБНОВЛЕНИЕ..."
 					ToggleTestPerkEvent:FireServer(item.PerkKey)
+					task.delay(0.2, function()
+						if shopWindow.Visible then refreshShopUI() end
+					end)
 				end)
 			else
 				testBtn.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
@@ -2404,7 +2414,14 @@ local function refreshShopUI()
 
 				testBtn.MouseButton1Click:Connect(function()
 					SoundEffects.Play("Coin")
-					PurchaseProductFunc:InvokeServer(item.ProductKey)
+					testBtn.Text = "ПОКУПКА..."
+					local res = PurchaseProductFunc:InvokeServer(item.ProductKey)
+					if res and res.Success then
+						SoundEffects.Play("RevealMythic")
+					end
+					task.delay(0.2, function()
+						if shopWindow.Visible then refreshShopUI() end
+					end)
 				end)
 			end
 
@@ -3028,14 +3045,6 @@ DataSyncEvent.OnClientEvent:Connect(function(data)
 		eqName.TextColor3 = eqAura.Color
 		eqSub.Text = AuraConfig.FormatRarity(eqAura.Rarity or 0)
 		eqStroke.Color = eqAura.Color
-
-		-- Update Upgrader Slot if not chosen
-		if not selectedUpgradeAura then
-			upgSlotName.Text = eqAura.Name
-			upgSlotName.TextColor3 = eqAura.Color
-			upgSlotIcon.Image = eqAura.Icon or "rbxasset://textures/particles/sparkles_main.dds"
-			upgSlotIcon.ImageColor3 = eqAura.Color
-		end
 	else
 		eqName.Text = "Aura: None"
 		eqName.TextColor3 = Color3.fromRGB(220, 225, 235)
@@ -3049,6 +3058,7 @@ DataSyncEvent.OnClientEvent:Connect(function(data)
 	if invWindow.Visible then refreshInventoryUI() end
 	if craftWindow.Visible then refreshCraftingUI() end
 	if shopWindow.Visible then refreshShopUI() end
+	if upgWindow.Visible then refreshUpgraderUI() end
 end)
 
 print("[Sols RNG] CS2 Roulette, PvP Battles, Aura Upgrader & Icons loaded!")

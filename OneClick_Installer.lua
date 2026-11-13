@@ -2463,34 +2463,81 @@ end
 -- PURCHASE PRODUCT HANDLER (DONATION & DEVPRODUCTS)
 PurchaseProductFunc.OnServerInvoke = function(player, productKey)
 	local data = sessionData[player]
-	if not data then return { Success = false } end
+	if not data then return { Success = false, Message = "Нет данных игрока" } end
+
+	data.Coins = data.Coins or 0
+	data.Inventory = data.Inventory or {}
+	data.TestPerks = data.TestPerks or {}
 
 	if productKey == "CoinPack10k" then
-		data.Coins = (data.Coins or 0) + 10000
+		data.Coins = data.Coins + 10000
 	elseif productKey == "CoinPack50k" then
-		data.Coins = (data.Coins or 0) + 50000
+		data.Coins = data.Coins + 50000
 	elseif productKey == "CoinPack250k" then
-		data.Coins = (data.Coins or 0) + 250000
+		data.Coins = data.Coins + 250000
 	elseif productKey == "MegaPotion" then
-		data.MegaPotionExpiry = os.time() + 900 -- 15 mins x5 luck!
+		data.MegaPotionExpiry = math.max(data.MegaPotionExpiry or 0, os.time()) + 900 -- 15 mins x5 luck!
 	elseif productKey == "InstantLegendary" then
 		local pool = { "Ruby", "Undead", "Solar" }
 		local pick = pool[math.random(1, #pool)]
 		data.Inventory[pick] = (data.Inventory[pick] or 0) + 1
 	elseif productKey == "InstantMythic" then
-		local pool = { "Lunar", "Poseidon", "Hades", "Galaxy" }
+		local pool = { "Lunar", "Poseidon", "Hades", "Galaxy", "AncientTurtle", "MythicDragon" }
 		local pick = pool[math.random(1, #pool)]
 		data.Inventory[pick] = (data.Inventory[pick] or 0) + 1
 	elseif productKey == "StarterPack" then
+		data.Coins = data.Coins + 25000
+		data.TestPerks.X2Luck = true
+		data.TestPerks.VIP = true
+		data.Inventory["VIPCrown"] = (data.Inventory["VIPCrown"] or 0) + 1
+		data.MegaPotionExpiry = math.max(data.MegaPotionExpiry or 0, os.time()) + 1800
+	end
+
+	syncClient(player)
+	return { Success = true, Message = "Покупка успешно совершена!" }
+end
+
+-- REAL MARKETPLACE SERVICE RECEIPT HANDLER (IF DEVPRODUCTS CONFIGURED IN AURACONFIG)
+MarketplaceService.ProcessReceipt = function(receiptInfo)
+	local player = Players:GetPlayerByUserId(receiptInfo.PlayerId)
+	if not player then
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+
+	local data = sessionData[player]
+	if not data then
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+
+	local devProds = AuraConfig.Settings.DevProductIds or {}
+	local productId = receiptInfo.ProductId
+
+	if productId == devProds.CoinPack10k then
+		data.Coins = (data.Coins or 0) + 10000
+	elseif productId == devProds.CoinPack50k then
+		data.Coins = (data.Coins or 0) + 50000
+	elseif productId == devProds.CoinPack250k then
+		data.Coins = (data.Coins or 0) + 250000
+	elseif productId == devProds.MegaPotion then
+		data.MegaPotionExpiry = math.max(data.MegaPotionExpiry or 0, os.time()) + 900
+	elseif productId == devProds.InstantLegendary then
+		local pool = { "Ruby", "Undead", "Solar" }
+		local pick = pool[math.random(1, #pool)]
+		data.Inventory[pick] = (data.Inventory[pick] or 0) + 1
+	elseif productId == devProds.InstantMythic then
+		local pool = { "Lunar", "Poseidon", "Hades", "Galaxy", "AncientTurtle", "MythicDragon" }
+		local pick = pool[math.random(1, #pool)]
+		data.Inventory[pick] = (data.Inventory[pick] or 0) + 1
+	elseif productId == devProds.StarterPack then
 		data.Coins = (data.Coins or 0) + 25000
 		data.TestPerks.X2Luck = true
 		data.TestPerks.VIP = true
 		data.Inventory["VIPCrown"] = (data.Inventory["VIPCrown"] or 0) + 1
-		data.MegaPotionExpiry = os.time() + 1800
+		data.MegaPotionExpiry = math.max(data.MegaPotionExpiry or 0, os.time()) + 1800
 	end
 
 	syncClient(player)
-	return { Success = true, Message = "Purchase Successful!" }
+	return Enum.ProductPurchaseDecision.PurchaseGranted
 end
 
 -- TEST PERK TOGGLE (Allows free testing of all monetization features without Robux!)
@@ -3305,34 +3352,81 @@ end
 -- PURCHASE PRODUCT HANDLER (DONATION & DEVPRODUCTS)
 PurchaseProductFunc.OnServerInvoke = function(player, productKey)
 	local data = sessionData[player]
-	if not data then return { Success = false } end
+	if not data then return { Success = false, Message = "Нет данных игрока" } end
+
+	data.Coins = data.Coins or 0
+	data.Inventory = data.Inventory or {}
+	data.TestPerks = data.TestPerks or {}
 
 	if productKey == "CoinPack10k" then
-		data.Coins = (data.Coins or 0) + 10000
+		data.Coins = data.Coins + 10000
 	elseif productKey == "CoinPack50k" then
-		data.Coins = (data.Coins or 0) + 50000
+		data.Coins = data.Coins + 50000
 	elseif productKey == "CoinPack250k" then
-		data.Coins = (data.Coins or 0) + 250000
+		data.Coins = data.Coins + 250000
 	elseif productKey == "MegaPotion" then
-		data.MegaPotionExpiry = os.time() + 900 -- 15 mins x5 luck!
+		data.MegaPotionExpiry = math.max(data.MegaPotionExpiry or 0, os.time()) + 900 -- 15 mins x5 luck!
 	elseif productKey == "InstantLegendary" then
 		local pool = { "Ruby", "Undead", "Solar" }
 		local pick = pool[math.random(1, #pool)]
 		data.Inventory[pick] = (data.Inventory[pick] or 0) + 1
 	elseif productKey == "InstantMythic" then
-		local pool = { "Lunar", "Poseidon", "Hades", "Galaxy" }
+		local pool = { "Lunar", "Poseidon", "Hades", "Galaxy", "AncientTurtle", "MythicDragon" }
 		local pick = pool[math.random(1, #pool)]
 		data.Inventory[pick] = (data.Inventory[pick] or 0) + 1
 	elseif productKey == "StarterPack" then
+		data.Coins = data.Coins + 25000
+		data.TestPerks.X2Luck = true
+		data.TestPerks.VIP = true
+		data.Inventory["VIPCrown"] = (data.Inventory["VIPCrown"] or 0) + 1
+		data.MegaPotionExpiry = math.max(data.MegaPotionExpiry or 0, os.time()) + 1800
+	end
+
+	syncClient(player)
+	return { Success = true, Message = "Покупка успешно совершена!" }
+end
+
+-- REAL MARKETPLACE SERVICE RECEIPT HANDLER (IF DEVPRODUCTS CONFIGURED IN AURACONFIG)
+MarketplaceService.ProcessReceipt = function(receiptInfo)
+	local player = Players:GetPlayerByUserId(receiptInfo.PlayerId)
+	if not player then
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+
+	local data = sessionData[player]
+	if not data then
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+
+	local devProds = AuraConfig.Settings.DevProductIds or {}
+	local productId = receiptInfo.ProductId
+
+	if productId == devProds.CoinPack10k then
+		data.Coins = (data.Coins or 0) + 10000
+	elseif productId == devProds.CoinPack50k then
+		data.Coins = (data.Coins or 0) + 50000
+	elseif productId == devProds.CoinPack250k then
+		data.Coins = (data.Coins or 0) + 250000
+	elseif productId == devProds.MegaPotion then
+		data.MegaPotionExpiry = math.max(data.MegaPotionExpiry or 0, os.time()) + 900
+	elseif productId == devProds.InstantLegendary then
+		local pool = { "Ruby", "Undead", "Solar" }
+		local pick = pool[math.random(1, #pool)]
+		data.Inventory[pick] = (data.Inventory[pick] or 0) + 1
+	elseif productId == devProds.InstantMythic then
+		local pool = { "Lunar", "Poseidon", "Hades", "Galaxy", "AncientTurtle", "MythicDragon" }
+		local pick = pool[math.random(1, #pool)]
+		data.Inventory[pick] = (data.Inventory[pick] or 0) + 1
+	elseif productId == devProds.StarterPack then
 		data.Coins = (data.Coins or 0) + 25000
 		data.TestPerks.X2Luck = true
 		data.TestPerks.VIP = true
 		data.Inventory["VIPCrown"] = (data.Inventory["VIPCrown"] or 0) + 1
-		data.MegaPotionExpiry = os.time() + 1800
+		data.MegaPotionExpiry = math.max(data.MegaPotionExpiry or 0, os.time()) + 1800
 	end
 
 	syncClient(player)
-	return { Success = true, Message = "Purchase Successful!" }
+	return Enum.ProductPurchaseDecision.PurchaseGranted
 end
 
 -- TEST PERK TOGGLE (Allows free testing of all monetization features without Robux!)
@@ -3664,11 +3758,6 @@ local selectedInventoryAura = nil
 local selectedCraftRecipe = nil
 local activeModal = nil
 
--- Upgrader State
-local selectedUpgradeAura = nil
-local upgraderMode = "Chance"
-local upgraderValue = 50
-
 -- PvP State
 local inBattle = false
 local battleOpponent = ""
@@ -3830,7 +3919,15 @@ offerBuyBtn.Parent = specialOffer
 
 offerBuyBtn.MouseButton1Click:Connect(function()
 	SoundEffects.Play("Click")
-	PurchaseProductFunc:InvokeServer("StarterPack")
+	offerBuyBtn.Text = "ПОЛУЧЕНО! [+25K / x2 LUCK / VIP]"
+	offerBuyBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+	local res = PurchaseProductFunc:InvokeServer("StarterPack")
+	if res and res.Success then
+		SoundEffects.Play("RevealMythic")
+	end
+	task.delay(1.5, function()
+		offerBuyBtn.Text = "ЗАБРАТЬ (R$ 149 / ТЕСТ)"
+	end)
 end)
 
 --------------------------------------------------------------------------------
@@ -5769,6 +5866,7 @@ local shopWindow, shopContent = createModal(" МАГАЗИН ДОНАТА И П�
 
 toggleShopModal = function()
 	toggleModal(shopWindow)
+	refreshShopUI()
 end
 
 local shopScroll = Instance.new("ScrollingFrame")
@@ -5776,6 +5874,8 @@ shopScroll.Size = UDim2.new(1, 0, 1, 0)
 shopScroll.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
 shopScroll.BackgroundTransparency = 0.4
 shopScroll.ScrollBarThickness = 5
+shopScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+shopScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 addCorner(shopScroll, 8)
 shopScroll.Parent = shopContent
 
@@ -5996,7 +6096,11 @@ local function refreshShopUI()
 
 				testBtn.MouseButton1Click:Connect(function()
 					SoundEffects.Play("Click")
+					testBtn.Text = "ОБНОВЛЕНИЕ..."
 					ToggleTestPerkEvent:FireServer(item.PerkKey)
+					task.delay(0.2, function()
+						if shopWindow.Visible then refreshShopUI() end
+					end)
 				end)
 			else
 				testBtn.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
@@ -6005,7 +6109,14 @@ local function refreshShopUI()
 
 				testBtn.MouseButton1Click:Connect(function()
 					SoundEffects.Play("Coin")
-					PurchaseProductFunc:InvokeServer(item.ProductKey)
+					testBtn.Text = "ПОКУПКА..."
+					local res = PurchaseProductFunc:InvokeServer(item.ProductKey)
+					if res and res.Success then
+						SoundEffects.Play("RevealMythic")
+					end
+					task.delay(0.2, function()
+						if shopWindow.Visible then refreshShopUI() end
+					end)
 				end)
 			end
 
@@ -6629,14 +6740,6 @@ DataSyncEvent.OnClientEvent:Connect(function(data)
 		eqName.TextColor3 = eqAura.Color
 		eqSub.Text = AuraConfig.FormatRarity(eqAura.Rarity or 0)
 		eqStroke.Color = eqAura.Color
-
-		-- Update Upgrader Slot if not chosen
-		if not selectedUpgradeAura then
-			upgSlotName.Text = eqAura.Name
-			upgSlotName.TextColor3 = eqAura.Color
-			upgSlotIcon.Image = eqAura.Icon or "rbxasset://textures/particles/sparkles_main.dds"
-			upgSlotIcon.ImageColor3 = eqAura.Color
-		end
 	else
 		eqName.Text = "Aura: None"
 		eqName.TextColor3 = Color3.fromRGB(220, 225, 235)
@@ -6650,6 +6753,7 @@ DataSyncEvent.OnClientEvent:Connect(function(data)
 	if invWindow.Visible then refreshInventoryUI() end
 	if craftWindow.Visible then refreshCraftingUI() end
 	if shopWindow.Visible then refreshShopUI() end
+	if upgWindow.Visible then refreshUpgraderUI() end
 end)
 
 print("[Sols RNG] CS2 Roulette, PvP Battles, Aura Upgrader & Icons loaded!")
@@ -6723,11 +6827,6 @@ local selectedInventoryAura = nil
 local selectedCraftRecipe = nil
 local activeModal = nil
 
--- Upgrader State
-local selectedUpgradeAura = nil
-local upgraderMode = "Chance"
-local upgraderValue = 50
-
 -- PvP State
 local inBattle = false
 local battleOpponent = ""
@@ -6889,7 +6988,15 @@ offerBuyBtn.Parent = specialOffer
 
 offerBuyBtn.MouseButton1Click:Connect(function()
 	SoundEffects.Play("Click")
-	PurchaseProductFunc:InvokeServer("StarterPack")
+	offerBuyBtn.Text = "ПОЛУЧЕНО! [+25K / x2 LUCK / VIP]"
+	offerBuyBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+	local res = PurchaseProductFunc:InvokeServer("StarterPack")
+	if res and res.Success then
+		SoundEffects.Play("RevealMythic")
+	end
+	task.delay(1.5, function()
+		offerBuyBtn.Text = "ЗАБРАТЬ (R$ 149 / ТЕСТ)"
+	end)
 end)
 
 --------------------------------------------------------------------------------
@@ -8828,6 +8935,7 @@ local shopWindow, shopContent = createModal(" МАГАЗИН ДОНАТА И П�
 
 toggleShopModal = function()
 	toggleModal(shopWindow)
+	refreshShopUI()
 end
 
 local shopScroll = Instance.new("ScrollingFrame")
@@ -8835,6 +8943,8 @@ shopScroll.Size = UDim2.new(1, 0, 1, 0)
 shopScroll.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
 shopScroll.BackgroundTransparency = 0.4
 shopScroll.ScrollBarThickness = 5
+shopScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+shopScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 addCorner(shopScroll, 8)
 shopScroll.Parent = shopContent
 
@@ -9055,7 +9165,11 @@ local function refreshShopUI()
 
 				testBtn.MouseButton1Click:Connect(function()
 					SoundEffects.Play("Click")
+					testBtn.Text = "ОБНОВЛЕНИЕ..."
 					ToggleTestPerkEvent:FireServer(item.PerkKey)
+					task.delay(0.2, function()
+						if shopWindow.Visible then refreshShopUI() end
+					end)
 				end)
 			else
 				testBtn.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
@@ -9064,7 +9178,14 @@ local function refreshShopUI()
 
 				testBtn.MouseButton1Click:Connect(function()
 					SoundEffects.Play("Coin")
-					PurchaseProductFunc:InvokeServer(item.ProductKey)
+					testBtn.Text = "ПОКУПКА..."
+					local res = PurchaseProductFunc:InvokeServer(item.ProductKey)
+					if res and res.Success then
+						SoundEffects.Play("RevealMythic")
+					end
+					task.delay(0.2, function()
+						if shopWindow.Visible then refreshShopUI() end
+					end)
 				end)
 			end
 
@@ -9688,14 +9809,6 @@ DataSyncEvent.OnClientEvent:Connect(function(data)
 		eqName.TextColor3 = eqAura.Color
 		eqSub.Text = AuraConfig.FormatRarity(eqAura.Rarity or 0)
 		eqStroke.Color = eqAura.Color
-
-		-- Update Upgrader Slot if not chosen
-		if not selectedUpgradeAura then
-			upgSlotName.Text = eqAura.Name
-			upgSlotName.TextColor3 = eqAura.Color
-			upgSlotIcon.Image = eqAura.Icon or "rbxasset://textures/particles/sparkles_main.dds"
-			upgSlotIcon.ImageColor3 = eqAura.Color
-		end
 	else
 		eqName.Text = "Aura: None"
 		eqName.TextColor3 = Color3.fromRGB(220, 225, 235)
@@ -9709,6 +9822,7 @@ DataSyncEvent.OnClientEvent:Connect(function(data)
 	if invWindow.Visible then refreshInventoryUI() end
 	if craftWindow.Visible then refreshCraftingUI() end
 	if shopWindow.Visible then refreshShopUI() end
+	if upgWindow.Visible then refreshUpgraderUI() end
 end)
 
 print("[Sols RNG] CS2 Roulette, PvP Battles, Aura Upgrader & Icons loaded!")

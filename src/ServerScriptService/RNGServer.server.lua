@@ -557,34 +557,81 @@ end
 -- PURCHASE PRODUCT HANDLER (DONATION & DEVPRODUCTS)
 PurchaseProductFunc.OnServerInvoke = function(player, productKey)
 	local data = sessionData[player]
-	if not data then return { Success = false } end
+	if not data then return { Success = false, Message = "Нет данных игрока" } end
+
+	data.Coins = data.Coins or 0
+	data.Inventory = data.Inventory or {}
+	data.TestPerks = data.TestPerks or {}
 
 	if productKey == "CoinPack10k" then
-		data.Coins = (data.Coins or 0) + 10000
+		data.Coins = data.Coins + 10000
 	elseif productKey == "CoinPack50k" then
-		data.Coins = (data.Coins or 0) + 50000
+		data.Coins = data.Coins + 50000
 	elseif productKey == "CoinPack250k" then
-		data.Coins = (data.Coins or 0) + 250000
+		data.Coins = data.Coins + 250000
 	elseif productKey == "MegaPotion" then
-		data.MegaPotionExpiry = os.time() + 900 -- 15 mins x5 luck!
+		data.MegaPotionExpiry = math.max(data.MegaPotionExpiry or 0, os.time()) + 900 -- 15 mins x5 luck!
 	elseif productKey == "InstantLegendary" then
 		local pool = { "Ruby", "Undead", "Solar" }
 		local pick = pool[math.random(1, #pool)]
 		data.Inventory[pick] = (data.Inventory[pick] or 0) + 1
 	elseif productKey == "InstantMythic" then
-		local pool = { "Lunar", "Poseidon", "Hades", "Galaxy" }
+		local pool = { "Lunar", "Poseidon", "Hades", "Galaxy", "AncientTurtle", "MythicDragon" }
 		local pick = pool[math.random(1, #pool)]
 		data.Inventory[pick] = (data.Inventory[pick] or 0) + 1
 	elseif productKey == "StarterPack" then
+		data.Coins = data.Coins + 25000
+		data.TestPerks.X2Luck = true
+		data.TestPerks.VIP = true
+		data.Inventory["VIPCrown"] = (data.Inventory["VIPCrown"] or 0) + 1
+		data.MegaPotionExpiry = math.max(data.MegaPotionExpiry or 0, os.time()) + 1800
+	end
+
+	syncClient(player)
+	return { Success = true, Message = "Покупка успешно совершена!" }
+end
+
+-- REAL MARKETPLACE SERVICE RECEIPT HANDLER (IF DEVPRODUCTS CONFIGURED IN AURACONFIG)
+MarketplaceService.ProcessReceipt = function(receiptInfo)
+	local player = Players:GetPlayerByUserId(receiptInfo.PlayerId)
+	if not player then
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+
+	local data = sessionData[player]
+	if not data then
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+
+	local devProds = AuraConfig.Settings.DevProductIds or {}
+	local productId = receiptInfo.ProductId
+
+	if productId == devProds.CoinPack10k then
+		data.Coins = (data.Coins or 0) + 10000
+	elseif productId == devProds.CoinPack50k then
+		data.Coins = (data.Coins or 0) + 50000
+	elseif productId == devProds.CoinPack250k then
+		data.Coins = (data.Coins or 0) + 250000
+	elseif productId == devProds.MegaPotion then
+		data.MegaPotionExpiry = math.max(data.MegaPotionExpiry or 0, os.time()) + 900
+	elseif productId == devProds.InstantLegendary then
+		local pool = { "Ruby", "Undead", "Solar" }
+		local pick = pool[math.random(1, #pool)]
+		data.Inventory[pick] = (data.Inventory[pick] or 0) + 1
+	elseif productId == devProds.InstantMythic then
+		local pool = { "Lunar", "Poseidon", "Hades", "Galaxy", "AncientTurtle", "MythicDragon" }
+		local pick = pool[math.random(1, #pool)]
+		data.Inventory[pick] = (data.Inventory[pick] or 0) + 1
+	elseif productId == devProds.StarterPack then
 		data.Coins = (data.Coins or 0) + 25000
 		data.TestPerks.X2Luck = true
 		data.TestPerks.VIP = true
 		data.Inventory["VIPCrown"] = (data.Inventory["VIPCrown"] or 0) + 1
-		data.MegaPotionExpiry = os.time() + 1800
+		data.MegaPotionExpiry = math.max(data.MegaPotionExpiry or 0, os.time()) + 1800
 	end
 
 	syncClient(player)
-	return { Success = true, Message = "Purchase Successful!" }
+	return Enum.ProductPurchaseDecision.PurchaseGranted
 end
 
 -- TEST PERK TOGGLE (Allows free testing of all monetization features without Robux!)
