@@ -76,28 +76,28 @@ end
 local function addDenseGroundEffects(parentAtt, color, scaleMultiplier)
 	local scale = scaleMultiplier or 1.0
 
-	-- Expanding Ground Shockwave Disc
+	-- Expanding Ground Shockwave Disc (Subtle, non-blinding floor glow)
 	createEmitter(parentAtt, {
 		Color = ColorSequence.new(color),
 		Size = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1.5 * scale),
-			NumberSequenceKeypoint.new(0.5, 4.5 * scale),
-			NumberSequenceKeypoint.new(1, 6.0 * scale),
+			NumberSequenceKeypoint.new(0, 1.2 * scale),
+			NumberSequenceKeypoint.new(0.5, 3.2 * scale),
+			NumberSequenceKeypoint.new(1, 4.2 * scale),
 		}),
 		Transparency = NumberSequence.new({
 			NumberSequenceKeypoint.new(0, 1.0),
-			NumberSequenceKeypoint.new(0.15, 0.1),
-			NumberSequenceKeypoint.new(0.7, 0.35),
+			NumberSequenceKeypoint.new(0.2, 0.55),
+			NumberSequenceKeypoint.new(0.8, 0.85),
 			NumberSequenceKeypoint.new(1, 1.0),
 		}),
-		Lifetime = NumberRange.new(1.6, 2.2),
-		Rate = 12,
-		Speed = NumberRange.new(0.2, 0.5),
+		Lifetime = NumberRange.new(1.4, 2.0),
+		Rate = 6,
+		Speed = NumberRange.new(0.1, 0.3),
 		SpreadAngle = Vector2.new(0, 0),
 		Acceleration = Vector3.new(0, 0.1, 0),
 		Drag = 1.0,
 		Texture = TEXTURES.Ring,
-		RotSpeed = NumberRange.new(35, 70),
+		RotSpeed = NumberRange.new(20, 45),
 		Orientation = Enum.ParticleOrientation.VelocityPerpendicular,
 		EmissionDirection = Enum.NormalId.Top,
 	})
@@ -667,49 +667,49 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 	attRoot.Position = Vector3.new(0, 0, 0)
 	attRoot.Parent = rootPart
 
-	-- Character Highlight (vivid neon glow)
+	-- Character Highlight (gentle outline, no blinding glare)
 	local highlight = Instance.new("Highlight")
 	highlight.Name = "AuraHighlight"
 	highlight.Adornee = character
 	highlight.OutlineColor = auraColor
-	highlight.OutlineTransparency = 0.08
+	highlight.OutlineTransparency = 0.25
 	highlight.FillColor = auraColor
-	highlight.FillTransparency = 0.88
+	highlight.FillTransparency = 0.94
 	highlight.Parent = activeFolder
 
-	-- Dynamic Light
+	-- Dynamic Light (Soft, non-blinding)
 	local light = Instance.new("PointLight")
 	light.Name = "AuraLight"
 	light.Color = auraColor
-	light.Range = (rarity >= 10000 or auraData.IsCrafted) and 18 or 14
-	light.Brightness = (rarity >= 10000 or auraData.IsCrafted) and 1.4 or 1.0
+	light.Range = (rarity >= 10000 or auraData.IsCrafted) and 10 or 6
+	light.Brightness = (rarity >= 10000 or auraData.IsCrafted) and 0.6 or 0.35
 	light.Shadows = false
 	light.Parent = attRoot
 
 	createOverheadGui(character, auraData, isVIP or false)
 
 	-- Always add dense ground runes & orbital sparkles
-	local groundScale = (rarity >= 10000) and 1.5 or 1.1
+	local groundScale = (rarity >= 10000) and 1.3 or 1.0
 	addDenseGroundEffects(attFoot, pColor, groundScale)
-	addDenseOrbitingSparks(attRoot, pColor, (rarity >= 1000) and 55 or 25)
+	addDenseOrbitingSparks(attRoot, pColor, (rarity >= 1000) and 40 or 20)
 
 	local shape = auraData.ParticleShape or "Sparks"
 
 	if shape == "Dust" or shape == "Sparks" then
-		addDenseBodyEnergy(attRoot, pColor, auraColor, 40, NumberRange.new(2.0, 4.5), {0.3, 1.2, 0.2})
+		addDenseBodyEnergy(attRoot, pColor, auraColor, 35, NumberRange.new(2.0, 4.0), {0.3, 1.2, 0.2})
 
 	elseif shape == "Leaves" then
-		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(160, 240, 100), 50, NumberRange.new(2.5, 5.5), {0.4, 1.6, 0.2})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(160, 240, 100), 45, NumberRange.new(2.5, 5.0), {0.4, 1.5, 0.2})
 
 	elseif shape == "Flame" or shape == "Embers" then
-		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 220, 120), 75, NumberRange.new(4.5, 9.0), {0.5, 2.2, 0.3})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 220, 120), 60, NumberRange.new(4.0, 7.5), {0.5, 2.0, 0.3})
 
 	elseif shape == "Sparkles" then
-		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 255, 200), 65, NumberRange.new(4.0, 8.0), {0.5, 2.0, 0.3})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 255, 200), 55, NumberRange.new(3.5, 7.0), {0.4, 1.8, 0.3})
 		addHeadCrown(character, activeFolder, pColor, false)
 
 	elseif shape == "Shards" or shape == "Frost" then
-		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(180, 230, 255), 60, NumberRange.new(3.5, 7.5), {0.4, 1.8, 0.3})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(180, 230, 255), 55, NumberRange.new(3.5, 7.0), {0.4, 1.8, 0.3})
 		addOrbiting3DRig(rootPart, activeFolder, {
 			Count = 5,
 			Size = Vector3.new(0.6, 1.4, 0.6),
@@ -721,12 +721,67 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 			BobHeight = 0.5,
 		})
 
-	elseif shape == "FireColumn" or shape == "Hellfire" or shape == "LavaTide" then
-		addDenseBodyEnergy(attRoot, Color3.fromRGB(255, 40, 20), pColor, 100, NumberRange.new(6.0, 12.0), {0.8, 3.0, 0.4})
+	elseif shape == "Vortex" then
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(186, 230, 253), Color3.fromRGB(255, 255, 255), 65, NumberRange.new(3.0, 6.5), {0.4, 1.8, 0.2})
+		addOrbiting3DRig(rootPart, activeFolder, {
+			Count = 4,
+			Size = Vector3.new(0.4, 1.2, 0.4),
+			Shape = Enum.PartType.Block,
+			Color = Color3.fromRGB(125, 211, 252),
+			Radius = 3.2,
+			Speed = 2.8,
+			BaseHeight = 0.0,
+			BobHeight = 0.8,
+		})
+
+	elseif shape == "Souls" then
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(52, 211, 153), Color3.fromRGB(16, 185, 129), 70, NumberRange.new(4.0, 7.5), {0.5, 2.0, 0.3})
+		addOrbiting3DRig(rootPart, activeFolder, {
+			Count = 3,
+			Size = Vector3.new(0.9, 0.9, 0.9),
+			Shape = Enum.PartType.Ball,
+			Color = Color3.fromRGB(110, 231, 183),
+			Radius = 3.0,
+			Speed = 1.6,
+			BaseHeight = 0.3,
+			BobHeight = 0.5,
+		})
+		addLightPillar(rootPart, activeFolder, pColor)
+
+	elseif shape == "FireColumn" then
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(255, 40, 20), pColor, 80, NumberRange.new(5.0, 10.0), {0.7, 2.5, 0.3})
+		addLightPillar(rootPart, activeFolder, pColor)
+
+	elseif shape == "Hellfire" then
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(220, 38, 38), Color3.fromRGB(127, 29, 29), 85, NumberRange.new(5.0, 9.5), {0.7, 2.5, 0.3})
+		addOrbiting3DRig(rootPart, activeFolder, {
+			Count = 3,
+			Size = Vector3.new(0.8, 1.5, 0.8),
+			Shape = Enum.PartType.Block,
+			Color = Color3.fromRGB(239, 68, 68),
+			Radius = 3.2,
+			Speed = 2.2,
+			BaseHeight = 0.2,
+			BobHeight = 0.4,
+		})
+		addLightPillar(rootPart, activeFolder, pColor)
+
+	elseif shape == "Tsunami" then
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(14, 165, 233), Color3.fromRGB(56, 189, 248), 80, NumberRange.new(4.5, 8.5), {0.6, 2.2, 0.3})
+		addOrbiting3DRig(rootPart, activeFolder, {
+			Count = 4,
+			Size = Vector3.new(0.9, 1.3, 0.9),
+			Shape = Enum.PartType.Cylinder,
+			Color = Color3.fromRGB(37, 99, 235),
+			Radius = 3.8,
+			Speed = 2.4,
+			BaseHeight = -0.1,
+			BobHeight = 0.6,
+		})
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "Sunburst" or shape == "EclipseCorona" then
-		addDenseBodyEnergy(attRoot, Color3.fromRGB(255, 180, 40), Color3.fromRGB(255, 255, 255), 110, NumberRange.new(5.5, 11.0), {0.8, 3.2, 0.4})
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(255, 180, 40), Color3.fromRGB(255, 255, 255), 90, NumberRange.new(5.0, 9.5), {0.7, 2.6, 0.3})
 		addOrbiting3DRig(rootPart, activeFolder, {
 			Count = 3,
 			Size = Vector3.new(1.1, 1.1, 1.1),
@@ -741,7 +796,7 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "MoonStars" or shape == "NebulaSpiral" or shape == "Singularity" then
-		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(240, 180, 255), 90, NumberRange.new(4.0, 8.5), {0.7, 2.8, 0.4})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(240, 180, 255), 80, NumberRange.new(4.0, 8.0), {0.6, 2.4, 0.3})
 		addOrbiting3DRig(rootPart, activeFolder, {
 			Count = 3,
 			Size = Vector3.new(1.0, 1.0, 1.0),
@@ -755,29 +810,44 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "DivineHalo" or shape == "TimeClock" or shape == "PrismaticGlitch" then
-		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 255, 255), 110, NumberRange.new(5.0, 10.0), {0.8, 3.0, 0.4})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 255, 255), 90, NumberRange.new(4.5, 9.0), {0.7, 2.5, 0.3})
 		addAngelicWings(character, activeFolder, pColor)
 		addHeadCrown(character, activeFolder, pColor, false)
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "CrownGlow" then
 		addHeadCrown(character, activeFolder, Color3.fromRGB(255, 215, 0), true)
-		addDenseBodyEnergy(attRoot, Color3.fromRGB(251, 191, 36), Color3.fromRGB(255, 255, 255), 60, NumberRange.new(3.5, 7.0), {0.4, 1.8, 0.3})
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(251, 191, 36), Color3.fromRGB(255, 255, 255), 55, NumberRange.new(3.5, 6.5), {0.4, 1.6, 0.3})
 
 	elseif shape == "Dragon" then
-		addDenseBodyEnergy(attRoot, Color3.fromRGB(244, 63, 94), Color3.fromRGB(251, 191, 36), 75, NumberRange.new(5.0, 9.0), {0.6, 2.2, 0.3})
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(244, 63, 94), Color3.fromRGB(251, 191, 36), 75, NumberRange.new(4.5, 8.5), {0.6, 2.0, 0.3})
 		addDragonSerpent(character, activeFolder, pColor)
 		addDragonWings(character, activeFolder, pColor)
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "Turtle" then
-		addDenseBodyEnergy(attRoot, Color3.fromRGB(16, 185, 129), Color3.fromRGB(52, 211, 153), 60, NumberRange.new(4.0, 8.0), {0.5, 2.0, 0.3})
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(16, 185, 129), Color3.fromRGB(52, 211, 153), 60, NumberRange.new(4.0, 7.5), {0.5, 1.8, 0.3})
 		addAncientTurtleShell(character, activeFolder, pColor)
 		addOrbitingTurtleShields(character, activeFolder, pColor)
 		addLightPillar(rootPart, activeFolder, pColor)
 
+	elseif shape == "LavaTide" then
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(251, 146, 60), Color3.fromRGB(239, 68, 68), 95, NumberRange.new(5.5, 10.0), {0.8, 2.8, 0.3})
+		addOrbiting3DRig(rootPart, activeFolder, {
+			Count = 4,
+			Size = Vector3.new(1.0, 1.0, 1.0),
+			Shape = Enum.PartType.Block,
+			Color = Color3.fromRGB(249, 115, 22),
+			Radius = 3.6,
+			Speed = 2.4,
+			BaseHeight = 0.3,
+			BobHeight = 0.5,
+		})
+		addDragonWings(character, activeFolder, pColor)
+		addLightPillar(rootPart, activeFolder, pColor)
+
 	else
-		addDenseBodyEnergy(attRoot, pColor, auraColor, 55, NumberRange.new(4.0, 8.0), {0.5, 2.0, 0.3})
+		addDenseBodyEnergy(attRoot, pColor, auraColor, 50, NumberRange.new(3.5, 7.0), {0.4, 1.8, 0.3})
 		if rarity >= 1000 then
 			addLightPillar(rootPart, activeFolder, pColor)
 		end

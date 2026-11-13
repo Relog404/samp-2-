@@ -108,19 +108,19 @@ def build_place():
 
     # 2. Lighting
     light_item, light_props = create_item(root, "Lighting", "Lighting", referent="RBX_Lighting")
-    ET.SubElement(light_props, "string", {"name": "TimeOfDay"}).text = "21:30:00"
-    ET.SubElement(light_props, "float", {"name": "Brightness"}).text = "1.8"
-    ET.SubElement(light_props, "float", {"name": "ClockTime"}).text = "21.5"
+    ET.SubElement(light_props, "string", {"name": "TimeOfDay"}).text = "08:00:00"
+    ET.SubElement(light_props, "float", {"name": "Brightness"}).text = "1.6"
+    ET.SubElement(light_props, "float", {"name": "ClockTime"}).text = "8.0"
 
     bloom_item, bloom_props = create_item(light_item, "BloomEffect", "RNGBloom")
-    ET.SubElement(bloom_props, "float", {"name": "Intensity"}).text = "1.2"
-    ET.SubElement(bloom_props, "float", {"name": "Size"}).text = "24"
-    ET.SubElement(bloom_props, "float", {"name": "Threshold"}).text = "0.85"
+    ET.SubElement(bloom_props, "float", {"name": "Intensity"}).text = "0.35"
+    ET.SubElement(bloom_props, "float", {"name": "Size"}).text = "16"
+    ET.SubElement(bloom_props, "float", {"name": "Threshold"}).text = "1.15"
 
     cc_item, cc_props = create_item(light_item, "ColorCorrectionEffect", "RNGColorCorrection")
-    ET.SubElement(cc_props, "float", {"name": "Brightness"}).text = "0.04"
-    ET.SubElement(cc_props, "float", {"name": "Contrast"}).text = "0.15"
-    ET.SubElement(cc_props, "float", {"name": "Saturation"}).text = "0.2"
+    ET.SubElement(cc_props, "float", {"name": "Brightness"}).text = "0.0"
+    ET.SubElement(cc_props, "float", {"name": "Contrast"}).text = "0.08"
+    ET.SubElement(cc_props, "float", {"name": "Saturation"}).text = "0.12"
 
     # 3. ReplicatedStorage
     rep_item, _ = create_item(root, "ReplicatedStorage", "ReplicatedStorage", referent="RBX_ReplicatedStorage")

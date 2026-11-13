@@ -1661,15 +1661,22 @@ doUpgradeBtn.MouseButton1Click:Connect(function()
 	local res = UpgradeAuraFunc:InvokeServer(sourceId, selectedTargetAuraId, upgraderChance, "Custom", upgraderChance)
 
 	if res and res.Success then
-		local startRot = needleContainer.Rotation % 360
-		local targetAngle = (res.Roll / 100.0) * 360
-		local spins = isUpgraderFast and 1 or 5
-		local endRot = startRot + (spins * 360) + targetAngle
+		-- Calculate exact landing angle (0 to 360 deg, where 0 is 12 o'clock)
+		local targetAngle = (res.Roll / 100.0) * 360.0
+		local curAngle = needleContainer.Rotation % 360
+		local forwardDelta = (targetAngle - curAngle) % 360
+		if forwardDelta < 20 then
+			forwardDelta = forwardDelta + 360
+		end
+
+		local spins = isUpgraderFast and 1 or 4
+		local endRot = needleContainer.Rotation + (spins * 360) + forwardDelta
 		local duration = isUpgraderFast and 0.6 or 3.2
 
-		TweenService:Create(needleContainer, TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+		local tween = TweenService:Create(needleContainer, TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
 			Rotation = endRot
-		}):Play()
+		})
+		tween:Play()
 
 		task.spawn(function()
 			local tickInterval = isUpgraderFast and 0.05 or 0.08
@@ -1681,16 +1688,19 @@ doUpgradeBtn.MouseButton1Click:Connect(function()
 		end)
 
 		task.wait(duration)
+		needleContainer.Rotation = targetAngle -- Normalize to exact target angle
 
 		if res.Won then
 			SoundEffects.Play("RevealMythic")
+			wheelStroke.Color = Color3.fromRGB(34, 197, 94)
 			hubStroke.Color = Color3.fromRGB(16, 185, 129)
-			upgResultMsg.Text = string.format("ПОБЕДА! Вы получили: %s (+%d монет)!", res.TargetAura.Name:upper(), res.Jackpot or 1500)
+			upgResultMsg.Text = string.format("ПОБЕДА! Стрелка в зеленой зоне! Получено: %s (+%d монет)!", res.TargetAura.Name:upper(), res.Jackpot or 1500)
 			upgResultMsg.TextColor3 = Color3.fromRGB(74, 222, 128)
 		else
 			SoundEffects.Play("Coin")
+			wheelStroke.Color = Color3.fromRGB(239, 68, 68)
 			hubStroke.Color = Color3.fromRGB(239, 68, 68)
-			upgResultMsg.Text = string.format("НЕУДАЧА! Аура сгорела (компенсация: +%d монет).", res.Scrap or 100)
+			upgResultMsg.Text = string.format("НЕУДАЧА! Стрелка в красной зоне (компенсация: +%d монет).", res.Scrap or 100)
 			upgResultMsg.TextColor3 = Color3.fromRGB(248, 113, 113)
 		end
 

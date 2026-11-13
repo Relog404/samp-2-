@@ -8,10 +8,10 @@ local Workspace = game:GetService("Workspace")
 local CraftingStationSetup = {}
 
 function CraftingStationSetup.BuildMap()
-	-- 1. Setup Crisp Sunny Morning Lighting
+	-- 1. Setup Crisp Sunny Morning Lighting (Soft, non-blinding)
 	Lighting.TimeOfDay = "08:00:00"
 	Lighting.ClockTime = 8.0
-	Lighting.Brightness = 2.4
+	Lighting.Brightness = 1.6
 	Lighting.Ambient = Color3.fromRGB(110, 120, 140)
 	Lighting.OutdoorAmbient = Color3.fromRGB(130, 145, 170)
 	Lighting.GlobalShadows = true
@@ -22,21 +22,21 @@ function CraftingStationSetup.BuildMap()
 	if not sunRays then
 		sunRays = Instance.new("SunRaysEffect")
 		sunRays.Name = "RNGSunRays"
-		sunRays.Intensity = 0.28
-		sunRays.Spread = 0.85
+		sunRays.Intensity = 0.15
+		sunRays.Spread = 0.6
 		sunRays.Parent = Lighting
 	end
 
-	-- Vibrant Bloom
+	-- Vibrant Bloom (Gentle, never blinding)
 	local bloom = Lighting:FindFirstChild("RNGBloom")
 	if not bloom then
 		bloom = Instance.new("BloomEffect")
 		bloom.Name = "RNGBloom"
 		bloom.Parent = Lighting
 	end
-	bloom.Intensity = 1.1
-	bloom.Size = 22
-	bloom.Threshold = 0.82
+	bloom.Intensity = 0.35
+	bloom.Size = 16
+	bloom.Threshold = 1.15
 
 	-- Saturated Color Correction
 	local cc = Lighting:FindFirstChild("RNGColorCorrection")
@@ -45,9 +45,9 @@ function CraftingStationSetup.BuildMap()
 		cc.Name = "RNGColorCorrection"
 		cc.Parent = Lighting
 	end
-	cc.Brightness = 0.04
-	cc.Contrast = 0.12
-	cc.Saturation = 0.22
+	cc.Brightness = 0.0
+	cc.Contrast = 0.08
+	cc.Saturation = 0.12
 
 	-- Atmosphere for clear blue sky
 	local atmo = Lighting:FindFirstChild("RNGAtmosphere")
@@ -73,50 +73,31 @@ function CraftingStationSetup.BuildMap()
 	platformFolder.Name = "RNG_Platform"
 	platformFolder.Parent = Workspace
 
-	-- Main Deck (Sleek Marble/Quartz Finish)
+	-- Main Deck (Matte Dark Slate - Non-reflective, zero glare)
 	local mainFloor = Instance.new("Part")
 	mainFloor.Name = "MainFloor"
 	mainFloor.Size = Vector3.new(120, 4, 120)
 	mainFloor.Position = Vector3.new(0, 0, 0)
 	mainFloor.Anchored = true
-	mainFloor.Material = Enum.Material.SmoothPlastic
-	mainFloor.Color = Color3.fromRGB(28, 32, 44)
+	mainFloor.Material = Enum.Material.Slate
+	mainFloor.Color = Color3.fromRGB(24, 28, 38)
 	mainFloor.TopSurface = Enum.SurfaceType.Smooth
 	mainFloor.BottomSurface = Enum.SurfaceType.Smooth
 	mainFloor.Parent = platformFolder
 
-	-- Glowing Cyan Neon Border
-	local border = Instance.new("Part")
-	border.Name = "BorderGlow"
-	border.Size = Vector3.new(122, 1, 122)
-	border.Position = Vector3.new(0, 2.1, 0)
-	border.Anchored = true
-	border.CanCollide = false
-	border.Material = Enum.Material.Neon
-	border.Color = Color3.fromRGB(56, 189, 248)
-	border.Transparency = 0.3
-	border.Parent = platformFolder
-
-	-- Center Spawn Location
+	-- Center Spawn Location (Matte Smooth Plastic, NOT Neon)
 	local spawn = Instance.new("SpawnLocation")
 	spawn.Name = "RNG_Spawn"
-	spawn.Size = Vector3.new(16, 1, 16)
-	spawn.Position = Vector3.new(0, 2.1, 0)
+	spawn.Size = Vector3.new(12, 1, 12)
+	spawn.Position = Vector3.new(0, 2.05, 0)
 	spawn.Anchored = true
-	spawn.Material = Enum.Material.Neon
-	spawn.Color = Color3.fromRGB(37, 99, 235)
+	spawn.Material = Enum.Material.SmoothPlastic
+	spawn.Color = Color3.fromRGB(32, 42, 60)
 	spawn.TopSurface = Enum.SurfaceType.Smooth
 	spawn.BottomSurface = Enum.SurfaceType.Smooth
 	spawn.Neutral = true
 	spawn.Duration = 0
 	spawn.Parent = platformFolder
-
-	-- Center Ambient Light
-	local spawnLight = Instance.new("PointLight")
-	spawnLight.Color = Color3.fromRGB(96, 165, 250)
-	spawnLight.Brightness = 2.5
-	spawnLight.Range = 25
-	spawnLight.Parent = spawn
 
 	-- 3. Interactive Crafting Altar
 	local altarModel = Instance.new("Model")
@@ -129,8 +110,8 @@ function CraftingStationSetup.BuildMap()
 	altarBase.Size = Vector3.new(10, 2, 10)
 	altarBase.Position = Vector3.new(35, 2.5, 0)
 	altarBase.Anchored = true
-	altarBase.Material = Enum.Material.SmoothPlastic
-	altarBase.Color = Color3.fromRGB(35, 40, 56)
+	altarBase.Material = Enum.Material.Slate
+	altarBase.Color = Color3.fromRGB(30, 36, 48)
 	altarBase.Parent = altarModel
 
 	-- Glowing Rune Disc
@@ -139,27 +120,27 @@ function CraftingStationSetup.BuildMap()
 	runeDisc.Size = Vector3.new(8, 0.4, 8)
 	runeDisc.Position = Vector3.new(35, 3.6, 0)
 	runeDisc.Anchored = true
-	runeDisc.Material = Enum.Material.Neon
-	runeDisc.Color = Color3.fromRGB(168, 85, 247)
+	runeDisc.Material = Enum.Material.SmoothPlastic
+	runeDisc.Color = Color3.fromRGB(124, 58, 237)
 	runeDisc.Parent = altarModel
 
 	-- Floating Mystical Crystal Anvil
 	local anvil = Instance.new("Part")
 	anvil.Name = "FloatingCrystal"
-	anvil.Size = Vector3.new(3.5, 4, 3.5)
+	anvil.Size = Vector3.new(3.2, 3.8, 3.2)
 	anvil.Position = Vector3.new(35, 6.5, 0)
 	anvil.Anchored = true
 	anvil.CanCollide = false
-	anvil.Material = Enum.Material.Neon
+	anvil.Material = Enum.Material.Glass
 	anvil.Color = Color3.fromRGB(245, 158, 11)
 	anvil.Orientation = Vector3.new(45, 45, 0)
 	anvil.Parent = altarModel
 
-	-- Anvil Light & Sparkle Emitter
+	-- Anvil Light & Sparkle Emitter (Subtle glow)
 	local anvilLight = Instance.new("PointLight")
 	anvilLight.Color = Color3.fromRGB(250, 204, 21)
-	anvilLight.Brightness = 3.5
-	anvilLight.Range = 22
+	anvilLight.Brightness = 0.8
+	anvilLight.Range = 12
 	anvilLight.Parent = anvil
 
 	local anvilEmitter = Instance.new("ParticleEmitter")

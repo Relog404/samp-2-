@@ -773,28 +773,28 @@ end
 local function addDenseGroundEffects(parentAtt, color, scaleMultiplier)
 	local scale = scaleMultiplier or 1.0
 
-	-- Expanding Ground Shockwave Disc
+	-- Expanding Ground Shockwave Disc (Subtle, non-blinding floor glow)
 	createEmitter(parentAtt, {
 		Color = ColorSequence.new(color),
 		Size = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1.5 * scale),
-			NumberSequenceKeypoint.new(0.5, 4.5 * scale),
-			NumberSequenceKeypoint.new(1, 6.0 * scale),
+			NumberSequenceKeypoint.new(0, 1.2 * scale),
+			NumberSequenceKeypoint.new(0.5, 3.2 * scale),
+			NumberSequenceKeypoint.new(1, 4.2 * scale),
 		}),
 		Transparency = NumberSequence.new({
 			NumberSequenceKeypoint.new(0, 1.0),
-			NumberSequenceKeypoint.new(0.15, 0.1),
-			NumberSequenceKeypoint.new(0.7, 0.35),
+			NumberSequenceKeypoint.new(0.2, 0.55),
+			NumberSequenceKeypoint.new(0.8, 0.85),
 			NumberSequenceKeypoint.new(1, 1.0),
 		}),
-		Lifetime = NumberRange.new(1.6, 2.2),
-		Rate = 12,
-		Speed = NumberRange.new(0.2, 0.5),
+		Lifetime = NumberRange.new(1.4, 2.0),
+		Rate = 6,
+		Speed = NumberRange.new(0.1, 0.3),
 		SpreadAngle = Vector2.new(0, 0),
 		Acceleration = Vector3.new(0, 0.1, 0),
 		Drag = 1.0,
 		Texture = TEXTURES.Ring,
-		RotSpeed = NumberRange.new(35, 70),
+		RotSpeed = NumberRange.new(20, 45),
 		Orientation = Enum.ParticleOrientation.VelocityPerpendicular,
 		EmissionDirection = Enum.NormalId.Top,
 	})
@@ -1364,49 +1364,49 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 	attRoot.Position = Vector3.new(0, 0, 0)
 	attRoot.Parent = rootPart
 
-	-- Character Highlight (vivid neon glow)
+	-- Character Highlight (gentle outline, no blinding glare)
 	local highlight = Instance.new("Highlight")
 	highlight.Name = "AuraHighlight"
 	highlight.Adornee = character
 	highlight.OutlineColor = auraColor
-	highlight.OutlineTransparency = 0.08
+	highlight.OutlineTransparency = 0.25
 	highlight.FillColor = auraColor
-	highlight.FillTransparency = 0.88
+	highlight.FillTransparency = 0.94
 	highlight.Parent = activeFolder
 
-	-- Dynamic Light
+	-- Dynamic Light (Soft, non-blinding)
 	local light = Instance.new("PointLight")
 	light.Name = "AuraLight"
 	light.Color = auraColor
-	light.Range = (rarity >= 10000 or auraData.IsCrafted) and 18 or 14
-	light.Brightness = (rarity >= 10000 or auraData.IsCrafted) and 1.4 or 1.0
+	light.Range = (rarity >= 10000 or auraData.IsCrafted) and 10 or 6
+	light.Brightness = (rarity >= 10000 or auraData.IsCrafted) and 0.6 or 0.35
 	light.Shadows = false
 	light.Parent = attRoot
 
 	createOverheadGui(character, auraData, isVIP or false)
 
 	-- Always add dense ground runes & orbital sparkles
-	local groundScale = (rarity >= 10000) and 1.5 or 1.1
+	local groundScale = (rarity >= 10000) and 1.3 or 1.0
 	addDenseGroundEffects(attFoot, pColor, groundScale)
-	addDenseOrbitingSparks(attRoot, pColor, (rarity >= 1000) and 55 or 25)
+	addDenseOrbitingSparks(attRoot, pColor, (rarity >= 1000) and 40 or 20)
 
 	local shape = auraData.ParticleShape or "Sparks"
 
 	if shape == "Dust" or shape == "Sparks" then
-		addDenseBodyEnergy(attRoot, pColor, auraColor, 40, NumberRange.new(2.0, 4.5), {0.3, 1.2, 0.2})
+		addDenseBodyEnergy(attRoot, pColor, auraColor, 35, NumberRange.new(2.0, 4.0), {0.3, 1.2, 0.2})
 
 	elseif shape == "Leaves" then
-		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(160, 240, 100), 50, NumberRange.new(2.5, 5.5), {0.4, 1.6, 0.2})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(160, 240, 100), 45, NumberRange.new(2.5, 5.0), {0.4, 1.5, 0.2})
 
 	elseif shape == "Flame" or shape == "Embers" then
-		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 220, 120), 75, NumberRange.new(4.5, 9.0), {0.5, 2.2, 0.3})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 220, 120), 60, NumberRange.new(4.0, 7.5), {0.5, 2.0, 0.3})
 
 	elseif shape == "Sparkles" then
-		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 255, 200), 65, NumberRange.new(4.0, 8.0), {0.5, 2.0, 0.3})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 255, 200), 55, NumberRange.new(3.5, 7.0), {0.4, 1.8, 0.3})
 		addHeadCrown(character, activeFolder, pColor, false)
 
 	elseif shape == "Shards" or shape == "Frost" then
-		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(180, 230, 255), 60, NumberRange.new(3.5, 7.5), {0.4, 1.8, 0.3})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(180, 230, 255), 55, NumberRange.new(3.5, 7.0), {0.4, 1.8, 0.3})
 		addOrbiting3DRig(rootPart, activeFolder, {
 			Count = 5,
 			Size = Vector3.new(0.6, 1.4, 0.6),
@@ -1418,12 +1418,67 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 			BobHeight = 0.5,
 		})
 
-	elseif shape == "FireColumn" or shape == "Hellfire" or shape == "LavaTide" then
-		addDenseBodyEnergy(attRoot, Color3.fromRGB(255, 40, 20), pColor, 100, NumberRange.new(6.0, 12.0), {0.8, 3.0, 0.4})
+	elseif shape == "Vortex" then
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(186, 230, 253), Color3.fromRGB(255, 255, 255), 65, NumberRange.new(3.0, 6.5), {0.4, 1.8, 0.2})
+		addOrbiting3DRig(rootPart, activeFolder, {
+			Count = 4,
+			Size = Vector3.new(0.4, 1.2, 0.4),
+			Shape = Enum.PartType.Block,
+			Color = Color3.fromRGB(125, 211, 252),
+			Radius = 3.2,
+			Speed = 2.8,
+			BaseHeight = 0.0,
+			BobHeight = 0.8,
+		})
+
+	elseif shape == "Souls" then
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(52, 211, 153), Color3.fromRGB(16, 185, 129), 70, NumberRange.new(4.0, 7.5), {0.5, 2.0, 0.3})
+		addOrbiting3DRig(rootPart, activeFolder, {
+			Count = 3,
+			Size = Vector3.new(0.9, 0.9, 0.9),
+			Shape = Enum.PartType.Ball,
+			Color = Color3.fromRGB(110, 231, 183),
+			Radius = 3.0,
+			Speed = 1.6,
+			BaseHeight = 0.3,
+			BobHeight = 0.5,
+		})
+		addLightPillar(rootPart, activeFolder, pColor)
+
+	elseif shape == "FireColumn" then
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(255, 40, 20), pColor, 80, NumberRange.new(5.0, 10.0), {0.7, 2.5, 0.3})
+		addLightPillar(rootPart, activeFolder, pColor)
+
+	elseif shape == "Hellfire" then
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(220, 38, 38), Color3.fromRGB(127, 29, 29), 85, NumberRange.new(5.0, 9.5), {0.7, 2.5, 0.3})
+		addOrbiting3DRig(rootPart, activeFolder, {
+			Count = 3,
+			Size = Vector3.new(0.8, 1.5, 0.8),
+			Shape = Enum.PartType.Block,
+			Color = Color3.fromRGB(239, 68, 68),
+			Radius = 3.2,
+			Speed = 2.2,
+			BaseHeight = 0.2,
+			BobHeight = 0.4,
+		})
+		addLightPillar(rootPart, activeFolder, pColor)
+
+	elseif shape == "Tsunami" then
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(14, 165, 233), Color3.fromRGB(56, 189, 248), 80, NumberRange.new(4.5, 8.5), {0.6, 2.2, 0.3})
+		addOrbiting3DRig(rootPart, activeFolder, {
+			Count = 4,
+			Size = Vector3.new(0.9, 1.3, 0.9),
+			Shape = Enum.PartType.Cylinder,
+			Color = Color3.fromRGB(37, 99, 235),
+			Radius = 3.8,
+			Speed = 2.4,
+			BaseHeight = -0.1,
+			BobHeight = 0.6,
+		})
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "Sunburst" or shape == "EclipseCorona" then
-		addDenseBodyEnergy(attRoot, Color3.fromRGB(255, 180, 40), Color3.fromRGB(255, 255, 255), 110, NumberRange.new(5.5, 11.0), {0.8, 3.2, 0.4})
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(255, 180, 40), Color3.fromRGB(255, 255, 255), 90, NumberRange.new(5.0, 9.5), {0.7, 2.6, 0.3})
 		addOrbiting3DRig(rootPart, activeFolder, {
 			Count = 3,
 			Size = Vector3.new(1.1, 1.1, 1.1),
@@ -1438,7 +1493,7 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "MoonStars" or shape == "NebulaSpiral" or shape == "Singularity" then
-		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(240, 180, 255), 90, NumberRange.new(4.0, 8.5), {0.7, 2.8, 0.4})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(240, 180, 255), 80, NumberRange.new(4.0, 8.0), {0.6, 2.4, 0.3})
 		addOrbiting3DRig(rootPart, activeFolder, {
 			Count = 3,
 			Size = Vector3.new(1.0, 1.0, 1.0),
@@ -1452,29 +1507,44 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "DivineHalo" or shape == "TimeClock" or shape == "PrismaticGlitch" then
-		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 255, 255), 110, NumberRange.new(5.0, 10.0), {0.8, 3.0, 0.4})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 255, 255), 90, NumberRange.new(4.5, 9.0), {0.7, 2.5, 0.3})
 		addAngelicWings(character, activeFolder, pColor)
 		addHeadCrown(character, activeFolder, pColor, false)
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "CrownGlow" then
 		addHeadCrown(character, activeFolder, Color3.fromRGB(255, 215, 0), true)
-		addDenseBodyEnergy(attRoot, Color3.fromRGB(251, 191, 36), Color3.fromRGB(255, 255, 255), 60, NumberRange.new(3.5, 7.0), {0.4, 1.8, 0.3})
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(251, 191, 36), Color3.fromRGB(255, 255, 255), 55, NumberRange.new(3.5, 6.5), {0.4, 1.6, 0.3})
 
 	elseif shape == "Dragon" then
-		addDenseBodyEnergy(attRoot, Color3.fromRGB(244, 63, 94), Color3.fromRGB(251, 191, 36), 75, NumberRange.new(5.0, 9.0), {0.6, 2.2, 0.3})
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(244, 63, 94), Color3.fromRGB(251, 191, 36), 75, NumberRange.new(4.5, 8.5), {0.6, 2.0, 0.3})
 		addDragonSerpent(character, activeFolder, pColor)
 		addDragonWings(character, activeFolder, pColor)
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "Turtle" then
-		addDenseBodyEnergy(attRoot, Color3.fromRGB(16, 185, 129), Color3.fromRGB(52, 211, 153), 60, NumberRange.new(4.0, 8.0), {0.5, 2.0, 0.3})
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(16, 185, 129), Color3.fromRGB(52, 211, 153), 60, NumberRange.new(4.0, 7.5), {0.5, 1.8, 0.3})
 		addAncientTurtleShell(character, activeFolder, pColor)
 		addOrbitingTurtleShields(character, activeFolder, pColor)
 		addLightPillar(rootPart, activeFolder, pColor)
 
+	elseif shape == "LavaTide" then
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(251, 146, 60), Color3.fromRGB(239, 68, 68), 95, NumberRange.new(5.5, 10.0), {0.8, 2.8, 0.3})
+		addOrbiting3DRig(rootPart, activeFolder, {
+			Count = 4,
+			Size = Vector3.new(1.0, 1.0, 1.0),
+			Shape = Enum.PartType.Block,
+			Color = Color3.fromRGB(249, 115, 22),
+			Radius = 3.6,
+			Speed = 2.4,
+			BaseHeight = 0.3,
+			BobHeight = 0.5,
+		})
+		addDragonWings(character, activeFolder, pColor)
+		addLightPillar(rootPart, activeFolder, pColor)
+
 	else
-		addDenseBodyEnergy(attRoot, pColor, auraColor, 55, NumberRange.new(4.0, 8.0), {0.5, 2.0, 0.3})
+		addDenseBodyEnergy(attRoot, pColor, auraColor, 50, NumberRange.new(3.5, 7.0), {0.4, 1.8, 0.3})
 		if rarity >= 1000 then
 			addLightPillar(rootPart, activeFolder, pColor)
 		end
@@ -1695,10 +1765,10 @@ local Workspace = game:GetService("Workspace")
 local CraftingStationSetup = {}
 
 function CraftingStationSetup.BuildMap()
-	-- 1. Setup Crisp Sunny Morning Lighting
+	-- 1. Setup Crisp Sunny Morning Lighting (Soft, non-blinding)
 	Lighting.TimeOfDay = "08:00:00"
 	Lighting.ClockTime = 8.0
-	Lighting.Brightness = 2.4
+	Lighting.Brightness = 1.6
 	Lighting.Ambient = Color3.fromRGB(110, 120, 140)
 	Lighting.OutdoorAmbient = Color3.fromRGB(130, 145, 170)
 	Lighting.GlobalShadows = true
@@ -1709,21 +1779,21 @@ function CraftingStationSetup.BuildMap()
 	if not sunRays then
 		sunRays = Instance.new("SunRaysEffect")
 		sunRays.Name = "RNGSunRays"
-		sunRays.Intensity = 0.28
-		sunRays.Spread = 0.85
+		sunRays.Intensity = 0.15
+		sunRays.Spread = 0.6
 		sunRays.Parent = Lighting
 	end
 
-	-- Vibrant Bloom
+	-- Vibrant Bloom (Gentle, never blinding)
 	local bloom = Lighting:FindFirstChild("RNGBloom")
 	if not bloom then
 		bloom = Instance.new("BloomEffect")
 		bloom.Name = "RNGBloom"
 		bloom.Parent = Lighting
 	end
-	bloom.Intensity = 1.1
-	bloom.Size = 22
-	bloom.Threshold = 0.82
+	bloom.Intensity = 0.35
+	bloom.Size = 16
+	bloom.Threshold = 1.15
 
 	-- Saturated Color Correction
 	local cc = Lighting:FindFirstChild("RNGColorCorrection")
@@ -1732,9 +1802,9 @@ function CraftingStationSetup.BuildMap()
 		cc.Name = "RNGColorCorrection"
 		cc.Parent = Lighting
 	end
-	cc.Brightness = 0.04
-	cc.Contrast = 0.12
-	cc.Saturation = 0.22
+	cc.Brightness = 0.0
+	cc.Contrast = 0.08
+	cc.Saturation = 0.12
 
 	-- Atmosphere for clear blue sky
 	local atmo = Lighting:FindFirstChild("RNGAtmosphere")
@@ -1760,50 +1830,31 @@ function CraftingStationSetup.BuildMap()
 	platformFolder.Name = "RNG_Platform"
 	platformFolder.Parent = Workspace
 
-	-- Main Deck (Sleek Marble/Quartz Finish)
+	-- Main Deck (Matte Dark Slate - Non-reflective, zero glare)
 	local mainFloor = Instance.new("Part")
 	mainFloor.Name = "MainFloor"
 	mainFloor.Size = Vector3.new(120, 4, 120)
 	mainFloor.Position = Vector3.new(0, 0, 0)
 	mainFloor.Anchored = true
-	mainFloor.Material = Enum.Material.SmoothPlastic
-	mainFloor.Color = Color3.fromRGB(28, 32, 44)
+	mainFloor.Material = Enum.Material.Slate
+	mainFloor.Color = Color3.fromRGB(24, 28, 38)
 	mainFloor.TopSurface = Enum.SurfaceType.Smooth
 	mainFloor.BottomSurface = Enum.SurfaceType.Smooth
 	mainFloor.Parent = platformFolder
 
-	-- Glowing Cyan Neon Border
-	local border = Instance.new("Part")
-	border.Name = "BorderGlow"
-	border.Size = Vector3.new(122, 1, 122)
-	border.Position = Vector3.new(0, 2.1, 0)
-	border.Anchored = true
-	border.CanCollide = false
-	border.Material = Enum.Material.Neon
-	border.Color = Color3.fromRGB(56, 189, 248)
-	border.Transparency = 0.3
-	border.Parent = platformFolder
-
-	-- Center Spawn Location
+	-- Center Spawn Location (Matte Smooth Plastic, NOT Neon)
 	local spawn = Instance.new("SpawnLocation")
 	spawn.Name = "RNG_Spawn"
-	spawn.Size = Vector3.new(16, 1, 16)
-	spawn.Position = Vector3.new(0, 2.1, 0)
+	spawn.Size = Vector3.new(12, 1, 12)
+	spawn.Position = Vector3.new(0, 2.05, 0)
 	spawn.Anchored = true
-	spawn.Material = Enum.Material.Neon
-	spawn.Color = Color3.fromRGB(37, 99, 235)
+	spawn.Material = Enum.Material.SmoothPlastic
+	spawn.Color = Color3.fromRGB(32, 42, 60)
 	spawn.TopSurface = Enum.SurfaceType.Smooth
 	spawn.BottomSurface = Enum.SurfaceType.Smooth
 	spawn.Neutral = true
 	spawn.Duration = 0
 	spawn.Parent = platformFolder
-
-	-- Center Ambient Light
-	local spawnLight = Instance.new("PointLight")
-	spawnLight.Color = Color3.fromRGB(96, 165, 250)
-	spawnLight.Brightness = 2.5
-	spawnLight.Range = 25
-	spawnLight.Parent = spawn
 
 	-- 3. Interactive Crafting Altar
 	local altarModel = Instance.new("Model")
@@ -1816,8 +1867,8 @@ function CraftingStationSetup.BuildMap()
 	altarBase.Size = Vector3.new(10, 2, 10)
 	altarBase.Position = Vector3.new(35, 2.5, 0)
 	altarBase.Anchored = true
-	altarBase.Material = Enum.Material.SmoothPlastic
-	altarBase.Color = Color3.fromRGB(35, 40, 56)
+	altarBase.Material = Enum.Material.Slate
+	altarBase.Color = Color3.fromRGB(30, 36, 48)
 	altarBase.Parent = altarModel
 
 	-- Glowing Rune Disc
@@ -1826,27 +1877,27 @@ function CraftingStationSetup.BuildMap()
 	runeDisc.Size = Vector3.new(8, 0.4, 8)
 	runeDisc.Position = Vector3.new(35, 3.6, 0)
 	runeDisc.Anchored = true
-	runeDisc.Material = Enum.Material.Neon
-	runeDisc.Color = Color3.fromRGB(168, 85, 247)
+	runeDisc.Material = Enum.Material.SmoothPlastic
+	runeDisc.Color = Color3.fromRGB(124, 58, 237)
 	runeDisc.Parent = altarModel
 
 	-- Floating Mystical Crystal Anvil
 	local anvil = Instance.new("Part")
 	anvil.Name = "FloatingCrystal"
-	anvil.Size = Vector3.new(3.5, 4, 3.5)
+	anvil.Size = Vector3.new(3.2, 3.8, 3.2)
 	anvil.Position = Vector3.new(35, 6.5, 0)
 	anvil.Anchored = true
 	anvil.CanCollide = false
-	anvil.Material = Enum.Material.Neon
+	anvil.Material = Enum.Material.Glass
 	anvil.Color = Color3.fromRGB(245, 158, 11)
 	anvil.Orientation = Vector3.new(45, 45, 0)
 	anvil.Parent = altarModel
 
-	-- Anvil Light & Sparkle Emitter
+	-- Anvil Light & Sparkle Emitter (Subtle glow)
 	local anvilLight = Instance.new("PointLight")
 	anvilLight.Color = Color3.fromRGB(250, 204, 21)
-	anvilLight.Brightness = 3.5
-	anvilLight.Range = 22
+	anvilLight.Brightness = 0.8
+	anvilLight.Range = 12
 	anvilLight.Parent = anvil
 
 	local anvilEmitter = Instance.new("ParticleEmitter")
@@ -5356,15 +5407,22 @@ doUpgradeBtn.MouseButton1Click:Connect(function()
 	local res = UpgradeAuraFunc:InvokeServer(sourceId, selectedTargetAuraId, upgraderChance, "Custom", upgraderChance)
 
 	if res and res.Success then
-		local startRot = needleContainer.Rotation % 360
-		local targetAngle = (res.Roll / 100.0) * 360
-		local spins = isUpgraderFast and 1 or 5
-		local endRot = startRot + (spins * 360) + targetAngle
+		-- Calculate exact landing angle (0 to 360 deg, where 0 is 12 o'clock)
+		local targetAngle = (res.Roll / 100.0) * 360.0
+		local curAngle = needleContainer.Rotation % 360
+		local forwardDelta = (targetAngle - curAngle) % 360
+		if forwardDelta < 20 then
+			forwardDelta = forwardDelta + 360
+		end
+
+		local spins = isUpgraderFast and 1 or 4
+		local endRot = needleContainer.Rotation + (spins * 360) + forwardDelta
 		local duration = isUpgraderFast and 0.6 or 3.2
 
-		TweenService:Create(needleContainer, TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+		local tween = TweenService:Create(needleContainer, TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
 			Rotation = endRot
-		}):Play()
+		})
+		tween:Play()
 
 		task.spawn(function()
 			local tickInterval = isUpgraderFast and 0.05 or 0.08
@@ -5376,16 +5434,19 @@ doUpgradeBtn.MouseButton1Click:Connect(function()
 		end)
 
 		task.wait(duration)
+		needleContainer.Rotation = targetAngle -- Normalize to exact target angle
 
 		if res.Won then
 			SoundEffects.Play("RevealMythic")
+			wheelStroke.Color = Color3.fromRGB(34, 197, 94)
 			hubStroke.Color = Color3.fromRGB(16, 185, 129)
-			upgResultMsg.Text = string.format("ПОБЕДА! Вы получили: %s (+%d монет)!", res.TargetAura.Name:upper(), res.Jackpot or 1500)
+			upgResultMsg.Text = string.format("ПОБЕДА! Стрелка в зеленой зоне! Получено: %s (+%d монет)!", res.TargetAura.Name:upper(), res.Jackpot or 1500)
 			upgResultMsg.TextColor3 = Color3.fromRGB(74, 222, 128)
 		else
 			SoundEffects.Play("Coin")
+			wheelStroke.Color = Color3.fromRGB(239, 68, 68)
 			hubStroke.Color = Color3.fromRGB(239, 68, 68)
-			upgResultMsg.Text = string.format("НЕУДАЧА! Аура сгорела (компенсация: +%d монет).", res.Scrap or 100)
+			upgResultMsg.Text = string.format("НЕУДАЧА! Стрелка в красной зоне (компенсация: +%d монет).", res.Scrap or 100)
 			upgResultMsg.TextColor3 = Color3.fromRGB(248, 113, 113)
 		end
 
@@ -8480,15 +8541,22 @@ doUpgradeBtn.MouseButton1Click:Connect(function()
 	local res = UpgradeAuraFunc:InvokeServer(sourceId, selectedTargetAuraId, upgraderChance, "Custom", upgraderChance)
 
 	if res and res.Success then
-		local startRot = needleContainer.Rotation % 360
-		local targetAngle = (res.Roll / 100.0) * 360
-		local spins = isUpgraderFast and 1 or 5
-		local endRot = startRot + (spins * 360) + targetAngle
+		-- Calculate exact landing angle (0 to 360 deg, where 0 is 12 o'clock)
+		local targetAngle = (res.Roll / 100.0) * 360.0
+		local curAngle = needleContainer.Rotation % 360
+		local forwardDelta = (targetAngle - curAngle) % 360
+		if forwardDelta < 20 then
+			forwardDelta = forwardDelta + 360
+		end
+
+		local spins = isUpgraderFast and 1 or 4
+		local endRot = needleContainer.Rotation + (spins * 360) + forwardDelta
 		local duration = isUpgraderFast and 0.6 or 3.2
 
-		TweenService:Create(needleContainer, TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+		local tween = TweenService:Create(needleContainer, TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
 			Rotation = endRot
-		}):Play()
+		})
+		tween:Play()
 
 		task.spawn(function()
 			local tickInterval = isUpgraderFast and 0.05 or 0.08
@@ -8500,16 +8568,19 @@ doUpgradeBtn.MouseButton1Click:Connect(function()
 		end)
 
 		task.wait(duration)
+		needleContainer.Rotation = targetAngle -- Normalize to exact target angle
 
 		if res.Won then
 			SoundEffects.Play("RevealMythic")
+			wheelStroke.Color = Color3.fromRGB(34, 197, 94)
 			hubStroke.Color = Color3.fromRGB(16, 185, 129)
-			upgResultMsg.Text = string.format("ПОБЕДА! Вы получили: %s (+%d монет)!", res.TargetAura.Name:upper(), res.Jackpot or 1500)
+			upgResultMsg.Text = string.format("ПОБЕДА! Стрелка в зеленой зоне! Получено: %s (+%d монет)!", res.TargetAura.Name:upper(), res.Jackpot or 1500)
 			upgResultMsg.TextColor3 = Color3.fromRGB(74, 222, 128)
 		else
 			SoundEffects.Play("Coin")
+			wheelStroke.Color = Color3.fromRGB(239, 68, 68)
 			hubStroke.Color = Color3.fromRGB(239, 68, 68)
-			upgResultMsg.Text = string.format("НЕУДАЧА! Аура сгорела (компенсация: +%d монет).", res.Scrap or 100)
+			upgResultMsg.Text = string.format("НЕУДАЧА! Стрелка в красной зоне (компенсация: +%d монет).", res.Scrap or 100)
 			upgResultMsg.TextColor3 = Color3.fromRGB(248, 113, 113)
 		end
 
