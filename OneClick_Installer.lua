@@ -542,158 +542,301 @@ end
 return AuraConfig
 ]===])
 installModule("AuraVisuals", [===[-- AuraVisuals.lua
--- Procedurally creates and attaches high-quality particle emitters, highlights,
--- light beams, and overhead billboards for all Auras in the game.
+-- Professional multi-layered procedural Visual Effects (VFX) engine for Sol's RNG.
+-- Creates ground magic rings, ascending body energy, orbiting celestial stars,
+-- divine wings, head halos, character highlights, light beams, and modern overhead badges.
 
 local AuraConfig = require(script.Parent.AuraConfig)
 
 local AuraVisuals = {}
 
--- Standard particle texture asset IDs built into Roblox or reliable default library assets
+-- Standard high-definition particle textures built into Roblox engine
 local TEXTURES = {
 	Sparkle = "rbxasset://textures/particles/sparkles_main.dds",
 	Smoke = "rbxasset://textures/particles/smoke_main.dds",
-	Point = "rbxassetid://241594419",   -- Glowing soft dot / star
-	Flame = "rbxassetid://258128463",   -- Rising flame wisps
-	Ring = "rbxassetid://243664672",    -- Circular energy ring
-	Cross = "rbxassetid://258127006",   -- Divine sparkle / star
-	Shard = "rbxassetid://241594432",   -- Crystal diamond shard
+	Point = "rbxassetid://241594419",   -- Glowing star orb
+	Flame = "rbxassetid://258128463",   -- Rising energy flame
+	Ring = "rbxassetid://243664672",    -- Energy ring / magic disc
+	Cross = "rbxassetid://258127006",   -- Divine star glint
+	Shard = "rbxassetid://241594432",   -- Diamond ice crystal
 }
 
--- Helper to safely get or create character's ActiveAura folder
+-- Safely clear all aura effects from character
+function AuraVisuals.ClearAura(character)
+	if not character then return end
+
+	local existing = character:FindFirstChild("ActiveAura")
+	if existing then
+		existing:Destroy()
+	end
+
+	local head = character:FindFirstChild("Head")
+	if head then
+		local oldBb = head:FindFirstChild("AuraBillboardGui")
+		if oldBb then
+			oldBb:Destroy()
+		end
+	end
+
+	-- Clean up any stray highlight or attachments
+	for _, child in ipairs(character:GetDescendants()) do
+		if child.Name == "AuraHighlight" or child.Name == "AuraVFXAttachment" then
+			child:Destroy()
+		end
+	end
+end
+
+-- Safely get or create character's ActiveAura folder
 local function getActiveFolder(character)
 	local existing = character:FindFirstChild("ActiveAura")
 	if existing and existing:IsA("Folder") then
 		existing:ClearAllChildren()
 		return existing
 	end
-	if existing then
-		existing:Destroy()
-	end
+	if existing then existing:Destroy() end
+
 	local folder = Instance.new("Folder")
 	folder.Name = "ActiveAura"
 	folder.Parent = character
 	return folder
 end
 
--- Clear aura effects
-function AuraVisuals.ClearAura(character)
-	local existing = character:FindFirstChild("ActiveAura")
-	if existing then
-		existing:Destroy()
-	end
-	
-	local head = character:FindFirstChild("Head")
-	if head then
-		local oldBillboard = head:FindFirstChild("AuraBillboardGui")
-		if oldBillboard then
-			oldBillboard:Destroy()
-		end
-	end
+-- Helper: Create configured ParticleEmitter
+local function createEmitter(parent, props)
+	local pe = Instance.new("ParticleEmitter")
+	pe.Color = props.Color
+	pe.Size = props.Size
+	pe.Transparency = props.Transparency
+	pe.Lifetime = props.Lifetime
+	pe.Rate = props.Rate
+	pe.Speed = props.Speed
+	pe.SpreadAngle = props.SpreadAngle or Vector2.new(15, 15)
+	pe.Acceleration = props.Acceleration or Vector3.new(0, 2, 0)
+	pe.Drag = props.Drag or 0.5
+	pe.LightEmission = props.LightEmission or 1.0
+	pe.LightInfluence = props.LightInfluence or 0.0
+	pe.Texture = props.Texture or TEXTURES.Sparkle
+	pe.RotSpeed = props.RotSpeed or NumberRange.new(-60, 60)
+	pe.Orientation = props.Orientation or Enum.ParticleOrientation.FacingCamera
+	pe.EmissionDirection = props.EmissionDirection or Enum.NormalId.Top
+	pe.Parent = parent
+	return pe
 end
 
--- Build standard particle emitter
-local function createEmitter(parent, config)
-	local emitter = Instance.new("ParticleEmitter")
-	emitter.Color = config.Color
-	emitter.Size = config.Size
-	emitter.Transparency = config.Transparency
-	emitter.Lifetime = config.Lifetime
-	emitter.Rate = config.Rate
-	emitter.Speed = config.Speed
-	emitter.SpreadAngle = config.SpreadAngle or Vector2.new(15, 15)
-	emitter.Acceleration = config.Acceleration or Vector3.new(0, 2, 0)
-	emitter.Drag = config.Drag or 0.5
-	emitter.LightEmission = config.LightEmission or 0.9
-	emitter.Texture = config.Texture or TEXTURES.Point
-	emitter.RotSpeed = config.RotSpeed or NumberRange.new(-45, 45)
-	emitter.EmissionDirection = config.EmissionDirection or Enum.NormalId.Top
-	emitter.Parent = parent
-	return emitter
+-- LAYER 1: Ground Magic Circle / Rune Disc
+local function addGroundMagicCircle(parentAtt, color, scaleMultiplier)
+	local scale = scaleMultiplier or 1.0
+
+	-- Expanding ground energy pulse
+	createEmitter(parentAtt, {
+		Color = ColorSequence.new(color),
+		Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1.2 * scale),
+			NumberSequenceKeypoint.new(0.6, 3.8 * scale),
+			NumberSequenceKeypoint.new(1, 4.8 * scale),
+		}),
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1.0),
+			NumberSequenceKeypoint.new(0.15, 0.2),
+			NumberSequenceKeypoint.new(0.7, 0.4),
+			NumberSequenceKeypoint.new(1, 1.0),
+		}),
+		Lifetime = NumberRange.new(1.8, 2.5),
+		Rate = 6,
+		Speed = NumberRange.new(0.1, 0.3),
+		SpreadAngle = Vector2.new(0, 0),
+		Acceleration = Vector3.new(0, 0.2, 0),
+		Drag = 1.0,
+		Texture = TEXTURES.Ring,
+		RotSpeed = NumberRange.new(20, 40),
+		Orientation = Enum.ParticleOrientation.VelocityPerpendicular,
+		EmissionDirection = Enum.NormalId.Top,
+	})
+
+	-- Ground ambient spark motes
+	createEmitter(parentAtt, {
+		Color = ColorSequence.new(color),
+		Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.2),
+			NumberSequenceKeypoint.new(0.5, 0.6 * scale),
+			NumberSequenceKeypoint.new(1, 0.1),
+		}),
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1.0),
+			NumberSequenceKeypoint.new(0.2, 0.1),
+			NumberSequenceKeypoint.new(0.8, 0.3),
+			NumberSequenceKeypoint.new(1, 1.0),
+		}),
+		Lifetime = NumberRange.new(1.5, 2.2),
+		Rate = 18 * scale,
+		Speed = NumberRange.new(1.0, 3.0),
+		SpreadAngle = Vector2.new(45, 45),
+		Acceleration = Vector3.new(0, 3.5, 0),
+		Texture = TEXTURES.Cross,
+	})
 end
 
--- Create overhead Billboard GUI above character head
-local function createOverheadGui(character, auraData, isVIP)
+-- LAYER 2: Body Ascending Energy Wisps (The Core Flame)
+local function addBodyEnergyWisps(parentAtt, color, secondaryColor, rate, speedRange, sizeRange)
+	local secColor = secondaryColor or color
+	createEmitter(parentAtt, {
+		Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, color),
+			ColorSequenceKeypoint.new(0.5, secColor),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
+		}),
+		Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, sizeRange[1] or 0.4),
+			NumberSequenceKeypoint.new(0.5, sizeRange[2] or 1.6),
+			NumberSequenceKeypoint.new(1, sizeRange[3] or 0.2),
+		}),
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1.0),
+			NumberSequenceKeypoint.new(0.15, 0.1),
+			NumberSequenceKeypoint.new(0.7, 0.3),
+			NumberSequenceKeypoint.new(1, 1.0),
+		}),
+		Lifetime = NumberRange.new(1.2, 2.0),
+		Rate = rate or 35,
+		Speed = speedRange or NumberRange.new(3.0, 6.0),
+		SpreadAngle = Vector2.new(20, 20),
+		Acceleration = Vector3.new(0, 5, 0),
+		Texture = TEXTURES.Flame,
+	})
+end
+
+-- LAYER 3: Orbiting Celestial Star Particles
+local function addOrbitingSparks(parentAtt, color, rate)
+	createEmitter(parentAtt, {
+		Color = ColorSequence.new(color),
+		Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.2),
+			NumberSequenceKeypoint.new(0.5, 0.8),
+			NumberSequenceKeypoint.new(1, 0.1),
+		}),
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1.0),
+			NumberSequenceKeypoint.new(0.2, 0.0),
+			NumberSequenceKeypoint.new(0.8, 0.2),
+			NumberSequenceKeypoint.new(1, 1.0),
+		}),
+		Lifetime = NumberRange.new(1.6, 2.6),
+		Rate = rate or 25,
+		Speed = NumberRange.new(2.5, 5.0),
+		SpreadAngle = Vector2.new(60, 60),
+		Acceleration = Vector3.new(0, 2, 0),
+		RotSpeed = NumberRange.new(-120, 120),
+		Texture = TEXTURES.Sparkle,
+	})
+end
+
+-- LAYER 4: Divine Angelic Wings (For Archangel, Solar, Godly)
+local function addAngelicWings(character, folder, color)
+	local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+	if not torso or not torso:IsA("BasePart") then return end
+
+	-- Left Wing Attachment
+	local attWingL = Instance.new("Attachment")
+	attWingL.Name = "AuraVFXAttachment"
+	attWingL.Position = Vector3.new(-1.2, 0.8, 0.8)
+	attWingL.Orientation = Vector3.new(0, 35, 15)
+	attWingL.Parent = torso
+
+	-- Right Wing Attachment
+	local attWingR = Instance.new("Attachment")
+	attWingR.Name = "AuraVFXAttachment"
+	attWingR.Position = Vector3.new(1.2, 0.8, 0.8)
+	attWingR.Orientation = Vector3.new(0, -35, -15)
+	attWingR.Parent = torso
+
+	local function makeWingEmitter(parentAtt)
+		createEmitter(parentAtt, {
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+				ColorSequenceKeypoint.new(0.6, color),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 240, 180)),
+			}),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.5),
+				NumberSequenceKeypoint.new(0.4, 2.2),
+				NumberSequenceKeypoint.new(1, 0.3),
+			}),
+			Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.8),
+				NumberSequenceKeypoint.new(0.2, 0.05),
+				NumberSequenceKeypoint.new(0.8, 0.2),
+				NumberSequenceKeypoint.new(1, 1.0),
+			}),
+			Lifetime = NumberRange.new(0.8, 1.4),
+			Rate = 40,
+			Speed = NumberRange.new(3.0, 6.0),
+			SpreadAngle = Vector2.new(20, 20),
+			Acceleration = Vector3.new(0, 3, 0),
+			Texture = TEXTURES.Flame,
+		})
+	end
+
+	makeWingEmitter(attWingL)
+	makeWingEmitter(attWingR)
+end
+
+-- LAYER 5: Floating Head Halo / Celestial Crown
+local function addHeadCrown(character, folder, color, isVIP)
 	local head = character:FindFirstChild("Head")
 	if not head or not head:IsA("BasePart") then return end
 
-	local oldGui = head:FindFirstChild("AuraBillboardGui")
-	if oldGui then oldGui:Destroy() end
+	local attCrown = Instance.new("Attachment")
+	attCrown.Name = "AuraVFXAttachment"
+	attCrown.Position = Vector3.new(0, 1.6, 0)
+	attCrown.Parent = head
 
-	local billboard = Instance.new("BillboardGui")
-	billboard.Name = "AuraBillboardGui"
-	billboard.Size = UDim2.new(0, 260, 0, 65)
-	billboard.StudsOffset = Vector3.new(0, 3.2, 0)
-	billboard.AlwaysOnTop = true
-	billboard.MaxDistance = 120
-	billboard.Parent = head
+	-- Rotating Halo Ring
+	createEmitter(attCrown, {
+		Color = ColorSequence.new(color),
+		Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1.5),
+			NumberSequenceKeypoint.new(0.5, 2.2),
+			NumberSequenceKeypoint.new(1, 1.5),
+		}),
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.6),
+			NumberSequenceKeypoint.new(0.5, 0.1),
+			NumberSequenceKeypoint.new(1, 0.6),
+		}),
+		Lifetime = NumberRange.new(1.0, 1.6),
+		Rate = 4,
+		Speed = NumberRange.new(0, 0.1),
+		SpreadAngle = Vector2.new(0, 0),
+		Acceleration = Vector3.new(0, 0, 0),
+		RotSpeed = NumberRange.new(45, 90),
+		Texture = TEXTURES.Ring,
+		Orientation = Enum.ParticleOrientation.VelocityPerpendicular,
+		EmissionDirection = Enum.NormalId.Top,
+	})
 
-	local container = Instance.new("Frame")
-	container.Size = UDim2.new(1, 0, 1, 0)
-	container.BackgroundTransparency = 1
-	container.Parent = billboard
-
-	local listLayout = Instance.new("UIListLayout")
-	listLayout.FillDirection = Enum.FillDirection.Vertical
-	listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-	listLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-	listLayout.Padding = UDim.new(0, 2)
-	listLayout.Parent = container
-
-	-- VIP Tag (if VIP)
-	if isVIP then
-		local vipLabel = Instance.new("TextLabel")
-		vipLabel.Size = UDim2.new(1, 0, 0, 16)
-		vipLabel.BackgroundTransparency = 1
-		vipLabel.Font = Enum.Font.GothamBlack
-		vipLabel.TextSize = 13
-		vipLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-		vipLabel.Text = "[ ⭐ VIP ⭐ ]"
-		vipLabel.TextStrokeColor3 = Color3.fromRGB(50, 40, 0)
-		vipLabel.TextStrokeTransparency = 0.2
-		vipLabel.Parent = container
-	end
-
-	-- Aura Name
-	local nameLabel = Instance.new("TextLabel")
-	nameLabel.Size = UDim2.new(1, 0, 0, 24)
-	nameLabel.BackgroundTransparency = 1
-	nameLabel.Font = Enum.Font.GothamBold
-	nameLabel.TextSize = 18
-	nameLabel.TextColor3 = auraData.Color
-	nameLabel.Text = auraData.Name
-	nameLabel.TextStrokeColor3 = Color3.fromRGB(15, 15, 20)
-	nameLabel.TextStrokeTransparency = 0.1
-	nameLabel.Parent = container
-
-	-- Rarity / Tier Tag
-	local rarityLabel = Instance.new("TextLabel")
-	rarityLabel.Size = UDim2.new(1, 0, 0, 16)
-	rarityLabel.BackgroundTransparency = 1
-	rarityLabel.Font = Enum.Font.GothamMedium
-	rarityLabel.TextSize = 13
-	rarityLabel.TextColor3 = Color3.fromRGB(220, 225, 235)
-	
-	local rarityText = AuraConfig.FormatRarity(auraData.Rarity or 0)
-	if auraData.Tier == "Crafted" then
-		rarityText = "Crafted Masterpiece"
-	end
-	rarityLabel.Text = string.format("%s • %s", auraData.Tier:upper(), rarityText)
-	rarityLabel.TextStrokeColor3 = Color3.fromRGB(10, 10, 15)
-	rarityLabel.TextStrokeTransparency = 0.3
-	rarityLabel.Parent = container
+	-- Halo Star Sparkles
+	createEmitter(attCrown, {
+		Color = ColorSequence.new(Color3.fromRGB(255, 255, 255)),
+		Size = NumberSequence.new(0.4, 0.1),
+		Transparency = NumberSequence.new(0.1, 1.0),
+		Lifetime = NumberRange.new(0.8, 1.4),
+		Rate = 12,
+		Speed = NumberRange.new(0.5, 1.5),
+		SpreadAngle = Vector2.new(180, 180),
+		Texture = TEXTURES.Cross,
+	})
 end
 
--- Create Vertical Light Pillar Beam (for Legendary+)
-local function createVerticalBeam(parent, rootPart, color)
+-- LAYER 6: Vertical Pillar of Divine Light (For Legendary+)
+local function addLightPillar(rootPart, activeFolder, color)
 	local attBottom = Instance.new("Attachment")
-	attBottom.Name = "BeamAttBottom"
-	attBottom.Position = Vector3.new(0, -2.5, 0)
+	attBottom.Name = "AuraVFXAttachment"
+	attBottom.Position = Vector3.new(0, -2.8, 0)
 	attBottom.Parent = rootPart
 
 	local attTop = Instance.new("Attachment")
-	attTop.Name = "BeamAttTop"
-	attTop.Position = Vector3.new(0, 10, 0)
+	attTop.Name = "AuraVFXAttachment"
+	attTop.Position = Vector3.new(0, 12, 0)
 	attTop.Parent = rootPart
 
 	local beam = Instance.new("Beam")
@@ -702,349 +845,269 @@ local function createVerticalBeam(parent, rootPart, color)
 	beam.Attachment1 = attTop
 	beam.Color = ColorSequence.new({
 		ColorSequenceKeypoint.new(0, color),
-		ColorSequenceKeypoint.new(0.5, Color3.new(1, 1, 1)),
+		ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
 		ColorSequenceKeypoint.new(1, color),
 	})
 	beam.Transparency = NumberSequence.new({
-		NumberSequenceKeypoint.new(0, 0.4),
+		NumberSequenceKeypoint.new(0, 0.5),
 		NumberSequenceKeypoint.new(0.5, 0.1),
-		NumberSequenceKeypoint.new(1, 0.9),
+		NumberSequenceKeypoint.new(1, 0.95),
 	})
-	beam.Width0 = 3.5
-	beam.Width1 = 5.0
+	beam.Width0 = 3.8
+	beam.Width1 = 6.2
 	beam.LightEmission = 1.0
-	beam.TextureSpeed = 1.5
+	beam.TextureSpeed = 1.8
 	beam.Texture = TEXTURES.Flame
-	beam.Parent = parent
+	beam.Parent = activeFolder
 end
 
--- Main function to apply an aura to a character model
+-- LAYER 7: Modern Glassmorphic Overhead Billboard Title
+local function createOverheadGui(character, auraData, isVIP)
+	local head = character:FindFirstChild("Head")
+	if not head or not head:IsA("BasePart") then return end
+
+	local oldBb = head:FindFirstChild("AuraBillboardGui")
+	if oldBb then oldBb:Destroy() end
+
+	local billboard = Instance.new("BillboardGui")
+	billboard.Name = "AuraBillboardGui"
+	billboard.Size = UDim2.new(0, 240, 0, 68)
+	billboard.StudsOffset = Vector3.new(0, 3.4, 0)
+	billboard.AlwaysOnTop = true
+	billboard.MaxDistance = 120
+	billboard.Parent = head
+
+	local pill = Instance.new("Frame")
+	pill.Size = UDim2.new(1, 0, 1, 0)
+	pill.BackgroundColor3 = Color3.fromRGB(13, 15, 22)
+	pill.BackgroundTransparency = 0.25
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 10)
+	corner.Parent = pill
+
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = auraData.Color
+	stroke.Thickness = 1.5
+	stroke.Transparency = 0.3
+	stroke.Parent = pill
+	pill.Parent = billboard
+
+	local padding = Instance.new("UIPadding")
+	padding.PaddingTop = UDim.new(0, 4)
+	padding.PaddingBottom = UDim.new(0, 4)
+	padding.PaddingLeft = UDim.new(0, 8)
+	padding.PaddingRight = UDim.new(0, 8)
+	padding.Parent = pill
+
+	local list = Instance.new("UIListLayout")
+	list.FillDirection = Enum.FillDirection.Vertical
+	list.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	list.VerticalAlignment = Enum.VerticalAlignment.Center
+	list.Padding = UDim.new(0, 1)
+	list.Parent = pill
+
+	-- VIP Tag (if VIP)
+	if isVIP then
+		local vipLabel = Instance.new("TextLabel")
+		vipLabel.Size = UDim2.new(1, 0, 0, 14)
+		vipLabel.BackgroundTransparency = 1
+		vipLabel.Font = Enum.Font.GothamBlack
+		vipLabel.TextSize = 11
+		vipLabel.TextColor3 = Color3.fromRGB(251, 191, 36)
+		vipLabel.Text = "★ VIP SUPPORTER ★"
+		vipLabel.Parent = pill
+	end
+
+	-- Aura Name
+	local nameLabel = Instance.new("TextLabel")
+	nameLabel.Size = UDim2.new(1, 0, 0, 24)
+	nameLabel.BackgroundTransparency = 1
+	nameLabel.Font = Enum.Font.GothamBlack
+	nameLabel.TextSize = 18
+	nameLabel.TextColor3 = auraData.Color
+	nameLabel.Text = auraData.Name
+	nameLabel.TextStrokeColor3 = Color3.fromRGB(10, 10, 15)
+	nameLabel.TextStrokeTransparency = 0.1
+	nameLabel.Parent = pill
+
+	-- Tier & Rarity Subtitle
+	local subLabel = Instance.new("TextLabel")
+	subLabel.Size = UDim2.new(1, 0, 0, 15)
+	subLabel.BackgroundTransparency = 1
+	subLabel.Font = Enum.Font.GothamBold
+	subLabel.TextSize = 11
+	subLabel.TextColor3 = Color3.fromRGB(200, 205, 220)
+
+	local rText = AuraConfig.FormatRarity(auraData.Rarity or 0)
+	if auraData.Tier == "Crafted" then
+		rText = "Crafted Masterpiece"
+	end
+	subLabel.Text = string.format("[ %s • %s ]", auraData.Tier:upper(), rText)
+	subLabel.Parent = pill
+end
+
+-- =============================================================================
+-- MAIN ENTRY POINT: APPLY AURA TO CHARACTER
+-- =============================================================================
+
 function AuraVisuals.ApplyAura(character, auraId, isVIP)
 	AuraVisuals.ClearAura(character)
 
-	if not auraId or auraId == "None" or auraId == "" then
+	if not character or not auraId or auraId == "None" or auraId == "" then
 		return
 	end
 
 	local auraData = AuraConfig.Auras[auraId]
-	if not auraData then
-		return
-	end
+	if not auraData then return end
 
 	local rootPart = character:FindFirstChild("HumanoidRootPart")
 		or character:FindFirstChild("Torso")
 		or character:FindFirstChild("UpperTorso")
 	
-	if not rootPart or not rootPart:IsA("BasePart") then
-		return
-	end
+	if not rootPart or not rootPart:IsA("BasePart") then return end
 
 	local activeFolder = getActiveFolder(character)
 	local auraColor = auraData.Color or Color3.fromRGB(255, 255, 255)
 	local pColor = auraData.ParticleColor or auraColor
+	local rarity = auraData.Rarity or 0
 
-	-- 1. Attachment on RootPart
-	local rootAttachment = Instance.new("Attachment")
-	rootAttachment.Name = "AuraRootAttachment"
-	rootAttachment.Position = Vector3.new(0, -0.5, 0)
-	rootAttachment.Parent = rootPart
+	-- 1. Create Core Attachments
+	local attFoot = Instance.new("Attachment")
+	attFoot.Name = "AuraVFXAttachment"
+	attFoot.Position = Vector3.new(0, -2.7, 0)
+	attFoot.Parent = rootPart
 
-	-- 2. Character Highlight (Glow outline)
+	local attRoot = Instance.new("Attachment")
+	attRoot.Name = "AuraVFXAttachment"
+	attRoot.Position = Vector3.new(0, 0, 0)
+	attRoot.Parent = rootPart
+
+	-- 2. Character Highlight (Clean, avatar-preserving outline glow)
 	local highlight = Instance.new("Highlight")
 	highlight.Name = "AuraHighlight"
 	highlight.Adornee = character
 	highlight.OutlineColor = auraColor
-	highlight.OutlineTransparency = 0.1
+	highlight.OutlineTransparency = 0.05
 	highlight.FillColor = auraColor
-	highlight.FillTransparency = 0.85
+	highlight.FillTransparency = 0.92 -- Translucent so avatar face/clothing stays crisp!
 	highlight.Parent = activeFolder
 
-	-- 3. Dynamic PointLight
+	-- 3. PointLight with breathing illumination
 	local light = Instance.new("PointLight")
 	light.Name = "AuraLight"
 	light.Color = auraColor
-	light.Range = (auraData.Rarity >= 10000 or auraData.IsCrafted) and 18 or 12
-	light.Brightness = (auraData.Rarity >= 10000 or auraData.IsCrafted) and 3.5 or 2.0
+	light.Range = (rarity >= 10000 or auraData.IsCrafted) and 20 or 14
+	light.Brightness = (rarity >= 10000 or auraData.IsCrafted) and 3.8 or 2.2
 	light.Shadows = false
-	light.Parent = rootAttachment
+	light.Parent = attRoot
 
-	-- 4. Overhead Billboard GUI
+	-- 4. Overhead Modern Billboard GUI
 	createOverheadGui(character, auraData, isVIP or false)
 
-	-- 5. Build Tailored Particle Emitters based on ParticleShape / Tier
+	-- 5. Always apply Ground Magic Circle & Orbiting Sparks for all auras
+	local groundScale = (rarity >= 10000) and 1.4 or 1.0
+	addGroundMagicCircle(attFoot, pColor, groundScale)
+	addOrbitingSparks(attRoot, pColor, (rarity >= 1000) and 35 or 18)
+
+	-- 6. Tailor Specialized VFX based on Aura Shape & Tier
 	local shape = auraData.ParticleShape or "Sparks"
 
-	if shape == "Dust" then
-		-- Common: subtle ambient dust
-		createEmitter(rootAttachment, {
-			Color = ColorSequence.new(pColor),
-			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.2),
-				NumberSequenceKeypoint.new(0.5, 0.6),
-				NumberSequenceKeypoint.new(1, 0.1),
-			}),
-			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.8),
-				NumberSequenceKeypoint.new(0.5, 0.3),
-				NumberSequenceKeypoint.new(1, 1.0),
-			}),
-			Lifetime = NumberRange.new(1.5, 2.5),
-			Rate = 12,
-			Speed = NumberRange.new(1.0, 2.0),
-			SpreadAngle = Vector2.new(45, 45),
-			Acceleration = Vector3.new(0, 1.5, 0),
-			Texture = TEXTURES.Point,
-		})
+	if shape == "Dust" or shape == "Sparks" then
+		-- Common / Uncommon
+		addBodyEnergyWisps(attRoot, pColor, auraColor, 20, NumberRange.new(1.5, 3.5), {0.2, 0.8, 0.1})
 
 	elseif shape == "Leaves" then
-		-- Natural: swirling leaves & green vitality
-		createEmitter(rootAttachment, {
-			Color = ColorSequence.new(pColor),
-			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.3),
-				NumberSequenceKeypoint.new(0.5, 0.8),
-				NumberSequenceKeypoint.new(1, 0.2),
-			}),
-			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.2),
-				NumberSequenceKeypoint.new(0.8, 0.4),
-				NumberSequenceKeypoint.new(1, 1.0),
-			}),
-			Lifetime = NumberRange.new(2.0, 3.2),
-			Rate = 22,
-			Speed = NumberRange.new(2.0, 4.0),
-			SpreadAngle = Vector2.new(60, 60),
-			Acceleration = Vector3.new(0, 3, 0),
-			RotSpeed = NumberRange.new(-90, 90),
-			Texture = TEXTURES.Sparkle,
-		})
+		-- Natural
+		addBodyEnergyWisps(attRoot, pColor, Color3.fromRGB(160, 240, 100), 28, NumberRange.new(2.0, 4.5), {0.3, 1.2, 0.2})
 
 	elseif shape == "Flame" or shape == "Embers" then
-		-- Rising flames or fiery embers
-		createEmitter(rootAttachment, {
-			Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, pColor),
-				ColorSequenceKeypoint.new(0.6, auraColor),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 200)),
-			}),
-			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.3),
-				NumberSequenceKeypoint.new(0.4, 1.2),
-				NumberSequenceKeypoint.new(1, 0.1),
-			}),
-			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.1),
-				NumberSequenceKeypoint.new(0.7, 0.3),
-				NumberSequenceKeypoint.new(1, 1.0),
-			}),
-			Lifetime = NumberRange.new(1.2, 2.0),
-			Rate = 35,
-			Speed = NumberRange.new(3.0, 6.0),
-			SpreadAngle = Vector2.new(25, 25),
-			Acceleration = Vector3.new(0, 5, 0),
-			Texture = TEXTURES.Flame,
-		})
+		-- Rare / Topaz
+		addBodyEnergyWisps(attRoot, pColor, Color3.fromRGB(255, 230, 150), 40, NumberRange.new(3.5, 7.0), {0.4, 1.6, 0.2})
+
+	elseif shape == "Sparkles" then
+		-- Divinus: Holy sparkles + Head Halo
+		addBodyEnergyWisps(attRoot, pColor, Color3.fromRGB(255, 255, 200), 35, NumberRange.new(3.0, 6.0), {0.3, 1.4, 0.2})
+		addHeadCrown(character, activeFolder, pColor, false)
 
 	elseif shape == "Shards" or shape == "Frost" then
-		-- Diamond crystal shards & sub-zero mist
-		createEmitter(rootAttachment, {
+		-- Crystallized / Glacier: Crystalline shards & blizzard mist
+		createEmitter(attRoot, {
 			Color = ColorSequence.new(pColor),
 			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.2),
-				NumberSequenceKeypoint.new(0.5, 0.9),
+				NumberSequenceKeypoint.new(0, 0.3),
+				NumberSequenceKeypoint.new(0.5, 1.1),
 				NumberSequenceKeypoint.new(1, 0.2),
 			}),
 			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.1),
-				NumberSequenceKeypoint.new(0.6, 0.2),
+				NumberSequenceKeypoint.new(0, 1.0),
+				NumberSequenceKeypoint.new(0.2, 0.0),
+				NumberSequenceKeypoint.new(0.8, 0.3),
 				NumberSequenceKeypoint.new(1, 1.0),
 			}),
-			Lifetime = NumberRange.new(1.8, 2.8),
+			Lifetime = NumberRange.new(1.6, 2.4),
 			Rate = 30,
-			Speed = NumberRange.new(2.0, 4.5),
-			SpreadAngle = Vector2.new(40, 40),
-			Acceleration = Vector3.new(0, 2.5, 0),
-			RotSpeed = NumberRange.new(-120, 120),
+			Speed = NumberRange.new(2.5, 5.5),
+			SpreadAngle = Vector2.new(45, 45),
+			Acceleration = Vector3.new(0, 3, 0),
+			RotSpeed = NumberRange.new(-140, 140),
 			Texture = TEXTURES.Shard,
 		})
-		-- Frost ambient mist
-		createEmitter(rootAttachment, {
-			Color = ColorSequence.new(Color3.fromRGB(200, 240, 255)),
-			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 1.0),
-				NumberSequenceKeypoint.new(1, 2.5),
-			}),
-			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.6),
-				NumberSequenceKeypoint.new(1, 1.0),
-			}),
-			Lifetime = NumberRange.new(1.5, 2.2),
-			Rate = 12,
-			Speed = NumberRange.new(0.5, 1.5),
-			Texture = TEXTURES.Smoke,
-		})
 
-	elseif shape == "FireColumn" or shape == "Hellfire" then
-		-- High-tier Fire Column (Ruby, Hades)
-		createEmitter(rootAttachment, {
-			Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 50, 20)),
-				ColorSequenceKeypoint.new(0.5, pColor),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 220, 100)),
-			}),
-			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.5),
-				NumberSequenceKeypoint.new(0.4, 2.2),
-				NumberSequenceKeypoint.new(1, 0.3),
-			}),
-			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.05),
-				NumberSequenceKeypoint.new(0.7, 0.25),
-				NumberSequenceKeypoint.new(1, 1.0),
-			}),
-			Lifetime = NumberRange.new(1.0, 1.8),
-			Rate = 50,
-			Speed = NumberRange.new(6.0, 11.0),
-			SpreadAngle = Vector2.new(20, 20),
-			Acceleration = Vector3.new(0, 8, 0),
-			Texture = TEXTURES.Flame,
-		})
-		-- Fiery sparks
-		createEmitter(rootAttachment, {
-			Color = ColorSequence.new(Color3.fromRGB(255, 240, 150)),
-			Size = NumberSequence.new(0.3, 0.1),
-			Transparency = NumberSequence.new(0.1, 1.0),
-			Lifetime = NumberRange.new(1.0, 2.0),
-			Rate = 35,
-			Speed = NumberRange.new(4.0, 9.0),
-			SpreadAngle = Vector2.new(35, 35),
-			Acceleration = Vector3.new(0, 6, 0),
-			Texture = TEXTURES.Cross,
-		})
-		createVerticalBeam(activeFolder, rootPart, pColor)
+	elseif shape == "FireColumn" or shape == "Hellfire" or shape == "LavaTide" then
+		-- Ruby / Hades / Hellforged: Violent blazing fire column + Vertical Pillar
+		addBodyEnergyWisps(attRoot, Color3.fromRGB(255, 40, 20), pColor, 55, NumberRange.new(5.0, 10.0), {0.6, 2.4, 0.3})
+		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "Sunburst" or shape == "EclipseCorona" then
-		-- Solar / Eclipse: Blinding solar rays & energy corona
-		createEmitter(rootAttachment, {
-			Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 180, 40)),
-				ColorSequenceKeypoint.new(0.5, pColor),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
-			}),
-			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.6),
-				NumberSequenceKeypoint.new(0.5, 2.5),
-				NumberSequenceKeypoint.new(1, 0.2),
-			}),
-			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.1),
-				NumberSequenceKeypoint.new(0.8, 0.4),
-				NumberSequenceKeypoint.new(1, 1.0),
-			}),
-			Lifetime = NumberRange.new(1.4, 2.2),
-			Rate = 60,
-			Speed = NumberRange.new(4.0, 9.0),
-			SpreadAngle = Vector2.new(45, 45),
-			Acceleration = Vector3.new(0, 4, 0),
-			Texture = TEXTURES.Cross,
-		})
-		createVerticalBeam(activeFolder, rootPart, pColor)
+		-- Solar / Eclipse: Radiant solar corona + Head Halo + Light Pillar
+		addBodyEnergyWisps(attRoot, Color3.fromRGB(255, 180, 40), Color3.fromRGB(255, 255, 255), 60, NumberRange.new(4.5, 9.0), {0.6, 2.5, 0.3})
+		addHeadCrown(character, activeFolder, pColor, false)
+		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "MoonStars" or shape == "NebulaSpiral" or shape == "Singularity" then
-		-- Cosmic / Galaxy / Abyssal Hunter / Lunar: Deep space stars & swirling nebula
-		createEmitter(rootAttachment, {
+		-- Lunar / Galaxy / Abyssal Hunter: Deep cosmic nebula + starlight beam
+		createEmitter(attRoot, {
 			Color = ColorSequence.new({
 				ColorSequenceKeypoint.new(0, pColor),
-				ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 200, 255)),
+				ColorSequenceKeypoint.new(0.5, Color3.fromRGB(240, 180, 255)),
 				ColorSequenceKeypoint.new(1, pColor),
 			}),
 			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.4),
-				NumberSequenceKeypoint.new(0.5, 1.6),
-				NumberSequenceKeypoint.new(1, 0.2),
+				NumberSequenceKeypoint.new(0, 0.8),
+				NumberSequenceKeypoint.new(0.5, 2.2),
+				NumberSequenceKeypoint.new(1, 0.4),
 			}),
 			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.1),
-				NumberSequenceKeypoint.new(0.7, 0.2),
+				NumberSequenceKeypoint.new(0, 1.0),
+				NumberSequenceKeypoint.new(0.2, 0.1),
+				NumberSequenceKeypoint.new(0.7, 0.25),
 				NumberSequenceKeypoint.new(1, 1.0),
 			}),
-			Lifetime = NumberRange.new(2.0, 3.2),
+			Lifetime = NumberRange.new(1.8, 2.8),
 			Rate = 45,
-			Speed = NumberRange.new(3.0, 6.5),
-			SpreadAngle = Vector2.new(50, 50),
-			Acceleration = Vector3.new(0, 3, 0),
-			RotSpeed = NumberRange.new(-60, 60),
+			Speed = NumberRange.new(2.5, 5.5),
+			SpreadAngle = Vector2.new(60, 60),
+			Acceleration = Vector3.new(0, 2.5, 0),
 			Texture = TEXTURES.Cross,
 		})
-		-- Swirling cosmic mist
-		createEmitter(rootAttachment, {
-			Color = ColorSequence.new(pColor),
-			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 1.5),
-				NumberSequenceKeypoint.new(1, 3.8),
-			}),
-			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.5),
-				NumberSequenceKeypoint.new(1, 1.0),
-			}),
-			Lifetime = NumberRange.new(2.0, 3.0),
-			Rate = 20,
-			Speed = NumberRange.new(1.0, 3.0),
-			SpreadAngle = Vector2.new(70, 70),
-			Texture = TEXTURES.Smoke,
-		})
-		createVerticalBeam(activeFolder, rootPart, pColor)
+		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "DivineHalo" or shape == "TimeClock" or shape == "PrismaticGlitch" then
-		-- Archangel / Chronos / Exotic Apex: Celestial divine radiance
-		createEmitter(rootAttachment, {
-			Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 220)),
-				ColorSequenceKeypoint.new(0.5, pColor),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
-			}),
-			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.4),
-				NumberSequenceKeypoint.new(0.5, 2.0),
-				NumberSequenceKeypoint.new(1, 0.3),
-			}),
-			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.05),
-				NumberSequenceKeypoint.new(0.8, 0.2),
-				NumberSequenceKeypoint.new(1, 1.0),
-			}),
-			Lifetime = NumberRange.new(1.5, 2.5),
-			Rate = 55,
-			Speed = NumberRange.new(4.0, 8.0),
-			SpreadAngle = Vector2.new(40, 40),
-			Acceleration = Vector3.new(0, 5, 0),
-			Texture = TEXTURES.Cross,
-		})
-		createVerticalBeam(activeFolder, rootPart, pColor)
+		-- Archangel / Chronos / Exotic Apex: Divine wings + Halo + Pillar
+		addBodyEnergyWisps(attRoot, pColor, Color3.fromRGB(255, 255, 255), 55, NumberRange.new(4.0, 8.5), {0.5, 2.2, 0.3})
+		addAngelicWings(character, activeFolder, pColor)
+		addHeadCrown(character, activeFolder, pColor, false)
+		addLightPillar(rootPart, activeFolder, pColor)
+
+	elseif shape == "CrownGlow" then
+		-- VIP Crown: Regal floating crown above head + Golden sparkles
+		addHeadCrown(character, activeFolder, Color3.fromRGB(255, 215, 0), true)
+		addBodyEnergyWisps(attRoot, Color3.fromRGB(251, 191, 36), Color3.fromRGB(255, 255, 255), 30, NumberRange.new(2.5, 5.0), {0.3, 1.2, 0.2})
 
 	else
-		-- General fallback emitter
-		createEmitter(rootAttachment, {
-			Color = ColorSequence.new(pColor),
-			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.3),
-				NumberSequenceKeypoint.new(0.5, 1.0),
-				NumberSequenceKeypoint.new(1, 0.2),
-			}),
-			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.2),
-				NumberSequenceKeypoint.new(0.7, 0.3),
-				NumberSequenceKeypoint.new(1, 1.0),
-			}),
-			Lifetime = NumberRange.new(1.5, 2.5),
-			Rate = 30,
-			Speed = NumberRange.new(2.5, 5.0),
-			SpreadAngle = Vector2.new(30, 30),
-			Acceleration = Vector3.new(0, 3, 0),
-			Texture = TEXTURES.Point,
-		})
-		if auraData.Rarity and auraData.Rarity >= 1000 then
-			createVerticalBeam(activeFolder, rootPart, pColor)
+		addBodyEnergyWisps(attRoot, pColor, auraColor, 35, NumberRange.new(3.0, 6.0), {0.4, 1.5, 0.2})
+		if rarity >= 1000 then
+			addLightPillar(rootPart, activeFolder, pColor)
 		end
 	end
 end
@@ -2475,12 +2538,14 @@ end
 local existingClientScript = existingScreenGui:FindFirstChild("RNGClient")
 if existingClientScript and existingClientScript:IsA("LocalScript") then
 	existingClientScript.Source = [===[-- RNGClient.client.lua
--- Client controller and complete GUI manager for Sol's RNG game.
--- Manages HUD, Rolling Animations, Cutscenes, Inventory, Crafting, Shop & Passes, and Settings.
+-- Professional, high-end User Interface (UI) controller for Sol's RNG.
+-- Features Glassmorphic Dark Design, Responsive Scaling (Mobile/PC/Tablet),
+-- Spring Tweens, Addictive Cutscenes, Full Inventory, Alchemist Crafting Forge, and Monetization.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local ProximityPromptService = game:GetService("ProximityPromptService")
 local SoundService = game:GetService("SoundService")
 
 local LocalPlayer = Players.LocalPlayer
@@ -2504,7 +2569,7 @@ local ToggleTestPerkEvent = EventsFolder:WaitForChild("ToggleTestPerk")
 local DataSyncEvent = EventsFolder:WaitForChild("DataSync")
 local GlobalAnnouncementEvent = EventsFolder:WaitForChild("GlobalAnnouncement")
 
--- Local Player Cache State
+-- Local Player State Cache
 local localData = {
 	Rolls = 0,
 	Coins = 100,
@@ -2526,9 +2591,10 @@ local isFastRollOn = false
 local isRolling = false
 local selectedInventoryAura = nil
 local selectedCraftRecipe = nil
+local activeModal = nil
 
 --------------------------------------------------------------------------------
--- UI CONSTRUCTION & INSTANCES
+-- UI ROOT & UTILITIES
 --------------------------------------------------------------------------------
 
 local screenGui = script.Parent
@@ -2540,264 +2606,335 @@ if not screenGui:IsA("ScreenGui") then
 	screenGui.Parent = PlayerGui
 end
 
--- Helper: Rounded corner
 local function addCorner(parent, radius)
 	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, radius or 10)
+	corner.CornerRadius = UDim.new(0, radius or 12)
 	corner.Parent = parent
 	return corner
 end
 
--- Helper: Stroke outline
-local function addStroke(parent, color, thickness)
+local function addStroke(parent, color, thickness, transparency)
 	local stroke = Instance.new("UIStroke")
-	stroke.Color = color or Color3.fromRGB(60, 65, 80)
+	stroke.Color = color or Color3.fromRGB(45, 52, 70)
 	stroke.Thickness = thickness or 1.5
+	stroke.Transparency = transparency or 0.2
 	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	stroke.Parent = parent
 	return stroke
 end
 
--- Top HUD Container
+local function addPadding(parent, top, bottom, left, right)
+	local pad = Instance.new("UIPadding")
+	pad.PaddingTop = UDim.new(0, top or 8)
+	pad.PaddingBottom = UDim.new(0, bottom or 8)
+	pad.PaddingLeft = UDim.new(0, left or 12)
+	pad.PaddingRight = UDim.new(0, right or 12)
+	pad.Parent = parent
+	return pad
+end
+
+--------------------------------------------------------------------------------
+-- 1. TOP HUD (RESPONSIVE CAPSULE)
+--------------------------------------------------------------------------------
+
 local topHud = Instance.new("Frame")
 topHud.Name = "TopHUD"
-topHud.Size = UDim2.new(0, 720, 0, 48)
-topHud.Position = UDim2.new(0.5, -360, 0, 14)
-topHud.BackgroundColor3 = Color3.fromRGB(18, 20, 28)
+topHud.AnchorPoint = Vector2.new(0.5, 0)
+topHud.Position = UDim2.new(0.5, 0, 0, 12)
+topHud.Size = UDim2.new(0.85, 0, 0, 46)
+topHud.BackgroundColor3 = Color3.fromRGB(13, 15, 22)
 topHud.BackgroundTransparency = 0.15
-addCorner(topHud, 12)
-addStroke(topHud, Color3.fromRGB(45, 52, 70), 1.5)
+addCorner(topHud, 14)
+addStroke(topHud, Color3.fromRGB(45, 55, 78), 1.5)
+addPadding(topHud, 4, 4, 16, 16)
 topHud.Parent = screenGui
 
-local topListLayout = Instance.new("UIListLayout")
-topListLayout.FillDirection = Enum.FillDirection.Horizontal
-topListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-topListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-topListLayout.Padding = UDim.new(0, 20)
-topListLayout.Parent = topHud
+local topSizeConstraint = Instance.new("UISizeConstraint")
+topSizeConstraint.MaxSize = Vector2.new(700, 48)
+topSizeConstraint.MinSize = Vector2.new(320, 40)
+topSizeConstraint.Parent = topHud
 
--- Top Stat Labels
-local function createTopStat(icon, defaultText, color)
+local topLayout = Instance.new("UIListLayout")
+topLayout.FillDirection = Enum.FillDirection.Horizontal
+topLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+topLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+topLayout.Padding = UDim.new(0, 16)
+topLayout.Parent = topHud
+
+local function createTopStatPill(icon, defaultText, color)
+	local pill = Instance.new("Frame")
+	pill.Size = UDim2.new(0, 130, 0, 32)
+	pill.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
+	pill.BackgroundTransparency = 0.4
+	addCorner(pill, 8)
+	addStroke(pill, Color3.fromRGB(35, 42, 60), 1)
+
 	local label = Instance.new("TextLabel")
-	label.Size = UDim2.new(0, 140, 1, 0)
+	label.Size = UDim2.new(1, 0, 1, 0)
 	label.BackgroundTransparency = 1
 	label.Font = Enum.Font.GothamBold
-	label.TextSize = 15
+	label.TextSize = 13
 	label.TextColor3 = color
 	label.Text = icon .. " " .. defaultText
 	label.TextXAlignment = Enum.TextXAlignment.Center
-	label.Parent = topHud
-	return label
+	label.Parent = pill
+
+	pill.Parent = topHud
+	return label, pill
 end
 
-local rollsLabel = createTopStat("🎲", "Rolls: 0", Color3.fromRGB(220, 225, 240))
-local luckLabel = createTopStat("🍀", "Luck: x1.0", Color3.fromRGB(74, 222, 128))
-local coinsLabel = createTopStat("🪙", "Coins: 100", Color3.fromRGB(250, 204, 21))
-local potionLabel = createTopStat("⏳", "Potion: None", Color3.fromRGB(56, 189, 248))
+local rollsLabel, rollsPill = createTopStatPill("🎲", "Rolls: 0", Color3.fromRGB(220, 225, 240))
+local luckLabel, luckPill = createTopStatPill("🍀", "Luck: x1.0", Color3.fromRGB(74, 222, 128))
+local coinsLabel, coinsPill = createTopStatPill("🪙", "Coins: 100", Color3.fromRGB(250, 204, 21))
+local potionLabel, potionPill = createTopStatPill("⏳", "Pot: None", Color3.fromRGB(56, 189, 248))
 
--- Bottom Center Controls Container
+--------------------------------------------------------------------------------
+-- 2. BOTTOM CONTROLS & MASSIVE ROLL BUTTON
+--------------------------------------------------------------------------------
+
 local bottomControls = Instance.new("Frame")
 bottomControls.Name = "BottomControls"
-bottomControls.Size = UDim2.new(0, 400, 0, 100)
-bottomControls.Position = UDim2.new(0.5, -200, 1, -115)
+bottomControls.AnchorPoint = Vector2.new(0.5, 1)
+bottomControls.Position = UDim2.new(0.5, 0, 1, -18)
+bottomControls.Size = UDim2.new(0, 460, 0, 110)
 bottomControls.BackgroundTransparency = 1
 bottomControls.Parent = screenGui
 
--- Big ROLL Button
+-- Main ROLL Button (Pulsing Centerpiece)
 local rollButton = Instance.new("TextButton")
 rollButton.Name = "RollButton"
-rollButton.Size = UDim2.new(0, 210, 0, 62)
-rollButton.Position = UDim2.new(0.5, -105, 0, 0)
+rollButton.AnchorPoint = Vector2.new(0.5, 0)
+rollButton.Position = UDim2.new(0.5, 0, 0, 0)
+rollButton.Size = UDim2.new(0, 240, 0, 64)
 rollButton.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
 rollButton.Font = Enum.Font.GothamBlack
-rollButton.TextSize = 24
+rollButton.TextSize = 26
 rollButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 rollButton.Text = "🎲 ROLL"
-addCorner(rollButton, 14)
-addStroke(rollButton, Color3.fromRGB(96, 165, 250), 2)
-rollButton.Parent = bottomControls
+addCorner(rollButton, 16)
+local rollStroke = addStroke(rollButton, Color3.fromRGB(96, 165, 250), 2.5)
 
--- Roll Button Gradient
-local rollGradient = Instance.new("UIGradient")
-rollGradient.Color = ColorSequence.new({
+local rollGrad = Instance.new("UIGradient")
+rollGrad.Color = ColorSequence.new({
 	ColorSequenceKeypoint.new(0, Color3.fromRGB(59, 130, 246)),
 	ColorSequenceKeypoint.new(1, Color3.fromRGB(29, 78, 216)),
 })
-rollGradient.Rotation = 45
-rollGradient.Parent = rollButton
+rollGrad.Rotation = 45
+rollGrad.Parent = rollButton
+rollButton.Parent = bottomControls
 
--- Auto Roll Button
+-- Secondary Controls (Auto Roll & Fast Roll Pills)
+local secondaryBar = Instance.new("Frame")
+secondaryBar.Size = UDim2.new(0, 320, 0, 34)
+secondaryBar.AnchorPoint = Vector2.new(0.5, 1)
+secondaryBar.Position = UDim2.new(0.5, 0, 1, 0)
+secondaryBar.BackgroundTransparency = 1
+secondaryBar.Parent = bottomControls
+
+local secLayout = Instance.new("UIListLayout")
+secLayout.FillDirection = Enum.FillDirection.Horizontal
+secLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+secLayout.Padding = UDim.new(0, 12)
+secLayout.Parent = secondaryBar
+
 local autoRollBtn = Instance.new("TextButton")
-autoRollBtn.Name = "AutoRollButton"
-autoRollBtn.Size = UDim2.new(0, 130, 0, 32)
-autoRollBtn.Position = UDim2.new(0.5, -140, 1, -34)
-autoRollBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
+autoRollBtn.Name = "AutoRollBtn"
+autoRollBtn.Size = UDim2.new(0, 150, 1, 0)
+autoRollBtn.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
 autoRollBtn.Font = Enum.Font.GothamBold
-autoRollBtn.TextSize = 13
-autoRollBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
+autoRollBtn.TextSize = 12
+autoRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
 autoRollBtn.Text = "⚡ AUTO: OFF"
 addCorner(autoRollBtn, 8)
-addStroke(autoRollBtn, Color3.fromRGB(55, 62, 80), 1)
-autoRollBtn.Parent = bottomControls
+local autoStroke = addStroke(autoRollBtn, Color3.fromRGB(45, 52, 70), 1.2)
+autoRollBtn.Parent = secondaryBar
 
--- Fast Roll Button
 local fastRollBtn = Instance.new("TextButton")
-fastRollBtn.Name = "FastRollButton"
-fastRollBtn.Size = UDim2.new(0, 130, 0, 32)
-fastRollBtn.Position = UDim2.new(0.5, 10, 1, -34)
-fastRollBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
+fastRollBtn.Name = "FastRollBtn"
+fastRollBtn.Size = UDim2.new(0, 150, 1, 0)
+fastRollBtn.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
 fastRollBtn.Font = Enum.Font.GothamBold
-fastRollBtn.TextSize = 13
-fastRollBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
+fastRollBtn.TextSize = 12
+fastRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
 fastRollBtn.Text = "⏩ FAST: OFF"
 addCorner(fastRollBtn, 8)
-addStroke(fastRollBtn, Color3.fromRGB(55, 62, 80), 1)
-fastRollBtn.Parent = bottomControls
+local fastStroke = addStroke(fastRollBtn, Color3.fromRGB(45, 52, 70), 1.2)
+fastRollBtn.Parent = secondaryBar
 
--- Left Navigation Bar
-local leftNav = Instance.new("Frame")
-leftNav.Name = "LeftNav"
-leftNav.Size = UDim2.new(0, 68, 0, 280)
-leftNav.Position = UDim2.new(0, 16, 0.5, -140)
-leftNav.BackgroundColor3 = Color3.fromRGB(18, 20, 28)
-leftNav.BackgroundTransparency = 0.2
-addCorner(leftNav, 14)
-addStroke(leftNav, Color3.fromRGB(45, 52, 70), 1.5)
-leftNav.Parent = screenGui
+-- Subtle breathing animation on Roll Button
+task.spawn(function()
+	while true do
+		TweenService:Create(rollStroke, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+			Color = Color3.fromRGB(147, 197, 253),
+		}):Play()
+		task.wait(1.2)
+		TweenService:Create(rollStroke, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+			Color = Color3.fromRGB(59, 130, 246),
+		}):Play()
+		task.wait(1.2)
+	end
+end)
 
-local navListLayout = Instance.new("UIListLayout")
-navListLayout.FillDirection = Enum.FillDirection.Vertical
-navListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-navListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-navListLayout.Padding = UDim.new(0, 12)
-navListLayout.Parent = leftNav
+--------------------------------------------------------------------------------
+-- 3. LEFT DOCK NAVIGATION BAR
+--------------------------------------------------------------------------------
 
-local function createNavButton(name, icon, tooltip)
+local leftDock = Instance.new("Frame")
+leftDock.Name = "LeftDock"
+leftDock.AnchorPoint = Vector2.new(0, 0.5)
+leftDock.Position = UDim2.new(0, 14, 0.5, 0)
+leftDock.Size = UDim2.new(0, 62, 0, 260)
+leftDock.BackgroundColor3 = Color3.fromRGB(13, 15, 22)
+leftDock.BackgroundTransparency = 0.15
+addCorner(leftDock, 14)
+addStroke(leftDock, Color3.fromRGB(45, 55, 78), 1.5)
+addPadding(leftDock, 8, 8, 4, 4)
+leftDock.Parent = screenGui
+
+local dockLayout = Instance.new("UIListLayout")
+dockLayout.FillDirection = Enum.FillDirection.Vertical
+dockLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+dockLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+dockLayout.Padding = UDim.new(0, 10)
+dockLayout.Parent = leftDock
+
+local function createDockButton(name, icon, tooltipText)
 	local btn = Instance.new("TextButton")
 	btn.Name = name .. "Btn"
-	btn.Size = UDim2.new(0, 52, 0, 52)
-	btn.BackgroundColor3 = Color3.fromRGB(28, 33, 46)
+	btn.Size = UDim2.new(0, 48, 0, 48)
+	btn.BackgroundColor3 = Color3.fromRGB(22, 26, 38)
 	btn.Font = Enum.Font.GothamBold
 	btn.TextSize = 22
 	btn.Text = icon
 	addCorner(btn, 10)
-	addStroke(btn, Color3.fromRGB(50, 58, 78), 1.2)
-	btn.Parent = leftNav
+	local stroke = addStroke(btn, Color3.fromRGB(45, 52, 72), 1)
+
+	btn.MouseEnter:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.15), { BackgroundColor3 = Color3.fromRGB(37, 99, 235) }):Play()
+		stroke.Color = Color3.fromRGB(96, 165, 250)
+	end)
+	btn.MouseLeave:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.15), { BackgroundColor3 = Color3.fromRGB(22, 26, 38) }):Play()
+		stroke.Color = Color3.fromRGB(45, 52, 72)
+	end)
+
+	btn.Parent = leftDock
 	return btn
 end
 
-local navInventoryBtn = createNavButton("Inventory", "🎒", "Inventory")
-local navCraftingBtn = createNavButton("Crafting", "⚗️", "Crafting")
-local navShopBtn = createNavButton("Shop", "🛒", "Shop & Passes")
-local navSettingsBtn = createNavButton("Settings", "⚙️", "Settings")
+local navInventoryBtn = createDockButton("Inventory", "🎒", "Inventory")
+local navCraftingBtn = createDockButton("Crafting", "⚗️", "Crafting Forge")
+local navShopBtn = createDockButton("Shop", "🛒", "Shop & Passes")
+local navSettingsBtn = createDockButton("Settings", "⚙️", "Settings")
 
--- Bottom Left: Equipped Aura Card
+--------------------------------------------------------------------------------
+-- 4. BOTTOM-LEFT EQUIPPED AURA SHOWCASE CARD
+--------------------------------------------------------------------------------
+
 local equippedCard = Instance.new("Frame")
 equippedCard.Name = "EquippedCard"
-equippedCard.Size = UDim2.new(0, 210, 0, 62)
-equippedCard.Position = UDim2.new(0, 16, 1, -78)
-equippedCard.BackgroundColor3 = Color3.fromRGB(18, 20, 28)
+equippedCard.AnchorPoint = Vector2.new(0, 1)
+equippedCard.Position = UDim2.new(0, 14, 1, -14)
+equippedCard.Size = UDim2.new(0, 200, 0, 60)
+equippedCard.BackgroundColor3 = Color3.fromRGB(13, 15, 22)
 equippedCard.BackgroundTransparency = 0.2
 addCorner(equippedCard, 10)
-addStroke(equippedCard, Color3.fromRGB(45, 52, 70), 1.5)
+local eqStroke = addStroke(equippedCard, Color3.fromRGB(45, 55, 78), 1.2)
+addPadding(equippedCard, 8, 8, 12, 8)
 equippedCard.Parent = screenGui
 
-local equippedTitle = Instance.new("TextLabel")
-equippedTitle.Size = UDim2.new(1, -65, 0, 20)
-equippedTitle.Position = UDim2.new(0, 12, 0, 10)
-equippedTitle.BackgroundTransparency = 1
-equippedTitle.Font = Enum.Font.GothamBold
-equippedTitle.TextSize = 14
-equippedTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-equippedTitle.TextXAlignment = Enum.TextXAlignment.Left
-equippedTitle.Text = "Aura: None"
-equippedTitle.Parent = equippedCard
+local eqName = Instance.new("TextLabel")
+eqName.Size = UDim2.new(1, -40, 0, 20)
+eqName.Position = UDim2.new(0, 0, 0, 2)
+eqName.BackgroundTransparency = 1
+eqName.Font = Enum.Font.GothamBlack
+eqName.TextSize = 14
+eqName.TextColor3 = Color3.fromRGB(240, 243, 250)
+eqName.TextXAlignment = Enum.TextXAlignment.Left
+eqName.Text = "Aura: None"
+eqName.Parent = equippedCard
 
-local equippedSubtitle = Instance.new("TextLabel")
-equippedSubtitle.Size = UDim2.new(1, -65, 0, 16)
-equippedSubtitle.Position = UDim2.new(0, 12, 0, 32)
-equippedSubtitle.BackgroundTransparency = 1
-equippedSubtitle.Font = Enum.Font.GothamMedium
-equippedSubtitle.TextSize = 12
-equippedSubtitle.TextColor3 = Color3.fromRGB(156, 163, 175)
-equippedSubtitle.TextXAlignment = Enum.TextXAlignment.Left
-equippedSubtitle.Text = "Not Equipped"
-equippedSubtitle.Parent = equippedCard
+local eqSub = Instance.new("TextLabel")
+eqSub.Size = UDim2.new(1, -40, 0, 16)
+eqSub.Position = UDim2.new(0, 0, 0, 24)
+eqSub.BackgroundTransparency = 1
+eqSub.Font = Enum.Font.GothamBold
+eqSub.TextSize = 11
+eqSub.TextColor3 = Color3.fromRGB(156, 163, 175)
+eqSub.TextXAlignment = Enum.TextXAlignment.Left
+eqSub.Text = "Not Equipped"
+eqSub.Parent = equippedCard
 
 local unequipBtn = Instance.new("TextButton")
-unequipBtn.Name = "UnequipBtn"
-unequipBtn.Size = UDim2.new(0, 42, 0, 42)
-unequipBtn.Position = UDim2.new(1, -52, 0.5, -21)
-unequipBtn.BackgroundColor3 = Color3.fromRGB(35, 40, 55)
+unequipBtn.Size = UDim2.new(0, 32, 0, 32)
+unequipBtn.Position = UDim2.new(1, -34, 0.5, -16)
+unequipBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
 unequipBtn.Font = Enum.Font.GothamBold
 unequipBtn.TextSize = 12
-unequipBtn.TextColor3 = Color3.fromRGB(239, 68, 68)
+unequipBtn.TextColor3 = Color3.fromRGB(248, 113, 113)
 unequipBtn.Text = "✕"
-addCorner(unequipBtn, 8)
+addCorner(unequipBtn, 6)
 unequipBtn.Parent = equippedCard
 
 --------------------------------------------------------------------------------
--- MODAL WINDOW HELPER
+-- MODAL WINDOW FACTORY
 --------------------------------------------------------------------------------
 
-local activeModal = nil
-
-local function createModalWindow(titleText, width, height)
+local function createModal(titleText, width, height)
 	local window = Instance.new("Frame")
+	window.AnchorPoint = Vector2.new(0.5, 0.5)
+	window.Position = UDim2.new(0.5, 0, 0.5, 0)
 	window.Size = UDim2.new(0, width, 0, height)
-	window.Position = UDim2.new(0.5, -width/2, 0.5, -height/2)
-	window.BackgroundColor3 = Color3.fromRGB(18, 20, 28)
-	window.BackgroundTransparency = 0.05
+	window.BackgroundColor3 = Color3.fromRGB(13, 15, 22)
+	window.BackgroundTransparency = 0.08
 	window.Visible = false
-	addCorner(window, 14)
-	addStroke(window, Color3.fromRGB(55, 65, 88), 2)
+	addCorner(window, 16)
+	addStroke(window, Color3.fromRGB(55, 65, 90), 2)
 	window.Parent = screenGui
 
-	-- Header Bar
+	-- Header
 	local header = Instance.new("Frame")
 	header.Size = UDim2.new(1, 0, 0, 48)
-	header.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
+	header.BackgroundColor3 = Color3.fromRGB(20, 24, 36)
 	header.BackgroundTransparency = 0.3
-	addCorner(header, 14)
+	addCorner(header, 16)
 	header.Parent = window
 
-	local titleLabel = Instance.new("TextLabel")
-	titleLabel.Size = UDim2.new(1, -60, 1, 0)
-	titleLabel.Position = UDim2.new(0, 18, 0, 0)
-	titleLabel.BackgroundTransparency = 1
-	titleLabel.Font = Enum.Font.GothamBlack
-	titleLabel.TextSize = 18
-	titleLabel.TextColor3 = Color3.fromRGB(240, 243, 250)
-	titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-	titleLabel.Text = titleText
-	titleLabel.Parent = header
+	local title = Instance.new("TextLabel")
+	title.Size = UDim2.new(1, -60, 1, 0)
+	title.Position = UDim2.new(0, 18, 0, 0)
+	title.BackgroundTransparency = 1
+	title.Font = Enum.Font.GothamBlack
+	title.TextSize = 18
+	title.TextColor3 = Color3.fromRGB(240, 243, 250)
+	title.TextXAlignment = Enum.TextXAlignment.Left
+	title.Text = titleText
+	title.Parent = header
 
 	local closeBtn = Instance.new("TextButton")
 	closeBtn.Size = UDim2.new(0, 32, 0, 32)
 	closeBtn.Position = UDim2.new(1, -40, 0.5, -16)
-	closeBtn.BackgroundColor3 = Color3.fromRGB(40, 45, 60)
+	closeBtn.BackgroundColor3 = Color3.fromRGB(35, 40, 56)
 	closeBtn.Font = Enum.Font.GothamBold
 	closeBtn.TextSize = 16
-	closeBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
+	closeBtn.TextColor3 = Color3.fromRGB(200, 205, 225)
 	closeBtn.Text = "✕"
 	addCorner(closeBtn, 8)
 	closeBtn.Parent = header
 
 	local content = Instance.new("Frame")
-	content.Size = UDim2.new(1, -32, 1, -64)
-	content.Position = UDim2.new(0, 16, 0, 54)
+	content.Size = UDim2.new(1, -28, 1, -64)
+	content.Position = UDim2.new(0, 14, 0, 54)
 	content.BackgroundTransparency = 1
 	content.Parent = window
 
 	closeBtn.MouseButton1Click:Connect(function()
 		SoundEffects.Play("Click")
 		window.Visible = false
-		if activeModal == window then
-			activeModal = nil
-		end
+		if activeModal == window then activeModal = nil end
 	end)
 
-	return window, content, closeBtn
+	return window, content
 end
 
 local function toggleModal(modal)
@@ -2806,53 +2943,69 @@ local function toggleModal(modal)
 		modal.Visible = false
 		activeModal = nil
 	else
-		if activeModal then
-			activeModal.Visible = false
-		end
+		if activeModal then activeModal.Visible = false end
 		modal.Visible = true
 		activeModal = modal
+		modal.Size = UDim2.new(0, modal.Size.X.Offset * 0.9, 0, modal.Size.Y.Offset * 0.9)
+		TweenService:Create(modal, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+			Size = UDim2.new(0, modal.Size.X.Offset / 0.9, 0, modal.Size.Y.Offset / 0.9),
+		}):Play()
 	end
 end
 
 --------------------------------------------------------------------------------
--- 1. INVENTORY WINDOW
+-- 5. INVENTORY WINDOW (MODERN GRID + DETAIL PANEL)
 --------------------------------------------------------------------------------
 
-local inventoryWindow, invContent = createModalWindow("🎒 AURA INVENTORY", 680, 480)
+local invWindow, invContent = createModal("🎒 AURA INVENTORY", 680, 480)
 
--- Top Storage Bar
-local storageInfo = Instance.new("TextLabel")
-storageInfo.Size = UDim2.new(0, 200, 0, 24)
-storageInfo.Position = UDim2.new(0, 0, 0, 0)
-storageInfo.BackgroundTransparency = 1
-storageInfo.Font = Enum.Font.GothamBold
-storageInfo.TextSize = 14
-storageInfo.TextColor3 = Color3.fromRGB(156, 163, 175)
-storageInfo.TextXAlignment = Enum.TextXAlignment.Left
-storageInfo.Text = "Storage: 0 / 20"
-storageInfo.Parent = invContent
+-- Top Info Bar: Slots + Auto Delete Threshold
+local topInvBar = Instance.new("Frame")
+topInvBar.Size = UDim2.new(1, 0, 0, 28)
+topInvBar.BackgroundTransparency = 1
+topInvBar.Parent = invContent
 
--- Auto Delete Threshold Dropdown/Button
+local storageBarBg = Instance.new("Frame")
+storageBarBg.Size = UDim2.new(0, 220, 0, 24)
+storageBarBg.BackgroundColor3 = Color3.fromRGB(22, 26, 38)
+addCorner(storageBarBg, 6)
+storageBarBg.Parent = topInvBar
+
+local storageFill = Instance.new("Frame")
+storageFill.Size = UDim2.new(0.5, 0, 1, 0)
+storageFill.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+addCorner(storageFill, 6)
+storageFill.Parent = storageBarBg
+
+local storageText = Instance.new("TextLabel")
+storageText.Size = UDim2.new(1, 0, 1, 0)
+storageText.BackgroundTransparency = 1
+storageText.Font = Enum.Font.GothamBold
+storageText.TextSize = 12
+storageText.TextColor3 = Color3.fromRGB(255, 255, 255)
+storageText.Text = "Storage: 0 / 20"
+storageText.Parent = storageBarBg
+
 local autoDeleteBtn = Instance.new("TextButton")
-autoDeleteBtn.Size = UDim2.new(0, 180, 0, 26)
-autoDeleteBtn.Position = UDim2.new(1, -180, 0, 0)
-autoDeleteBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
+autoDeleteBtn.Size = UDim2.new(0, 190, 0, 26)
+autoDeleteBtn.Position = UDim2.new(1, -190, 0, 0)
+autoDeleteBtn.BackgroundColor3 = Color3.fromRGB(28, 33, 48)
 autoDeleteBtn.Font = Enum.Font.GothamMedium
 autoDeleteBtn.TextSize = 12
-autoDeleteBtn.TextColor3 = Color3.fromRGB(220, 225, 235)
+autoDeleteBtn.TextColor3 = Color3.fromRGB(220, 225, 240)
 autoDeleteBtn.Text = "Auto-Delete: None"
 addCorner(autoDeleteBtn, 6)
-addStroke(autoDeleteBtn, Color3.fromRGB(50, 58, 78), 1)
-autoDeleteBtn.Parent = invContent
+addStroke(autoDeleteBtn, Color3.fromRGB(50, 60, 82), 1)
+autoDeleteBtn.Parent = topInvBar
 
--- Left Grid Container
+-- Left: Scrollable Inventory Grid
 local invScroll = Instance.new("ScrollingFrame")
-invScroll.Size = UDim2.new(1, -210, 1, -36)
-invScroll.Position = UDim2.new(0, 0, 0, 32)
-invScroll.BackgroundColor3 = Color3.fromRGB(12, 14, 20)
-invScroll.BackgroundTransparency = 0.5
-invScroll.ScrollBarThickness = 6
-invScroll.ScrollBarImageColor3 = Color3.fromRGB(60, 70, 95)
+invScroll.Size = UDim2.new(1, -220, 1, -38)
+invScroll.Position = UDim2.new(0, 0, 0, 36)
+invScroll.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
+invScroll.BackgroundTransparency = 0.4
+invScroll.ScrollBarThickness = 5
+invScroll.ScrollBarImageColor3 = Color3.fromRGB(55, 65, 90)
 addCorner(invScroll, 8)
 invScroll.Parent = invContent
 
@@ -2860,19 +3013,20 @@ local invGrid = Instance.new("UIGridLayout")
 invGrid.CellSize = UDim2.new(0, 100, 0, 100)
 invGrid.CellPadding = UDim2.new(0, 8, 0, 8)
 invGrid.Parent = invScroll
+addPadding(invScroll, 8, 8, 8, 8)
 
--- Right Detail Panel
+-- Right: Details Inspector
 local detailPanel = Instance.new("Frame")
-detailPanel.Size = UDim2.new(0, 195, 1, -36)
-detailPanel.Position = UDim2.new(1, -195, 0, 32)
-detailPanel.BackgroundColor3 = Color3.fromRGB(14, 16, 22)
+detailPanel.Size = UDim2.new(0, 205, 1, -38)
+detailPanel.Position = UDim2.new(1, -205, 0, 36)
+detailPanel.BackgroundColor3 = Color3.fromRGB(16, 19, 28)
 addCorner(detailPanel, 8)
-addStroke(detailPanel, Color3.fromRGB(40, 48, 65), 1)
+addStroke(detailPanel, Color3.fromRGB(42, 50, 70), 1)
+addPadding(detailPanel, 12, 12, 12, 12)
 detailPanel.Parent = invContent
 
 local detailName = Instance.new("TextLabel")
-detailName.Size = UDim2.new(1, -16, 0, 28)
-detailName.Position = UDim2.new(0, 8, 0, 10)
+detailName.Size = UDim2.new(1, 0, 0, 26)
 detailName.BackgroundTransparency = 1
 detailName.Font = Enum.Font.GothamBlack
 detailName.TextSize = 16
@@ -2881,30 +3035,30 @@ detailName.Text = "Select an Aura"
 detailName.Parent = detailPanel
 
 local detailRarity = Instance.new("TextLabel")
-detailRarity.Size = UDim2.new(1, -16, 0, 20)
-detailRarity.Position = UDim2.new(0, 8, 0, 38)
+detailRarity.Size = UDim2.new(1, 0, 0, 18)
+detailRarity.Position = UDim2.new(0, 0, 0, 28)
 detailRarity.BackgroundTransparency = 1
 detailRarity.Font = Enum.Font.GothamBold
-detailRarity.TextSize = 13
+detailRarity.TextSize = 12
 detailRarity.TextColor3 = Color3.fromRGB(156, 163, 175)
 detailRarity.Text = ""
 detailRarity.Parent = detailPanel
 
 local detailDesc = Instance.new("TextLabel")
-detailDesc.Size = UDim2.new(1, -16, 0, 80)
-detailDesc.Position = UDim2.new(0, 8, 0, 64)
+detailDesc.Size = UDim2.new(1, 0, 0, 110)
+detailDesc.Position = UDim2.new(0, 0, 0, 52)
 detailDesc.BackgroundTransparency = 1
 detailDesc.Font = Enum.Font.Gotham
 detailDesc.TextSize = 12
 detailDesc.TextColor3 = Color3.fromRGB(200, 205, 220)
 detailDesc.TextWrapped = true
 detailDesc.TextYAlignment = Enum.TextYAlignment.Top
-detailDesc.Text = "Click any aura card on the left to equip or manage."
+detailDesc.Text = "Click any aura on the left to equip or manage."
 detailDesc.Parent = detailPanel
 
 local equipActionBtn = Instance.new("TextButton")
-equipActionBtn.Size = UDim2.new(1, -20, 0, 38)
-equipActionBtn.Position = UDim2.new(0, 10, 1, -94)
+equipActionBtn.Size = UDim2.new(1, 0, 0, 40)
+equipActionBtn.Position = UDim2.new(0, 0, 1, -84)
 equipActionBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
 equipActionBtn.Font = Enum.Font.GothamBold
 equipActionBtn.TextSize = 14
@@ -2915,9 +3069,9 @@ addCorner(equipActionBtn, 8)
 equipActionBtn.Parent = detailPanel
 
 local deleteActionBtn = Instance.new("TextButton")
-deleteActionBtn.Size = UDim2.new(1, -20, 0, 36)
-deleteActionBtn.Position = UDim2.new(0, 10, 1, -48)
-deleteActionBtn.BackgroundColor3 = Color3.fromRGB(45, 25, 28)
+deleteActionBtn.Size = UDim2.new(1, 0, 0, 36)
+deleteActionBtn.Position = UDim2.new(0, 0, 1, -38)
+deleteActionBtn.BackgroundColor3 = Color3.fromRGB(48, 25, 30)
 deleteActionBtn.Font = Enum.Font.GothamMedium
 deleteActionBtn.TextSize = 12
 deleteActionBtn.TextColor3 = Color3.fromRGB(248, 113, 113)
@@ -2926,13 +3080,9 @@ deleteActionBtn.Visible = false
 addCorner(deleteActionBtn, 8)
 deleteActionBtn.Parent = detailPanel
 
--- Function to refresh inventory UI
 local function refreshInventoryUI()
-	-- Clear old item cards
 	for _, child in ipairs(invScroll:GetChildren()) do
-		if child:IsA("TextButton") then
-			child:Destroy()
-		end
+		if child:IsA("TextButton") then child:Destroy() end
 	end
 
 	local totalCount = 0
@@ -2942,14 +3092,14 @@ local function refreshInventoryUI()
 		if auraData then
 			local card = Instance.new("TextButton")
 			card.Name = "Card_" .. auraId
-			card.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
+			card.BackgroundColor3 = Color3.fromRGB(18, 22, 32)
 			card.Text = ""
 			addCorner(card, 8)
-			local stroke = addStroke(card, auraData.Color, 1.5)
+			addStroke(card, auraData.Color, 1.5)
 
 			local name = Instance.new("TextLabel")
-			name.Size = UDim2.new(1, -8, 0, 28)
-			name.Position = UDim2.new(0, 4, 0, 6)
+			name.Size = UDim2.new(1, -8, 0, 32)
+			name.Position = UDim2.new(0, 4, 0, 4)
 			name.BackgroundTransparency = 1
 			name.Font = Enum.Font.GothamBold
 			name.TextSize = 12
@@ -2960,7 +3110,7 @@ local function refreshInventoryUI()
 
 			local rarity = Instance.new("TextLabel")
 			rarity.Size = UDim2.new(1, -8, 0, 16)
-			rarity.Position = UDim2.new(0, 4, 0, 36)
+			rarity.Position = UDim2.new(0, 4, 0, 38)
 			rarity.BackgroundTransparency = 1
 			rarity.Font = Enum.Font.GothamMedium
 			rarity.TextSize = 10
@@ -2969,9 +3119,9 @@ local function refreshInventoryUI()
 			rarity.Parent = card
 
 			local countTag = Instance.new("TextLabel")
-			countTag.Size = UDim2.new(0, 30, 0, 16)
-			countTag.Position = UDim2.new(1, -34, 1, -20)
-			countTag.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
+			countTag.Size = UDim2.new(0, 32, 0, 18)
+			countTag.Position = UDim2.new(1, -36, 1, -22)
+			countTag.BackgroundColor3 = Color3.fromRGB(28, 33, 48)
 			countTag.Font = Enum.Font.GothamBold
 			countTag.TextSize = 10
 			countTag.TextColor3 = Color3.fromRGB(220, 225, 240)
@@ -2979,14 +3129,13 @@ local function refreshInventoryUI()
 			addCorner(countTag, 4)
 			countTag.Parent = card
 
-			-- Equipped Indicator
 			if localData.EquippedAura == auraId then
 				local eqTag = Instance.new("TextLabel")
-				eqTag.Size = UDim2.new(0, 52, 0, 16)
-				eqTag.Position = UDim2.new(0, 4, 1, -20)
+				eqTag.Size = UDim2.new(0, 50, 0, 18)
+				eqTag.Position = UDim2.new(0, 4, 1, -22)
 				eqTag.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 				eqTag.Font = Enum.Font.GothamBold
-				eqTag.TextSize = 9
+				eqTag.TextSize = 8
 				eqTag.TextColor3 = Color3.fromRGB(255, 255, 255)
 				eqTag.Text = "EQUIPPED"
 				addCorner(eqTag, 4)
@@ -3004,7 +3153,7 @@ local function refreshInventoryUI()
 				equipActionBtn.Visible = true
 				if localData.EquippedAura == auraId then
 					equipActionBtn.Text = "Unequip"
-					equipActionBtn.BackgroundColor3 = Color3.fromRGB(75, 85, 99)
+					equipActionBtn.BackgroundColor3 = Color3.fromRGB(60, 70, 85)
 				else
 					equipActionBtn.Text = "Equip"
 					equipActionBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
@@ -3016,8 +3165,19 @@ local function refreshInventoryUI()
 		end
 	end
 
-	storageInfo.Text = string.format("Storage: %d / %d", totalCount, localData.MaxStorage)
-	invScroll.CanvasSize = UDim2.new(0, 0, 0, invGrid.AbsoluteContentSize.Y + 20)
+	local maxSlots = localData.MaxStorage or 20
+	storageText.Text = string.format("Storage: %d / %d", totalCount, maxSlots)
+	local ratio = math.clamp(totalCount / maxSlots, 0, 1)
+	storageFill.Size = UDim2.new(ratio, 0, 1, 0)
+	if ratio >= 1.0 then
+		storageFill.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
+	elseif ratio >= 0.8 then
+		storageFill.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
+	else
+		storageFill.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+	end
+
+	invScroll.CanvasSize = UDim2.new(0, 0, 0, invGrid.AbsoluteContentSize.Y + 24)
 end
 
 equipActionBtn.MouseButton1Click:Connect(function()
@@ -3042,7 +3202,6 @@ deleteActionBtn.MouseButton1Click:Connect(function()
 	detailDesc.Text = "Aura scrapped for coins."
 end)
 
--- Cycle auto-delete threshold
 local thresholds = { 0, 2, 4, 16, 64 }
 local thresholdNames = { [0] = "None", [2] = "Common (1/2)", [4] = "Uncommon (1/4)", [16] = "Rare (1/16)", [64] = "Crystallized (1/64)" }
 autoDeleteBtn.MouseButton1Click:Connect(function()
@@ -3055,137 +3214,134 @@ autoDeleteBtn.MouseButton1Click:Connect(function()
 			break
 		end
 	end
-	local nextVal = thresholds[nextIdx]
-	SetAutoDeleteEvent:FireServer(nextVal)
+	SetAutoDeleteEvent:FireServer(thresholds[nextIdx])
 end)
 
 --------------------------------------------------------------------------------
--- 2. CRAFTING ALCHEMIST WINDOW
+-- 6. CRAFTING ALCHEMIST FORGE
 --------------------------------------------------------------------------------
 
-local craftWindow, craftContent = createModalWindow("⚗️ ALCHEMIST CRAFTING FORGE", 720, 500)
+local craftWindow, craftContent = createModal("⚗️ ALCHEMIST CRAFTING FORGE", 720, 500)
 
-local recipeListScroll = Instance.new("ScrollingFrame")
-recipeListScroll.Size = UDim2.new(0, 240, 1, 0)
-recipeListScroll.Position = UDim2.new(0, 0, 0, 0)
-recipeListScroll.BackgroundColor3 = Color3.fromRGB(12, 14, 20)
-recipeListScroll.BackgroundTransparency = 0.5
-recipeListScroll.ScrollBarThickness = 4
-addCorner(recipeListScroll, 8)
-recipeListScroll.Parent = craftContent
+local recipeScroll = Instance.new("ScrollingFrame")
+recipeScroll.Size = UDim2.new(0, 240, 1, 0)
+recipeScroll.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
+recipeScroll.BackgroundTransparency = 0.4
+recipeScroll.ScrollBarThickness = 4
+addCorner(recipeScroll, 8)
+recipeScroll.Parent = craftContent
 
-local recipeListLayout = Instance.new("UIListLayout")
-recipeListLayout.Padding = UDim.new(0, 8)
-recipeListLayout.Parent = recipeListScroll
+local recLayout = Instance.new("UIListLayout")
+recLayout.Padding = UDim.new(0, 8)
+recLayout.Parent = recipeScroll
+addPadding(recipeScroll, 6, 6, 6, 6)
 
--- Recipe Details & Ingredients Panel
 local craftDetail = Instance.new("Frame")
 craftDetail.Size = UDim2.new(1, -255, 1, 0)
 craftDetail.Position = UDim2.new(0, 255, 0, 0)
-craftDetail.BackgroundColor3 = Color3.fromRGB(14, 16, 22)
+craftDetail.BackgroundColor3 = Color3.fromRGB(16, 19, 28)
 addCorner(craftDetail, 8)
-addStroke(craftDetail, Color3.fromRGB(40, 48, 65), 1)
+addStroke(craftDetail, Color3.fromRGB(42, 50, 70), 1)
+addPadding(craftDetail, 12, 12, 12, 12)
 craftDetail.Parent = craftContent
 
-local craftResultName = Instance.new("TextLabel")
-craftResultName.Size = UDim2.new(1, -20, 0, 28)
-craftResultName.Position = UDim2.new(0, 10, 0, 12)
-craftResultName.BackgroundTransparency = 1
-craftResultName.Font = Enum.Font.GothamBlack
-craftResultName.TextSize = 18
-craftResultName.TextColor3 = Color3.fromRGB(255, 255, 255)
-craftResultName.Text = "Select a Recipe"
-craftResultName.Parent = craftDetail
+local craftTitle = Instance.new("TextLabel")
+craftTitle.Size = UDim2.new(1, 0, 0, 28)
+craftTitle.BackgroundTransparency = 1
+craftTitle.Font = Enum.Font.GothamBlack
+craftTitle.TextSize = 18
+craftTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+craftTitle.Text = "Select a Recipe"
+craftTitle.Parent = craftDetail
 
-local craftResultDesc = Instance.new("TextLabel")
-craftResultDesc.Size = UDim2.new(1, -20, 0, 40)
-craftResultDesc.Position = UDim2.new(0, 10, 0, 42)
-craftResultDesc.BackgroundTransparency = 1
-craftResultDesc.Font = Enum.Font.Gotham
-craftResultDesc.TextSize = 12
-craftResultDesc.TextColor3 = Color3.fromRGB(200, 205, 220)
-craftResultDesc.TextWrapped = true
-craftResultDesc.Text = "Combine rare auras to forge exclusive godly auras, luck gauntlets, and elixirs!"
-craftResultDesc.Parent = craftDetail
+local craftDesc = Instance.new("TextLabel")
+craftDesc.Size = UDim2.new(1, 0, 0, 44)
+craftDesc.Position = UDim2.new(0, 0, 0, 32)
+craftDesc.BackgroundTransparency = 1
+craftDesc.Font = Enum.Font.Gotham
+craftDesc.TextSize = 12
+craftDesc.TextColor3 = Color3.fromRGB(180, 185, 200)
+craftDesc.TextWrapped = true
+craftDesc.Text = "Combine auras to synthesize godly auras, luck gauntlets, and elixirs!"
+craftDesc.Parent = craftDetail
 
-local ingredientsHeader = Instance.new("TextLabel")
-ingredientsHeader.Size = UDim2.new(1, -20, 0, 20)
-ingredientsHeader.Position = UDim2.new(0, 10, 0, 92)
-ingredientsHeader.BackgroundTransparency = 1
-ingredientsHeader.Font = Enum.Font.GothamBold
-ingredientsHeader.TextSize = 13
-ingredientsHeader.TextColor3 = Color3.fromRGB(156, 163, 175)
-ingredientsHeader.Text = "REQUIRED INGREDIENTS:"
-ingredientsHeader.TextXAlignment = Enum.TextXAlignment.Left
-ingredientsHeader.Parent = craftDetail
+local ingHeader = Instance.new("TextLabel")
+ingHeader.Size = UDim2.new(1, 0, 0, 20)
+ingHeader.Position = UDim2.new(0, 0, 0, 82)
+ingHeader.BackgroundTransparency = 1
+ingHeader.Font = Enum.Font.GothamBold
+ingHeader.TextSize = 12
+ingHeader.TextColor3 = Color3.fromRGB(156, 163, 175)
+ingHeader.Text = "REQUIRED INGREDIENTS:"
+ingHeader.TextXAlignment = Enum.TextXAlignment.Left
+ingHeader.Parent = craftDetail
 
-local ingredientsFrame = Instance.new("Frame")
-ingredientsFrame.Size = UDim2.new(1, -20, 0, 180)
-ingredientsFrame.Position = UDim2.new(0, 10, 0, 118)
-ingredientsFrame.BackgroundTransparency = 1
-ingredientsFrame.Parent = craftDetail
+local ingListFrame = Instance.new("Frame")
+ingListFrame.Size = UDim2.new(1, 0, 0, 180)
+ingListFrame.Position = UDim2.new(0, 0, 0, 106)
+ingListFrame.BackgroundTransparency = 1
+ingListFrame.Parent = craftDetail
 
-local ingListLayout = Instance.new("UIListLayout")
-ingListLayout.Padding = UDim.new(0, 6)
-ingListLayout.Parent = ingredientsFrame
+local ingLayout = Instance.new("UIListLayout")
+ingLayout.Padding = UDim.new(0, 6)
+ingLayout.Parent = ingListFrame
 
-local craftActionBtn = Instance.new("TextButton")
-craftActionBtn.Size = UDim2.new(1, -20, 0, 44)
-craftActionBtn.Position = UDim2.new(0, 10, 1, -54)
-craftActionBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
-craftActionBtn.Font = Enum.Font.GothamBlack
-craftActionBtn.TextSize = 16
-craftActionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-craftActionBtn.Text = "⚗️ FORGE RECIPE"
-craftActionBtn.Visible = false
-addCorner(craftActionBtn, 10)
-craftActionBtn.Parent = craftDetail
+local forgeBtn = Instance.new("TextButton")
+forgeBtn.Size = UDim2.new(1, 0, 0, 46)
+forgeBtn.Position = UDim2.new(0, 0, 1, -48)
+forgeBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
+forgeBtn.Font = Enum.Font.GothamBlack
+forgeBtn.TextSize = 16
+forgeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+forgeBtn.Text = "⚗️ FORGE RECIPE"
+forgeBtn.Visible = false
+addCorner(forgeBtn, 10)
+forgeBtn.Parent = craftDetail
 
 local function refreshCraftingUI()
-	for _, child in ipairs(recipeListScroll:GetChildren()) do
+	for _, child in ipairs(recipeScroll:GetChildren()) do
 		if child:IsA("TextButton") then child:Destroy() end
 	end
 
 	for _, recipe in ipairs(AuraConfig.Recipes) do
 		local btn = Instance.new("TextButton")
-		btn.Size = UDim2.new(1, -8, 0, 52)
-		btn.BackgroundColor3 = Color3.fromRGB(22, 26, 36)
+		btn.Size = UDim2.new(1, 0, 0, 54)
+		btn.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
 		btn.Text = ""
 		addCorner(btn, 8)
 		addStroke(btn, recipe.Color, 1.2)
 
-		local title = Instance.new("TextLabel")
-		title.Size = UDim2.new(1, -12, 0, 22)
-		title.Position = UDim2.new(0, 8, 0, 6)
-		title.BackgroundTransparency = 1
-		title.Font = Enum.Font.GothamBold
-		title.TextSize = 13
-		title.TextColor3 = recipe.Color
-		title.TextXAlignment = Enum.TextXAlignment.Left
-		title.Text = recipe.Name
-		title.Parent = btn
+		local t = Instance.new("TextLabel")
+		t.Size = UDim2.new(1, -12, 0, 22)
+		t.Position = UDim2.new(0, 8, 0, 6)
+		t.BackgroundTransparency = 1
+		t.Font = Enum.Font.GothamBold
+		t.TextSize = 13
+		t.TextColor3 = recipe.Color
+		t.TextXAlignment = Enum.TextXAlignment.Left
+		t.Text = recipe.Name
+		t.Parent = btn
 
-		local typeLabel = Instance.new("TextLabel")
-		typeLabel.Size = UDim2.new(1, -12, 0, 16)
-		typeLabel.Position = UDim2.new(0, 8, 0, 28)
-		typeLabel.BackgroundTransparency = 1
-		typeLabel.Font = Enum.Font.Gotham
-		typeLabel.TextSize = 11
-		typeLabel.TextColor3 = Color3.fromRGB(156, 163, 175)
-		typeLabel.TextXAlignment = Enum.TextXAlignment.Left
-		typeLabel.Text = string.format("Type: %s", recipe.ResultType)
-		typeLabel.Parent = btn
+		local sub = Instance.new("TextLabel")
+		sub.Size = UDim2.new(1, -12, 0, 16)
+		sub.Position = UDim2.new(0, 8, 0, 28)
+		sub.BackgroundTransparency = 1
+		sub.Font = Enum.Font.Gotham
+		sub.TextSize = 11
+		sub.TextColor3 = Color3.fromRGB(156, 163, 175)
+		sub.TextXAlignment = Enum.TextXAlignment.Left
+		sub.Text = string.format("Reward: %s", recipe.ResultType)
+		sub.Parent = btn
 
 		btn.MouseButton1Click:Connect(function()
 			SoundEffects.Play("Click")
 			selectedCraftRecipe = recipe
-			craftResultName.Text = recipe.Name
-			craftResultName.TextColor3 = recipe.Color
-			craftResultDesc.Text = recipe.Description
+			craftTitle.Text = recipe.Name
+			craftTitle.TextColor3 = recipe.Color
+			craftDesc.Text = recipe.Description
 
-			-- Clear ingredients frame
-			for _, child in ipairs(ingredientsFrame:GetChildren()) do
-				if child:IsA("Frame") then child:Destroy() end
+			for _, c in ipairs(ingListFrame:GetChildren()) do
+				if c:IsA("Frame") then c:Destroy() end
 			end
 
 			local canCraftAll = true
@@ -3196,14 +3352,14 @@ local function refreshCraftingUI()
 				local auraColor = auraData and auraData.Color or Color3.fromRGB(220, 225, 240)
 
 				local row = Instance.new("Frame")
-				row.Size = UDim2.new(1, 0, 0, 32)
-				row.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
+				row.Size = UDim2.new(1, 0, 0, 34)
+				row.BackgroundColor3 = Color3.fromRGB(22, 26, 38)
 				addCorner(row, 6)
-				row.Parent = ingredientsFrame
+				row.Parent = ingListFrame
 
 				local nameLbl = Instance.new("TextLabel")
 				nameLbl.Size = UDim2.new(0.65, 0, 1, 0)
-				nameLbl.Position = UDim2.new(0, 8, 0, 0)
+				nameLbl.Position = UDim2.new(0, 10, 0, 0)
 				nameLbl.BackgroundTransparency = 1
 				nameLbl.Font = Enum.Font.GothamBold
 				nameLbl.TextSize = 12
@@ -3229,23 +3385,23 @@ local function refreshCraftingUI()
 				countLbl.Parent = row
 			end
 
-			craftActionBtn.Visible = true
+			forgeBtn.Visible = true
 			if canCraftAll then
-				craftActionBtn.Text = "⚗️ FORGE NOW"
-				craftActionBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+				forgeBtn.Text = "⚗️ FORGE NOW"
+				forgeBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 			else
-				craftActionBtn.Text = "Missing Auras"
-				craftActionBtn.BackgroundColor3 = Color3.fromRGB(55, 65, 80)
+				forgeBtn.Text = "Missing Ingredients"
+				forgeBtn.BackgroundColor3 = Color3.fromRGB(50, 60, 75)
 			end
 		end)
 
-		btn.Parent = recipeListScroll
+		btn.Parent = recipeScroll
 	end
 
-	recipeListScroll.CanvasSize = UDim2.new(0, 0, 0, recipeListLayout.AbsoluteContentSize.Y + 20)
+	recipeScroll.CanvasSize = UDim2.new(0, 0, 0, recLayout.AbsoluteContentSize.Y + 20)
 end
 
-craftActionBtn.MouseButton1Click:Connect(function()
+forgeBtn.MouseButton1Click:Connect(function()
 	if not selectedCraftRecipe then return end
 	SoundEffects.Play("Click")
 	local result = CraftAuraFunc:InvokeServer(selectedCraftRecipe.Id)
@@ -3257,29 +3413,30 @@ craftActionBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------------------------------------------------
--- 3. SHOP & GAMEPASSES WINDOW
+-- 7. SHOP & MONETIZATION (WITH FREE DEV TEST TOGGLE)
 --------------------------------------------------------------------------------
 
-local shopWindow, shopContent = createModalWindow("🛒 SHOP & PASSES (TEST MODE INCLUDED)", 700, 480)
+local shopWindow, shopContent = createModal("🛒 SHOP & PASSES (TEST MODE INCLUDED)", 700, 480)
 
 local shopScroll = Instance.new("ScrollingFrame")
 shopScroll.Size = UDim2.new(1, 0, 1, 0)
-shopScroll.BackgroundColor3 = Color3.fromRGB(12, 14, 20)
-shopScroll.BackgroundTransparency = 0.5
-shopScroll.ScrollBarThickness = 6
+shopScroll.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
+shopScroll.BackgroundTransparency = 0.4
+shopScroll.ScrollBarThickness = 5
 addCorner(shopScroll, 8)
 shopScroll.Parent = shopContent
 
 local shopLayout = Instance.new("UIListLayout")
 shopLayout.Padding = UDim.new(0, 10)
 shopLayout.Parent = shopScroll
+addPadding(shopScroll, 8, 8, 8, 8)
 
 local passItems = {
 	{
 		Id = "X2Luck",
 		Name = "🎲 x2 Luck Pass",
 		Color = Color3.fromRGB(74, 222, 128),
-		Desc = "Permanently doubles your chance for all rare, mythic, and godly auras!",
+		Desc = "Permanently doubles your chance of rolling rare, mythic, and godly auras!",
 		PerkKey = "X2Luck",
 	},
 	{
@@ -3293,14 +3450,14 @@ local passItems = {
 		Id = "ExtraStorage",
 		Name = "🎨 Aura Storage (+30)",
 		Color = Color3.fromRGB(56, 189, 248),
-		Desc = "Expands your aura inventory capacity by +30 slots to keep all your treasures!",
+		Desc = "Expands your inventory capacity by +30 slots to store all your treasures!",
 		PerkKey = "ExtraStorage",
 	},
 	{
 		Id = "VIP",
 		Name = "⭐ VIP Supporter Pass",
 		Color = Color3.fromRGB(245, 158, 11),
-		Desc = "Exclusive VIP Crown Aura + x1.5 Permanent Luck + Golden VIP Chat & Overhead Tag!",
+		Desc = "Exclusive VIP Crown Aura + x1.5 Permanent Luck + Golden Overhead & Chat Tag!",
 		PerkKey = "VIP",
 	},
 }
@@ -3312,14 +3469,14 @@ local function refreshShopUI()
 
 	for _, item in ipairs(passItems) do
 		local row = Instance.new("Frame")
-		row.Size = UDim2.new(1, -12, 0, 84)
+		row.Size = UDim2.new(1, 0, 0, 84)
 		row.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
 		addCorner(row, 8)
 		addStroke(row, item.Color, 1.2)
+		addPadding(row, 8, 8, 12, 12)
 
 		local nameLbl = Instance.new("TextLabel")
 		nameLbl.Size = UDim2.new(0.65, 0, 0, 24)
-		nameLbl.Position = UDim2.new(0, 12, 0, 10)
 		nameLbl.BackgroundTransparency = 1
 		nameLbl.Font = Enum.Font.GothamBlack
 		nameLbl.TextSize = 16
@@ -3330,7 +3487,7 @@ local function refreshShopUI()
 
 		local descLbl = Instance.new("TextLabel")
 		descLbl.Size = UDim2.new(0.65, 0, 0, 38)
-		descLbl.Position = UDim2.new(0, 12, 0, 36)
+		descLbl.Position = UDim2.new(0, 0, 0, 26)
 		descLbl.BackgroundTransparency = 1
 		descLbl.Font = Enum.Font.Gotham
 		descLbl.TextSize = 12
@@ -3340,10 +3497,9 @@ local function refreshShopUI()
 		descLbl.Text = item.Desc
 		descLbl.Parent = row
 
-		-- Test Toggle Button
 		local testBtn = Instance.new("TextButton")
 		testBtn.Size = UDim2.new(0, 170, 0, 42)
-		testBtn.Position = UDim2.new(1, -182, 0.5, -21)
+		testBtn.Position = UDim2.new(1, -170, 0.5, -21)
 		testBtn.Font = Enum.Font.GothamBold
 		testBtn.TextSize = 12
 		addCorner(testBtn, 8)
@@ -3374,72 +3530,74 @@ local function refreshShopUI()
 end
 
 --------------------------------------------------------------------------------
--- 4. SETTINGS WINDOW
+-- 8. SETTINGS WINDOW
 --------------------------------------------------------------------------------
 
-local settingsWindow, setContent = createModalWindow("⚙️ SETTINGS", 450, 260)
+local setWindow, setContent = createModal("⚙️ SETTINGS", 440, 240)
 
-local setFastRollBtn = Instance.new("TextButton")
-setFastRollBtn.Size = UDim2.new(1, 0, 0, 44)
-setFastRollBtn.Position = UDim2.new(0, 0, 0, 10)
-setFastRollBtn.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
-setFastRollBtn.Font = Enum.Font.GothamBold
-setFastRollBtn.TextSize = 14
-setFastRollBtn.TextColor3 = Color3.fromRGB(220, 225, 240)
-setFastRollBtn.Text = "⏩ Fast Roll Cutscene: OFF"
-addCorner(setFastRollBtn, 8)
-addStroke(setFastRollBtn, Color3.fromRGB(45, 52, 70), 1)
-setFastRollBtn.Parent = setContent
+local setFastBtn = Instance.new("TextButton")
+setFastBtn.Size = UDim2.new(1, 0, 0, 44)
+setFastBtn.Position = UDim2.new(0, 0, 0, 12)
+setFastBtn.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
+setFastBtn.Font = Enum.Font.GothamBold
+setFastBtn.TextSize = 14
+setFastBtn.TextColor3 = Color3.fromRGB(220, 225, 240)
+setFastBtn.Text = "⏩ Fast Roll Cutscene: OFF"
+addCorner(setFastBtn, 8)
+addStroke(setFastBtn, Color3.fromRGB(45, 55, 75), 1)
+setFastBtn.Parent = setContent
 
-local setAutoDeleteInfo = Instance.new("TextLabel")
-setAutoDeleteInfo.Size = UDim2.new(1, 0, 0, 44)
-setAutoDeleteInfo.Position = UDim2.new(0, 0, 0, 68)
-setAutoDeleteInfo.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
-setAutoDeleteInfo.Font = Enum.Font.GothamMedium
-setAutoDeleteInfo.TextSize = 13
-setAutoDeleteInfo.TextColor3 = Color3.fromRGB(200, 205, 220)
-setAutoDeleteInfo.Text = "Auto-Delete: Configure inside Inventory"
-addCorner(setAutoDeleteInfo, 8)
-setAutoDeleteInfo.Parent = setContent
+local setInfo = Instance.new("TextLabel")
+setInfo.Size = UDim2.new(1, 0, 0, 44)
+setInfo.Position = UDim2.new(0, 0, 0, 72)
+setInfo.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
+setInfo.Font = Enum.Font.GothamMedium
+setInfo.TextSize = 13
+setInfo.TextColor3 = Color3.fromRGB(180, 185, 200)
+setInfo.Text = "Auto-Delete threshold can be changed in Inventory."
+addCorner(setInfo, 8)
+setInfo.Parent = setContent
 
-setFastRollBtn.MouseButton1Click:Connect(function()
+setFastBtn.MouseButton1Click:Connect(function()
 	SoundEffects.Play("Click")
 	isFastRollOn = not isFastRollOn
 	if isFastRollOn then
-		setFastRollBtn.Text = "⏩ Fast Roll Cutscene: ON"
+		setFastBtn.Text = "⏩ Fast Roll Cutscene: ON"
 		fastRollBtn.Text = "⏩ FAST: ON"
 		fastRollBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
 	else
-		setFastRollBtn.Text = "⏩ Fast Roll Cutscene: OFF"
+		setFastBtn.Text = "⏩ Fast Roll Cutscene: OFF"
 		fastRollBtn.Text = "⏩ FAST: OFF"
-		fastRollBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
+		fastRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
 	end
 end)
 
 --------------------------------------------------------------------------------
--- 5. ROLL REVEAL CUTSCENE OVERLAY
+-- 9. CINEMATIC ROLL REVEAL CUTSCENE OVERLAY
 --------------------------------------------------------------------------------
 
 local cutsceneOverlay = Instance.new("Frame")
 cutsceneOverlay.Name = "CutsceneOverlay"
 cutsceneOverlay.Size = UDim2.new(1, 0, 1, 0)
-cutsceneOverlay.BackgroundColor3 = Color3.fromRGB(5, 6, 10)
-cutsceneOverlay.BackgroundTransparency = 0.35
+cutsceneOverlay.BackgroundColor3 = Color3.fromRGB(4, 5, 8)
+cutsceneOverlay.BackgroundTransparency = 0.3
 cutsceneOverlay.Visible = false
 cutsceneOverlay.Parent = screenGui
 
+-- Center Card
 local revealCard = Instance.new("Frame")
 revealCard.Name = "RevealCard"
+revealCard.AnchorPoint = Vector2.new(0.5, 0.5)
+revealCard.Position = UDim2.new(0.5, 0, 0.5, 0)
 revealCard.Size = UDim2.new(0, 360, 0, 420)
-revealCard.Position = UDim2.new(0.5, -180, 0.5, -210)
-revealCard.BackgroundColor3 = Color3.fromRGB(18, 20, 28)
-addCorner(revealCard, 16)
-local cardStroke = addStroke(revealCard, Color3.fromRGB(255, 255, 255), 2.5)
+revealCard.BackgroundColor3 = Color3.fromRGB(15, 18, 26)
+addCorner(revealCard, 18)
+local cardStroke = addStroke(revealCard, Color3.fromRGB(255, 255, 255), 3)
+addPadding(revealCard, 20, 20, 20, 20)
 revealCard.Parent = cutsceneOverlay
 
 local cardTierTag = Instance.new("TextLabel")
-cardTierTag.Size = UDim2.new(1, 0, 0, 28)
-cardTierTag.Position = UDim2.new(0, 0, 0, 24)
+cardTierTag.Size = UDim2.new(1, 0, 0, 24)
 cardTierTag.BackgroundTransparency = 1
 cardTierTag.Font = Enum.Font.GothamBlack
 cardTierTag.TextSize = 14
@@ -3448,18 +3606,18 @@ cardTierTag.Text = "[ TIER ]"
 cardTierTag.Parent = revealCard
 
 local cardName = Instance.new("TextLabel")
-cardName.Size = UDim2.new(1, -20, 0, 42)
-cardName.Position = UDim2.new(0, 10, 0, 52)
+cardName.Size = UDim2.new(1, 0, 0, 44)
+cardName.Position = UDim2.new(0, 0, 0, 28)
 cardName.BackgroundTransparency = 1
 cardName.Font = Enum.Font.GothamBlack
-cardName.TextSize = 28
+cardName.TextSize = 30
 cardName.TextColor3 = Color3.fromRGB(255, 255, 255)
 cardName.Text = "Aura Name"
 cardName.Parent = revealCard
 
 local cardRarity = Instance.new("TextLabel")
-cardRarity.Size = UDim2.new(1, 0, 0, 28)
-cardRarity.Position = UDim2.new(0, 0, 0, 100)
+cardRarity.Size = UDim2.new(1, 0, 0, 26)
+cardRarity.Position = UDim2.new(0, 0, 0, 78)
 cardRarity.BackgroundTransparency = 1
 cardRarity.Font = Enum.Font.GothamBold
 cardRarity.TextSize = 18
@@ -3468,21 +3626,21 @@ cardRarity.Text = "1 in 100,000"
 cardRarity.Parent = revealCard
 
 local cardDesc = Instance.new("TextLabel")
-cardDesc.Size = UDim2.new(1, -40, 0, 100)
-cardDesc.Position = UDim2.new(0, 20, 0, 140)
+cardDesc.Size = UDim2.new(1, 0, 0, 110)
+cardDesc.Position = UDim2.new(0, 0, 0, 116)
 cardDesc.BackgroundTransparency = 1
 cardDesc.Font = Enum.Font.Gotham
 cardDesc.TextSize = 13
-cardDesc.TextColor3 = Color3.fromRGB(180, 185, 200)
+cardDesc.TextColor3 = Color3.fromRGB(180, 185, 205)
 cardDesc.TextWrapped = true
-cardDesc.Text = "Aura description..."
+cardDesc.Text = "Aura lore description..."
 cardDesc.Parent = revealCard
 
 local cardEquipBtn = Instance.new("TextButton")
-cardEquipBtn.Size = UDim2.new(0, 150, 0, 44)
-cardEquipBtn.Position = UDim2.new(0.5, -160, 1, -64)
+cardEquipBtn.Size = UDim2.new(0.48, 0, 0, 44)
+cardEquipBtn.Position = UDim2.new(0, 0, 1, -44)
 cardEquipBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
-cardEquipBtn.Font = Enum.Font.GothamBold
+cardEquipBtn.Font = Enum.Font.GothamBlack
 cardEquipBtn.TextSize = 15
 cardEquipBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 cardEquipBtn.Text = "EQUIP"
@@ -3490,10 +3648,10 @@ addCorner(cardEquipBtn, 10)
 cardEquipBtn.Parent = revealCard
 
 local cardCloseBtn = Instance.new("TextButton")
-cardCloseBtn.Size = UDim2.new(0, 150, 0, 44)
-cardCloseBtn.Position = UDim2.new(0.5, 10, 1, -64)
+cardCloseBtn.Size = UDim2.new(0.48, 0, 0, 44)
+cardCloseBtn.Position = UDim2.new(0.52, 0, 1, -44)
 cardCloseBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
-cardCloseBtn.Font = Enum.Font.GothamBold
+cardCloseBtn.Font = Enum.Font.GothamBlack
 cardCloseBtn.TextSize = 15
 cardCloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 cardCloseBtn.Text = "COLLECT"
@@ -3504,14 +3662,13 @@ local currentRolledAura = nil
 
 local function showCutscene(auraData)
 	currentRolledAura = auraData
-	cardTierTag.Text = string.format("[ %s ]", auraData.Tier:upper())
+	cardTierTag.Text = string.format("[ ✦ %s ✦ ]", auraData.Tier:upper())
 	cardName.Text = auraData.Name
 	cardName.TextColor3 = auraData.Color
 	cardRarity.Text = AuraConfig.FormatRarity(auraData.Rarity or 0)
 	cardDesc.Text = auraData.Description
 	cardStroke.Color = auraData.Color
 
-	-- Play sound matching rarity tier
 	if auraData.Rarity >= 250000 then
 		SoundEffects.Play("RevealGodly")
 	elseif auraData.Rarity >= 10000 then
@@ -3526,9 +3683,9 @@ local function showCutscene(auraData)
 
 	cutsceneOverlay.Visible = true
 
-	-- Entrance animation
-	revealCard.Size = UDim2.new(0, 100, 0, 100)
-	TweenService:Create(revealCard, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+	-- Dramatic Spring Bounce-in
+	revealCard.Size = UDim2.new(0, 80, 0, 90)
+	TweenService:Create(revealCard, TweenInfo.new(0.38, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
 		Size = UDim2.new(0, 360, 0, 420),
 	}):Play()
 end
@@ -3547,16 +3704,17 @@ cardCloseBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------------------------------------------------
--- 6. GLOBAL ANNOUNCEMENT BANNER
+-- 10. GLOBAL SERVER ANNOUNCEMENT BANNER
 --------------------------------------------------------------------------------
 
 local banner = Instance.new("Frame")
 banner.Name = "GlobalBanner"
-banner.Size = UDim2.new(0, 520, 0, 44)
-banner.Position = UDim2.new(0.5, -260, 0, -60) -- Start off-screen
-banner.BackgroundColor3 = Color3.fromRGB(24, 28, 42)
+banner.AnchorPoint = Vector2.new(0.5, 0)
+banner.Size = UDim2.new(0, 540, 0, 46)
+banner.Position = UDim2.new(0.5, 0, 0, -65)
+banner.BackgroundColor3 = Color3.fromRGB(20, 24, 38)
 banner.BackgroundTransparency = 0.1
-addCorner(banner, 10)
+addCorner(banner, 12)
 local bannerStroke = addStroke(banner, Color3.fromRGB(250, 204, 21), 2)
 banner.Parent = screenGui
 
@@ -3564,7 +3722,7 @@ local bannerText = Instance.new("TextLabel")
 bannerText.Size = UDim2.new(1, -20, 1, 0)
 bannerText.Position = UDim2.new(0, 10, 0, 0)
 bannerText.BackgroundTransparency = 1
-bannerText.Font = Enum.Font.GothamBold
+bannerText.Font = Enum.Font.GothamBlack
 bannerText.TextSize = 14
 bannerText.TextColor3 = Color3.fromRGB(255, 235, 120)
 bannerText.Text = "🎉 Player rolled MYTHIC!"
@@ -3576,45 +3734,42 @@ GlobalAnnouncementEvent.OnClientEvent:Connect(function(info)
 	bannerText.Text = string.format("🎉 %s rolled %s (%s)!", info.PlayerName, info.AuraName:upper(), AuraConfig.FormatRarity(info.Rarity))
 	bannerText.TextColor3 = tierColor
 
-	-- Slide down
 	TweenService:Create(banner, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-		Position = UDim2.new(0.5, -260, 0, 68),
+		Position = UDim2.new(0.5, 0, 0, 68),
 	}):Play()
 
 	task.delay(4.5, function()
 		TweenService:Create(banner, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
-			Position = UDim2.new(0.5, -260, 0, -60),
+			Position = UDim2.new(0.5, 0, 0, -65),
 		}):Play()
 	end)
 end)
 
 --------------------------------------------------------------------------------
--- 7. ROLL TRIGGER & BUTTON EVENTS
+-- 11. ROLL EXECUTION & AUTOMATION
 --------------------------------------------------------------------------------
 
 local function doRoll()
 	if isRolling then return end
 	isRolling = true
 
-	-- Button bounce
-	TweenService:Create(rollButton, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-		Size = UDim2.new(0, 195, 0, 56),
+	TweenService:Create(rollButton, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+		Size = UDim2.new(0, 225, 0, 58),
 	}):Play()
 
 	SoundEffects.Play("Spin")
 
 	local result = RollRequestFunc:InvokeServer(isFastRollOn)
 
-	task.wait(0.12)
+	task.wait(0.1)
 	TweenService:Create(rollButton, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-		Size = UDim2.new(0, 210, 0, 62),
+		Size = UDim2.new(0, 240, 0, 64),
 	}):Play()
 
 	if result and result.Success and result.Aura then
 		if not isFastRollOn then
 			showCutscene(result.Aura)
 		else
-			-- Fast roll: play sound only
 			SoundEffects.Play("RevealCommon")
 		end
 	end
@@ -3626,18 +3781,19 @@ rollButton.MouseButton1Click:Connect(function()
 	doRoll()
 end)
 
--- Auto Roll Loop
 autoRollBtn.MouseButton1Click:Connect(function()
 	SoundEffects.Play("Click")
 	isAutoRollOn = not isAutoRollOn
 	if isAutoRollOn then
 		autoRollBtn.Text = "⚡ AUTO: ON"
 		autoRollBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
-		autoRollBtn.BackgroundColor3 = Color3.fromRGB(20, 55, 35)
+		autoRollBtn.BackgroundColor3 = Color3.fromRGB(22, 50, 35)
+		autoStroke.Color = Color3.fromRGB(74, 222, 128)
 	else
 		autoRollBtn.Text = "⚡ AUTO: OFF"
-		autoRollBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
-		autoRollBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
+		autoRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
+		autoRollBtn.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
+		autoStroke.Color = Color3.fromRGB(45, 52, 70)
 	end
 end)
 
@@ -3656,11 +3812,11 @@ fastRollBtn.MouseButton1Click:Connect(function()
 	if isFastRollOn then
 		fastRollBtn.Text = "⏩ FAST: ON"
 		fastRollBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
-		setFastRollBtn.Text = "⏩ Fast Roll Cutscene: ON"
+		setFastBtn.Text = "⏩ Fast Roll Cutscene: ON"
 	else
 		fastRollBtn.Text = "⏩ FAST: OFF"
-		fastRollBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
-		setFastRollBtn.Text = "⏩ Fast Roll Cutscene: OFF"
+		fastRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
+		setFastBtn.Text = "⏩ Fast Roll Cutscene: OFF"
 	end
 end)
 
@@ -3669,9 +3825,8 @@ unequipBtn.MouseButton1Click:Connect(function()
 	EquipAuraEvent:FireServer("None")
 end)
 
--- Navigation button clicks
 navInventoryBtn.MouseButton1Click:Connect(function()
-	toggleModal(inventoryWindow)
+	toggleModal(invWindow)
 	refreshInventoryUI()
 end)
 
@@ -3686,22 +3841,18 @@ navShopBtn.MouseButton1Click:Connect(function()
 end)
 
 navSettingsBtn.MouseButton1Click:Connect(function()
-	toggleModal(settingsWindow)
+	toggleModal(setWindow)
 end)
 
--- 3D World ProximityPrompt Trigger for Crafting Altar
-local ProximityPromptService = game:GetService("ProximityPromptService")
 ProximityPromptService.PromptTriggered:Connect(function(prompt, player)
 	if prompt.Name == "CraftingPrompt" and player == LocalPlayer then
-		if not craftWindow.Visible then
-			toggleModal(craftWindow)
-		end
+		if not craftWindow.Visible then toggleModal(craftWindow) end
 		refreshCraftingUI()
 	end
 end)
 
 --------------------------------------------------------------------------------
--- 8. DATA SYNC RECEIVER
+-- 12. DATA SYNCHRONIZATION
 --------------------------------------------------------------------------------
 
 DataSyncEvent.OnClientEvent:Connect(function(data)
@@ -3709,12 +3860,10 @@ DataSyncEvent.OnClientEvent:Connect(function(data)
 		localData[k] = v
 	end
 
-	-- Update Top Stats
 	rollsLabel.Text = string.format("🎲 Rolls: %s", AuraConfig.FormatNumber(localData.Rolls or 0))
 	luckLabel.Text = string.format("🍀 Luck: x%.1f", localData.CurrentLuck or 1.0)
 	coinsLabel.Text = string.format("🪙 %s", AuraConfig.FormatNumber(localData.Coins or 0))
 
-	-- Update Potion label
 	if localData.PotionExpiry and localData.PotionExpiry > os.time() then
 		local remaining = localData.PotionExpiry - os.time()
 		local mins = math.floor(remaining / 60)
@@ -3726,41 +3875,42 @@ DataSyncEvent.OnClientEvent:Connect(function(data)
 		potionLabel.TextColor3 = Color3.fromRGB(156, 163, 175)
 	end
 
-	-- Update Equipped Card
 	local eqAura = AuraConfig.Auras[localData.EquippedAura]
 	if eqAura then
-		equippedTitle.Text = eqAura.Name
-		equippedTitle.TextColor3 = eqAura.Color
-		equippedSubtitle.Text = AuraConfig.FormatRarity(eqAura.Rarity or 0)
+		eqName.Text = eqAura.Name
+		eqName.TextColor3 = eqAura.Color
+		eqSub.Text = AuraConfig.FormatRarity(eqAura.Rarity or 0)
+		eqStroke.Color = eqAura.Color
 	else
-		equippedTitle.Text = "Aura: None"
-		equippedTitle.TextColor3 = Color3.fromRGB(220, 225, 235)
-		equippedSubtitle.Text = "Not Equipped"
+		eqName.Text = "Aura: None"
+		eqName.TextColor3 = Color3.fromRGB(220, 225, 235)
+		eqSub.Text = "Not Equipped"
+		eqStroke.Color = Color3.fromRGB(45, 55, 78)
 	end
 
-	-- Update Auto Delete Threshold Text
 	local autoDelText = thresholdNames[localData.AutoDeleteThreshold or 0] or "None"
 	autoDeleteBtn.Text = "Auto-Delete: " .. autoDelText
 
-	-- Refresh open modal if visible
-	if inventoryWindow.Visible then refreshInventoryUI() end
+	if invWindow.Visible then refreshInventoryUI() end
 	if craftWindow.Visible then refreshCraftingUI() end
 	if shopWindow.Visible then refreshShopUI() end
 end)
 
-print("[Sols RNG] Client GUI initialized!")
+print("[Sols RNG] Professional AAA Client GUI loaded successfully!")
 ]===]
 else
 	if existingClientScript then existingClientScript:Destroy() end
 	local clientScript = Instance.new("LocalScript")
 	clientScript.Name = "RNGClient"
 	clientScript.Source = [===[-- RNGClient.client.lua
--- Client controller and complete GUI manager for Sol's RNG game.
--- Manages HUD, Rolling Animations, Cutscenes, Inventory, Crafting, Shop & Passes, and Settings.
+-- Professional, high-end User Interface (UI) controller for Sol's RNG.
+-- Features Glassmorphic Dark Design, Responsive Scaling (Mobile/PC/Tablet),
+-- Spring Tweens, Addictive Cutscenes, Full Inventory, Alchemist Crafting Forge, and Monetization.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local ProximityPromptService = game:GetService("ProximityPromptService")
 local SoundService = game:GetService("SoundService")
 
 local LocalPlayer = Players.LocalPlayer
@@ -3784,7 +3934,7 @@ local ToggleTestPerkEvent = EventsFolder:WaitForChild("ToggleTestPerk")
 local DataSyncEvent = EventsFolder:WaitForChild("DataSync")
 local GlobalAnnouncementEvent = EventsFolder:WaitForChild("GlobalAnnouncement")
 
--- Local Player Cache State
+-- Local Player State Cache
 local localData = {
 	Rolls = 0,
 	Coins = 100,
@@ -3806,9 +3956,10 @@ local isFastRollOn = false
 local isRolling = false
 local selectedInventoryAura = nil
 local selectedCraftRecipe = nil
+local activeModal = nil
 
 --------------------------------------------------------------------------------
--- UI CONSTRUCTION & INSTANCES
+-- UI ROOT & UTILITIES
 --------------------------------------------------------------------------------
 
 local screenGui = script.Parent
@@ -3820,264 +3971,335 @@ if not screenGui:IsA("ScreenGui") then
 	screenGui.Parent = PlayerGui
 end
 
--- Helper: Rounded corner
 local function addCorner(parent, radius)
 	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, radius or 10)
+	corner.CornerRadius = UDim.new(0, radius or 12)
 	corner.Parent = parent
 	return corner
 end
 
--- Helper: Stroke outline
-local function addStroke(parent, color, thickness)
+local function addStroke(parent, color, thickness, transparency)
 	local stroke = Instance.new("UIStroke")
-	stroke.Color = color or Color3.fromRGB(60, 65, 80)
+	stroke.Color = color or Color3.fromRGB(45, 52, 70)
 	stroke.Thickness = thickness or 1.5
+	stroke.Transparency = transparency or 0.2
 	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	stroke.Parent = parent
 	return stroke
 end
 
--- Top HUD Container
+local function addPadding(parent, top, bottom, left, right)
+	local pad = Instance.new("UIPadding")
+	pad.PaddingTop = UDim.new(0, top or 8)
+	pad.PaddingBottom = UDim.new(0, bottom or 8)
+	pad.PaddingLeft = UDim.new(0, left or 12)
+	pad.PaddingRight = UDim.new(0, right or 12)
+	pad.Parent = parent
+	return pad
+end
+
+--------------------------------------------------------------------------------
+-- 1. TOP HUD (RESPONSIVE CAPSULE)
+--------------------------------------------------------------------------------
+
 local topHud = Instance.new("Frame")
 topHud.Name = "TopHUD"
-topHud.Size = UDim2.new(0, 720, 0, 48)
-topHud.Position = UDim2.new(0.5, -360, 0, 14)
-topHud.BackgroundColor3 = Color3.fromRGB(18, 20, 28)
+topHud.AnchorPoint = Vector2.new(0.5, 0)
+topHud.Position = UDim2.new(0.5, 0, 0, 12)
+topHud.Size = UDim2.new(0.85, 0, 0, 46)
+topHud.BackgroundColor3 = Color3.fromRGB(13, 15, 22)
 topHud.BackgroundTransparency = 0.15
-addCorner(topHud, 12)
-addStroke(topHud, Color3.fromRGB(45, 52, 70), 1.5)
+addCorner(topHud, 14)
+addStroke(topHud, Color3.fromRGB(45, 55, 78), 1.5)
+addPadding(topHud, 4, 4, 16, 16)
 topHud.Parent = screenGui
 
-local topListLayout = Instance.new("UIListLayout")
-topListLayout.FillDirection = Enum.FillDirection.Horizontal
-topListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-topListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-topListLayout.Padding = UDim.new(0, 20)
-topListLayout.Parent = topHud
+local topSizeConstraint = Instance.new("UISizeConstraint")
+topSizeConstraint.MaxSize = Vector2.new(700, 48)
+topSizeConstraint.MinSize = Vector2.new(320, 40)
+topSizeConstraint.Parent = topHud
 
--- Top Stat Labels
-local function createTopStat(icon, defaultText, color)
+local topLayout = Instance.new("UIListLayout")
+topLayout.FillDirection = Enum.FillDirection.Horizontal
+topLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+topLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+topLayout.Padding = UDim.new(0, 16)
+topLayout.Parent = topHud
+
+local function createTopStatPill(icon, defaultText, color)
+	local pill = Instance.new("Frame")
+	pill.Size = UDim2.new(0, 130, 0, 32)
+	pill.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
+	pill.BackgroundTransparency = 0.4
+	addCorner(pill, 8)
+	addStroke(pill, Color3.fromRGB(35, 42, 60), 1)
+
 	local label = Instance.new("TextLabel")
-	label.Size = UDim2.new(0, 140, 1, 0)
+	label.Size = UDim2.new(1, 0, 1, 0)
 	label.BackgroundTransparency = 1
 	label.Font = Enum.Font.GothamBold
-	label.TextSize = 15
+	label.TextSize = 13
 	label.TextColor3 = color
 	label.Text = icon .. " " .. defaultText
 	label.TextXAlignment = Enum.TextXAlignment.Center
-	label.Parent = topHud
-	return label
+	label.Parent = pill
+
+	pill.Parent = topHud
+	return label, pill
 end
 
-local rollsLabel = createTopStat("🎲", "Rolls: 0", Color3.fromRGB(220, 225, 240))
-local luckLabel = createTopStat("🍀", "Luck: x1.0", Color3.fromRGB(74, 222, 128))
-local coinsLabel = createTopStat("🪙", "Coins: 100", Color3.fromRGB(250, 204, 21))
-local potionLabel = createTopStat("⏳", "Potion: None", Color3.fromRGB(56, 189, 248))
+local rollsLabel, rollsPill = createTopStatPill("🎲", "Rolls: 0", Color3.fromRGB(220, 225, 240))
+local luckLabel, luckPill = createTopStatPill("🍀", "Luck: x1.0", Color3.fromRGB(74, 222, 128))
+local coinsLabel, coinsPill = createTopStatPill("🪙", "Coins: 100", Color3.fromRGB(250, 204, 21))
+local potionLabel, potionPill = createTopStatPill("⏳", "Pot: None", Color3.fromRGB(56, 189, 248))
 
--- Bottom Center Controls Container
+--------------------------------------------------------------------------------
+-- 2. BOTTOM CONTROLS & MASSIVE ROLL BUTTON
+--------------------------------------------------------------------------------
+
 local bottomControls = Instance.new("Frame")
 bottomControls.Name = "BottomControls"
-bottomControls.Size = UDim2.new(0, 400, 0, 100)
-bottomControls.Position = UDim2.new(0.5, -200, 1, -115)
+bottomControls.AnchorPoint = Vector2.new(0.5, 1)
+bottomControls.Position = UDim2.new(0.5, 0, 1, -18)
+bottomControls.Size = UDim2.new(0, 460, 0, 110)
 bottomControls.BackgroundTransparency = 1
 bottomControls.Parent = screenGui
 
--- Big ROLL Button
+-- Main ROLL Button (Pulsing Centerpiece)
 local rollButton = Instance.new("TextButton")
 rollButton.Name = "RollButton"
-rollButton.Size = UDim2.new(0, 210, 0, 62)
-rollButton.Position = UDim2.new(0.5, -105, 0, 0)
+rollButton.AnchorPoint = Vector2.new(0.5, 0)
+rollButton.Position = UDim2.new(0.5, 0, 0, 0)
+rollButton.Size = UDim2.new(0, 240, 0, 64)
 rollButton.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
 rollButton.Font = Enum.Font.GothamBlack
-rollButton.TextSize = 24
+rollButton.TextSize = 26
 rollButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 rollButton.Text = "🎲 ROLL"
-addCorner(rollButton, 14)
-addStroke(rollButton, Color3.fromRGB(96, 165, 250), 2)
-rollButton.Parent = bottomControls
+addCorner(rollButton, 16)
+local rollStroke = addStroke(rollButton, Color3.fromRGB(96, 165, 250), 2.5)
 
--- Roll Button Gradient
-local rollGradient = Instance.new("UIGradient")
-rollGradient.Color = ColorSequence.new({
+local rollGrad = Instance.new("UIGradient")
+rollGrad.Color = ColorSequence.new({
 	ColorSequenceKeypoint.new(0, Color3.fromRGB(59, 130, 246)),
 	ColorSequenceKeypoint.new(1, Color3.fromRGB(29, 78, 216)),
 })
-rollGradient.Rotation = 45
-rollGradient.Parent = rollButton
+rollGrad.Rotation = 45
+rollGrad.Parent = rollButton
+rollButton.Parent = bottomControls
 
--- Auto Roll Button
+-- Secondary Controls (Auto Roll & Fast Roll Pills)
+local secondaryBar = Instance.new("Frame")
+secondaryBar.Size = UDim2.new(0, 320, 0, 34)
+secondaryBar.AnchorPoint = Vector2.new(0.5, 1)
+secondaryBar.Position = UDim2.new(0.5, 0, 1, 0)
+secondaryBar.BackgroundTransparency = 1
+secondaryBar.Parent = bottomControls
+
+local secLayout = Instance.new("UIListLayout")
+secLayout.FillDirection = Enum.FillDirection.Horizontal
+secLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+secLayout.Padding = UDim.new(0, 12)
+secLayout.Parent = secondaryBar
+
 local autoRollBtn = Instance.new("TextButton")
-autoRollBtn.Name = "AutoRollButton"
-autoRollBtn.Size = UDim2.new(0, 130, 0, 32)
-autoRollBtn.Position = UDim2.new(0.5, -140, 1, -34)
-autoRollBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
+autoRollBtn.Name = "AutoRollBtn"
+autoRollBtn.Size = UDim2.new(0, 150, 1, 0)
+autoRollBtn.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
 autoRollBtn.Font = Enum.Font.GothamBold
-autoRollBtn.TextSize = 13
-autoRollBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
+autoRollBtn.TextSize = 12
+autoRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
 autoRollBtn.Text = "⚡ AUTO: OFF"
 addCorner(autoRollBtn, 8)
-addStroke(autoRollBtn, Color3.fromRGB(55, 62, 80), 1)
-autoRollBtn.Parent = bottomControls
+local autoStroke = addStroke(autoRollBtn, Color3.fromRGB(45, 52, 70), 1.2)
+autoRollBtn.Parent = secondaryBar
 
--- Fast Roll Button
 local fastRollBtn = Instance.new("TextButton")
-fastRollBtn.Name = "FastRollButton"
-fastRollBtn.Size = UDim2.new(0, 130, 0, 32)
-fastRollBtn.Position = UDim2.new(0.5, 10, 1, -34)
-fastRollBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
+fastRollBtn.Name = "FastRollBtn"
+fastRollBtn.Size = UDim2.new(0, 150, 1, 0)
+fastRollBtn.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
 fastRollBtn.Font = Enum.Font.GothamBold
-fastRollBtn.TextSize = 13
-fastRollBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
+fastRollBtn.TextSize = 12
+fastRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
 fastRollBtn.Text = "⏩ FAST: OFF"
 addCorner(fastRollBtn, 8)
-addStroke(fastRollBtn, Color3.fromRGB(55, 62, 80), 1)
-fastRollBtn.Parent = bottomControls
+local fastStroke = addStroke(fastRollBtn, Color3.fromRGB(45, 52, 70), 1.2)
+fastRollBtn.Parent = secondaryBar
 
--- Left Navigation Bar
-local leftNav = Instance.new("Frame")
-leftNav.Name = "LeftNav"
-leftNav.Size = UDim2.new(0, 68, 0, 280)
-leftNav.Position = UDim2.new(0, 16, 0.5, -140)
-leftNav.BackgroundColor3 = Color3.fromRGB(18, 20, 28)
-leftNav.BackgroundTransparency = 0.2
-addCorner(leftNav, 14)
-addStroke(leftNav, Color3.fromRGB(45, 52, 70), 1.5)
-leftNav.Parent = screenGui
+-- Subtle breathing animation on Roll Button
+task.spawn(function()
+	while true do
+		TweenService:Create(rollStroke, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+			Color = Color3.fromRGB(147, 197, 253),
+		}):Play()
+		task.wait(1.2)
+		TweenService:Create(rollStroke, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+			Color = Color3.fromRGB(59, 130, 246),
+		}):Play()
+		task.wait(1.2)
+	end
+end)
 
-local navListLayout = Instance.new("UIListLayout")
-navListLayout.FillDirection = Enum.FillDirection.Vertical
-navListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-navListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-navListLayout.Padding = UDim.new(0, 12)
-navListLayout.Parent = leftNav
+--------------------------------------------------------------------------------
+-- 3. LEFT DOCK NAVIGATION BAR
+--------------------------------------------------------------------------------
 
-local function createNavButton(name, icon, tooltip)
+local leftDock = Instance.new("Frame")
+leftDock.Name = "LeftDock"
+leftDock.AnchorPoint = Vector2.new(0, 0.5)
+leftDock.Position = UDim2.new(0, 14, 0.5, 0)
+leftDock.Size = UDim2.new(0, 62, 0, 260)
+leftDock.BackgroundColor3 = Color3.fromRGB(13, 15, 22)
+leftDock.BackgroundTransparency = 0.15
+addCorner(leftDock, 14)
+addStroke(leftDock, Color3.fromRGB(45, 55, 78), 1.5)
+addPadding(leftDock, 8, 8, 4, 4)
+leftDock.Parent = screenGui
+
+local dockLayout = Instance.new("UIListLayout")
+dockLayout.FillDirection = Enum.FillDirection.Vertical
+dockLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+dockLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+dockLayout.Padding = UDim.new(0, 10)
+dockLayout.Parent = leftDock
+
+local function createDockButton(name, icon, tooltipText)
 	local btn = Instance.new("TextButton")
 	btn.Name = name .. "Btn"
-	btn.Size = UDim2.new(0, 52, 0, 52)
-	btn.BackgroundColor3 = Color3.fromRGB(28, 33, 46)
+	btn.Size = UDim2.new(0, 48, 0, 48)
+	btn.BackgroundColor3 = Color3.fromRGB(22, 26, 38)
 	btn.Font = Enum.Font.GothamBold
 	btn.TextSize = 22
 	btn.Text = icon
 	addCorner(btn, 10)
-	addStroke(btn, Color3.fromRGB(50, 58, 78), 1.2)
-	btn.Parent = leftNav
+	local stroke = addStroke(btn, Color3.fromRGB(45, 52, 72), 1)
+
+	btn.MouseEnter:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.15), { BackgroundColor3 = Color3.fromRGB(37, 99, 235) }):Play()
+		stroke.Color = Color3.fromRGB(96, 165, 250)
+	end)
+	btn.MouseLeave:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.15), { BackgroundColor3 = Color3.fromRGB(22, 26, 38) }):Play()
+		stroke.Color = Color3.fromRGB(45, 52, 72)
+	end)
+
+	btn.Parent = leftDock
 	return btn
 end
 
-local navInventoryBtn = createNavButton("Inventory", "🎒", "Inventory")
-local navCraftingBtn = createNavButton("Crafting", "⚗️", "Crafting")
-local navShopBtn = createNavButton("Shop", "🛒", "Shop & Passes")
-local navSettingsBtn = createNavButton("Settings", "⚙️", "Settings")
+local navInventoryBtn = createDockButton("Inventory", "🎒", "Inventory")
+local navCraftingBtn = createDockButton("Crafting", "⚗️", "Crafting Forge")
+local navShopBtn = createDockButton("Shop", "🛒", "Shop & Passes")
+local navSettingsBtn = createDockButton("Settings", "⚙️", "Settings")
 
--- Bottom Left: Equipped Aura Card
+--------------------------------------------------------------------------------
+-- 4. BOTTOM-LEFT EQUIPPED AURA SHOWCASE CARD
+--------------------------------------------------------------------------------
+
 local equippedCard = Instance.new("Frame")
 equippedCard.Name = "EquippedCard"
-equippedCard.Size = UDim2.new(0, 210, 0, 62)
-equippedCard.Position = UDim2.new(0, 16, 1, -78)
-equippedCard.BackgroundColor3 = Color3.fromRGB(18, 20, 28)
+equippedCard.AnchorPoint = Vector2.new(0, 1)
+equippedCard.Position = UDim2.new(0, 14, 1, -14)
+equippedCard.Size = UDim2.new(0, 200, 0, 60)
+equippedCard.BackgroundColor3 = Color3.fromRGB(13, 15, 22)
 equippedCard.BackgroundTransparency = 0.2
 addCorner(equippedCard, 10)
-addStroke(equippedCard, Color3.fromRGB(45, 52, 70), 1.5)
+local eqStroke = addStroke(equippedCard, Color3.fromRGB(45, 55, 78), 1.2)
+addPadding(equippedCard, 8, 8, 12, 8)
 equippedCard.Parent = screenGui
 
-local equippedTitle = Instance.new("TextLabel")
-equippedTitle.Size = UDim2.new(1, -65, 0, 20)
-equippedTitle.Position = UDim2.new(0, 12, 0, 10)
-equippedTitle.BackgroundTransparency = 1
-equippedTitle.Font = Enum.Font.GothamBold
-equippedTitle.TextSize = 14
-equippedTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-equippedTitle.TextXAlignment = Enum.TextXAlignment.Left
-equippedTitle.Text = "Aura: None"
-equippedTitle.Parent = equippedCard
+local eqName = Instance.new("TextLabel")
+eqName.Size = UDim2.new(1, -40, 0, 20)
+eqName.Position = UDim2.new(0, 0, 0, 2)
+eqName.BackgroundTransparency = 1
+eqName.Font = Enum.Font.GothamBlack
+eqName.TextSize = 14
+eqName.TextColor3 = Color3.fromRGB(240, 243, 250)
+eqName.TextXAlignment = Enum.TextXAlignment.Left
+eqName.Text = "Aura: None"
+eqName.Parent = equippedCard
 
-local equippedSubtitle = Instance.new("TextLabel")
-equippedSubtitle.Size = UDim2.new(1, -65, 0, 16)
-equippedSubtitle.Position = UDim2.new(0, 12, 0, 32)
-equippedSubtitle.BackgroundTransparency = 1
-equippedSubtitle.Font = Enum.Font.GothamMedium
-equippedSubtitle.TextSize = 12
-equippedSubtitle.TextColor3 = Color3.fromRGB(156, 163, 175)
-equippedSubtitle.TextXAlignment = Enum.TextXAlignment.Left
-equippedSubtitle.Text = "Not Equipped"
-equippedSubtitle.Parent = equippedCard
+local eqSub = Instance.new("TextLabel")
+eqSub.Size = UDim2.new(1, -40, 0, 16)
+eqSub.Position = UDim2.new(0, 0, 0, 24)
+eqSub.BackgroundTransparency = 1
+eqSub.Font = Enum.Font.GothamBold
+eqSub.TextSize = 11
+eqSub.TextColor3 = Color3.fromRGB(156, 163, 175)
+eqSub.TextXAlignment = Enum.TextXAlignment.Left
+eqSub.Text = "Not Equipped"
+eqSub.Parent = equippedCard
 
 local unequipBtn = Instance.new("TextButton")
-unequipBtn.Name = "UnequipBtn"
-unequipBtn.Size = UDim2.new(0, 42, 0, 42)
-unequipBtn.Position = UDim2.new(1, -52, 0.5, -21)
-unequipBtn.BackgroundColor3 = Color3.fromRGB(35, 40, 55)
+unequipBtn.Size = UDim2.new(0, 32, 0, 32)
+unequipBtn.Position = UDim2.new(1, -34, 0.5, -16)
+unequipBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
 unequipBtn.Font = Enum.Font.GothamBold
 unequipBtn.TextSize = 12
-unequipBtn.TextColor3 = Color3.fromRGB(239, 68, 68)
+unequipBtn.TextColor3 = Color3.fromRGB(248, 113, 113)
 unequipBtn.Text = "✕"
-addCorner(unequipBtn, 8)
+addCorner(unequipBtn, 6)
 unequipBtn.Parent = equippedCard
 
 --------------------------------------------------------------------------------
--- MODAL WINDOW HELPER
+-- MODAL WINDOW FACTORY
 --------------------------------------------------------------------------------
 
-local activeModal = nil
-
-local function createModalWindow(titleText, width, height)
+local function createModal(titleText, width, height)
 	local window = Instance.new("Frame")
+	window.AnchorPoint = Vector2.new(0.5, 0.5)
+	window.Position = UDim2.new(0.5, 0, 0.5, 0)
 	window.Size = UDim2.new(0, width, 0, height)
-	window.Position = UDim2.new(0.5, -width/2, 0.5, -height/2)
-	window.BackgroundColor3 = Color3.fromRGB(18, 20, 28)
-	window.BackgroundTransparency = 0.05
+	window.BackgroundColor3 = Color3.fromRGB(13, 15, 22)
+	window.BackgroundTransparency = 0.08
 	window.Visible = false
-	addCorner(window, 14)
-	addStroke(window, Color3.fromRGB(55, 65, 88), 2)
+	addCorner(window, 16)
+	addStroke(window, Color3.fromRGB(55, 65, 90), 2)
 	window.Parent = screenGui
 
-	-- Header Bar
+	-- Header
 	local header = Instance.new("Frame")
 	header.Size = UDim2.new(1, 0, 0, 48)
-	header.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
+	header.BackgroundColor3 = Color3.fromRGB(20, 24, 36)
 	header.BackgroundTransparency = 0.3
-	addCorner(header, 14)
+	addCorner(header, 16)
 	header.Parent = window
 
-	local titleLabel = Instance.new("TextLabel")
-	titleLabel.Size = UDim2.new(1, -60, 1, 0)
-	titleLabel.Position = UDim2.new(0, 18, 0, 0)
-	titleLabel.BackgroundTransparency = 1
-	titleLabel.Font = Enum.Font.GothamBlack
-	titleLabel.TextSize = 18
-	titleLabel.TextColor3 = Color3.fromRGB(240, 243, 250)
-	titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-	titleLabel.Text = titleText
-	titleLabel.Parent = header
+	local title = Instance.new("TextLabel")
+	title.Size = UDim2.new(1, -60, 1, 0)
+	title.Position = UDim2.new(0, 18, 0, 0)
+	title.BackgroundTransparency = 1
+	title.Font = Enum.Font.GothamBlack
+	title.TextSize = 18
+	title.TextColor3 = Color3.fromRGB(240, 243, 250)
+	title.TextXAlignment = Enum.TextXAlignment.Left
+	title.Text = titleText
+	title.Parent = header
 
 	local closeBtn = Instance.new("TextButton")
 	closeBtn.Size = UDim2.new(0, 32, 0, 32)
 	closeBtn.Position = UDim2.new(1, -40, 0.5, -16)
-	closeBtn.BackgroundColor3 = Color3.fromRGB(40, 45, 60)
+	closeBtn.BackgroundColor3 = Color3.fromRGB(35, 40, 56)
 	closeBtn.Font = Enum.Font.GothamBold
 	closeBtn.TextSize = 16
-	closeBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
+	closeBtn.TextColor3 = Color3.fromRGB(200, 205, 225)
 	closeBtn.Text = "✕"
 	addCorner(closeBtn, 8)
 	closeBtn.Parent = header
 
 	local content = Instance.new("Frame")
-	content.Size = UDim2.new(1, -32, 1, -64)
-	content.Position = UDim2.new(0, 16, 0, 54)
+	content.Size = UDim2.new(1, -28, 1, -64)
+	content.Position = UDim2.new(0, 14, 0, 54)
 	content.BackgroundTransparency = 1
 	content.Parent = window
 
 	closeBtn.MouseButton1Click:Connect(function()
 		SoundEffects.Play("Click")
 		window.Visible = false
-		if activeModal == window then
-			activeModal = nil
-		end
+		if activeModal == window then activeModal = nil end
 	end)
 
-	return window, content, closeBtn
+	return window, content
 end
 
 local function toggleModal(modal)
@@ -4086,53 +4308,69 @@ local function toggleModal(modal)
 		modal.Visible = false
 		activeModal = nil
 	else
-		if activeModal then
-			activeModal.Visible = false
-		end
+		if activeModal then activeModal.Visible = false end
 		modal.Visible = true
 		activeModal = modal
+		modal.Size = UDim2.new(0, modal.Size.X.Offset * 0.9, 0, modal.Size.Y.Offset * 0.9)
+		TweenService:Create(modal, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+			Size = UDim2.new(0, modal.Size.X.Offset / 0.9, 0, modal.Size.Y.Offset / 0.9),
+		}):Play()
 	end
 end
 
 --------------------------------------------------------------------------------
--- 1. INVENTORY WINDOW
+-- 5. INVENTORY WINDOW (MODERN GRID + DETAIL PANEL)
 --------------------------------------------------------------------------------
 
-local inventoryWindow, invContent = createModalWindow("🎒 AURA INVENTORY", 680, 480)
+local invWindow, invContent = createModal("🎒 AURA INVENTORY", 680, 480)
 
--- Top Storage Bar
-local storageInfo = Instance.new("TextLabel")
-storageInfo.Size = UDim2.new(0, 200, 0, 24)
-storageInfo.Position = UDim2.new(0, 0, 0, 0)
-storageInfo.BackgroundTransparency = 1
-storageInfo.Font = Enum.Font.GothamBold
-storageInfo.TextSize = 14
-storageInfo.TextColor3 = Color3.fromRGB(156, 163, 175)
-storageInfo.TextXAlignment = Enum.TextXAlignment.Left
-storageInfo.Text = "Storage: 0 / 20"
-storageInfo.Parent = invContent
+-- Top Info Bar: Slots + Auto Delete Threshold
+local topInvBar = Instance.new("Frame")
+topInvBar.Size = UDim2.new(1, 0, 0, 28)
+topInvBar.BackgroundTransparency = 1
+topInvBar.Parent = invContent
 
--- Auto Delete Threshold Dropdown/Button
+local storageBarBg = Instance.new("Frame")
+storageBarBg.Size = UDim2.new(0, 220, 0, 24)
+storageBarBg.BackgroundColor3 = Color3.fromRGB(22, 26, 38)
+addCorner(storageBarBg, 6)
+storageBarBg.Parent = topInvBar
+
+local storageFill = Instance.new("Frame")
+storageFill.Size = UDim2.new(0.5, 0, 1, 0)
+storageFill.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+addCorner(storageFill, 6)
+storageFill.Parent = storageBarBg
+
+local storageText = Instance.new("TextLabel")
+storageText.Size = UDim2.new(1, 0, 1, 0)
+storageText.BackgroundTransparency = 1
+storageText.Font = Enum.Font.GothamBold
+storageText.TextSize = 12
+storageText.TextColor3 = Color3.fromRGB(255, 255, 255)
+storageText.Text = "Storage: 0 / 20"
+storageText.Parent = storageBarBg
+
 local autoDeleteBtn = Instance.new("TextButton")
-autoDeleteBtn.Size = UDim2.new(0, 180, 0, 26)
-autoDeleteBtn.Position = UDim2.new(1, -180, 0, 0)
-autoDeleteBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
+autoDeleteBtn.Size = UDim2.new(0, 190, 0, 26)
+autoDeleteBtn.Position = UDim2.new(1, -190, 0, 0)
+autoDeleteBtn.BackgroundColor3 = Color3.fromRGB(28, 33, 48)
 autoDeleteBtn.Font = Enum.Font.GothamMedium
 autoDeleteBtn.TextSize = 12
-autoDeleteBtn.TextColor3 = Color3.fromRGB(220, 225, 235)
+autoDeleteBtn.TextColor3 = Color3.fromRGB(220, 225, 240)
 autoDeleteBtn.Text = "Auto-Delete: None"
 addCorner(autoDeleteBtn, 6)
-addStroke(autoDeleteBtn, Color3.fromRGB(50, 58, 78), 1)
-autoDeleteBtn.Parent = invContent
+addStroke(autoDeleteBtn, Color3.fromRGB(50, 60, 82), 1)
+autoDeleteBtn.Parent = topInvBar
 
--- Left Grid Container
+-- Left: Scrollable Inventory Grid
 local invScroll = Instance.new("ScrollingFrame")
-invScroll.Size = UDim2.new(1, -210, 1, -36)
-invScroll.Position = UDim2.new(0, 0, 0, 32)
-invScroll.BackgroundColor3 = Color3.fromRGB(12, 14, 20)
-invScroll.BackgroundTransparency = 0.5
-invScroll.ScrollBarThickness = 6
-invScroll.ScrollBarImageColor3 = Color3.fromRGB(60, 70, 95)
+invScroll.Size = UDim2.new(1, -220, 1, -38)
+invScroll.Position = UDim2.new(0, 0, 0, 36)
+invScroll.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
+invScroll.BackgroundTransparency = 0.4
+invScroll.ScrollBarThickness = 5
+invScroll.ScrollBarImageColor3 = Color3.fromRGB(55, 65, 90)
 addCorner(invScroll, 8)
 invScroll.Parent = invContent
 
@@ -4140,19 +4378,20 @@ local invGrid = Instance.new("UIGridLayout")
 invGrid.CellSize = UDim2.new(0, 100, 0, 100)
 invGrid.CellPadding = UDim2.new(0, 8, 0, 8)
 invGrid.Parent = invScroll
+addPadding(invScroll, 8, 8, 8, 8)
 
--- Right Detail Panel
+-- Right: Details Inspector
 local detailPanel = Instance.new("Frame")
-detailPanel.Size = UDim2.new(0, 195, 1, -36)
-detailPanel.Position = UDim2.new(1, -195, 0, 32)
-detailPanel.BackgroundColor3 = Color3.fromRGB(14, 16, 22)
+detailPanel.Size = UDim2.new(0, 205, 1, -38)
+detailPanel.Position = UDim2.new(1, -205, 0, 36)
+detailPanel.BackgroundColor3 = Color3.fromRGB(16, 19, 28)
 addCorner(detailPanel, 8)
-addStroke(detailPanel, Color3.fromRGB(40, 48, 65), 1)
+addStroke(detailPanel, Color3.fromRGB(42, 50, 70), 1)
+addPadding(detailPanel, 12, 12, 12, 12)
 detailPanel.Parent = invContent
 
 local detailName = Instance.new("TextLabel")
-detailName.Size = UDim2.new(1, -16, 0, 28)
-detailName.Position = UDim2.new(0, 8, 0, 10)
+detailName.Size = UDim2.new(1, 0, 0, 26)
 detailName.BackgroundTransparency = 1
 detailName.Font = Enum.Font.GothamBlack
 detailName.TextSize = 16
@@ -4161,30 +4400,30 @@ detailName.Text = "Select an Aura"
 detailName.Parent = detailPanel
 
 local detailRarity = Instance.new("TextLabel")
-detailRarity.Size = UDim2.new(1, -16, 0, 20)
-detailRarity.Position = UDim2.new(0, 8, 0, 38)
+detailRarity.Size = UDim2.new(1, 0, 0, 18)
+detailRarity.Position = UDim2.new(0, 0, 0, 28)
 detailRarity.BackgroundTransparency = 1
 detailRarity.Font = Enum.Font.GothamBold
-detailRarity.TextSize = 13
+detailRarity.TextSize = 12
 detailRarity.TextColor3 = Color3.fromRGB(156, 163, 175)
 detailRarity.Text = ""
 detailRarity.Parent = detailPanel
 
 local detailDesc = Instance.new("TextLabel")
-detailDesc.Size = UDim2.new(1, -16, 0, 80)
-detailDesc.Position = UDim2.new(0, 8, 0, 64)
+detailDesc.Size = UDim2.new(1, 0, 0, 110)
+detailDesc.Position = UDim2.new(0, 0, 0, 52)
 detailDesc.BackgroundTransparency = 1
 detailDesc.Font = Enum.Font.Gotham
 detailDesc.TextSize = 12
 detailDesc.TextColor3 = Color3.fromRGB(200, 205, 220)
 detailDesc.TextWrapped = true
 detailDesc.TextYAlignment = Enum.TextYAlignment.Top
-detailDesc.Text = "Click any aura card on the left to equip or manage."
+detailDesc.Text = "Click any aura on the left to equip or manage."
 detailDesc.Parent = detailPanel
 
 local equipActionBtn = Instance.new("TextButton")
-equipActionBtn.Size = UDim2.new(1, -20, 0, 38)
-equipActionBtn.Position = UDim2.new(0, 10, 1, -94)
+equipActionBtn.Size = UDim2.new(1, 0, 0, 40)
+equipActionBtn.Position = UDim2.new(0, 0, 1, -84)
 equipActionBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
 equipActionBtn.Font = Enum.Font.GothamBold
 equipActionBtn.TextSize = 14
@@ -4195,9 +4434,9 @@ addCorner(equipActionBtn, 8)
 equipActionBtn.Parent = detailPanel
 
 local deleteActionBtn = Instance.new("TextButton")
-deleteActionBtn.Size = UDim2.new(1, -20, 0, 36)
-deleteActionBtn.Position = UDim2.new(0, 10, 1, -48)
-deleteActionBtn.BackgroundColor3 = Color3.fromRGB(45, 25, 28)
+deleteActionBtn.Size = UDim2.new(1, 0, 0, 36)
+deleteActionBtn.Position = UDim2.new(0, 0, 1, -38)
+deleteActionBtn.BackgroundColor3 = Color3.fromRGB(48, 25, 30)
 deleteActionBtn.Font = Enum.Font.GothamMedium
 deleteActionBtn.TextSize = 12
 deleteActionBtn.TextColor3 = Color3.fromRGB(248, 113, 113)
@@ -4206,13 +4445,9 @@ deleteActionBtn.Visible = false
 addCorner(deleteActionBtn, 8)
 deleteActionBtn.Parent = detailPanel
 
--- Function to refresh inventory UI
 local function refreshInventoryUI()
-	-- Clear old item cards
 	for _, child in ipairs(invScroll:GetChildren()) do
-		if child:IsA("TextButton") then
-			child:Destroy()
-		end
+		if child:IsA("TextButton") then child:Destroy() end
 	end
 
 	local totalCount = 0
@@ -4222,14 +4457,14 @@ local function refreshInventoryUI()
 		if auraData then
 			local card = Instance.new("TextButton")
 			card.Name = "Card_" .. auraId
-			card.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
+			card.BackgroundColor3 = Color3.fromRGB(18, 22, 32)
 			card.Text = ""
 			addCorner(card, 8)
-			local stroke = addStroke(card, auraData.Color, 1.5)
+			addStroke(card, auraData.Color, 1.5)
 
 			local name = Instance.new("TextLabel")
-			name.Size = UDim2.new(1, -8, 0, 28)
-			name.Position = UDim2.new(0, 4, 0, 6)
+			name.Size = UDim2.new(1, -8, 0, 32)
+			name.Position = UDim2.new(0, 4, 0, 4)
 			name.BackgroundTransparency = 1
 			name.Font = Enum.Font.GothamBold
 			name.TextSize = 12
@@ -4240,7 +4475,7 @@ local function refreshInventoryUI()
 
 			local rarity = Instance.new("TextLabel")
 			rarity.Size = UDim2.new(1, -8, 0, 16)
-			rarity.Position = UDim2.new(0, 4, 0, 36)
+			rarity.Position = UDim2.new(0, 4, 0, 38)
 			rarity.BackgroundTransparency = 1
 			rarity.Font = Enum.Font.GothamMedium
 			rarity.TextSize = 10
@@ -4249,9 +4484,9 @@ local function refreshInventoryUI()
 			rarity.Parent = card
 
 			local countTag = Instance.new("TextLabel")
-			countTag.Size = UDim2.new(0, 30, 0, 16)
-			countTag.Position = UDim2.new(1, -34, 1, -20)
-			countTag.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
+			countTag.Size = UDim2.new(0, 32, 0, 18)
+			countTag.Position = UDim2.new(1, -36, 1, -22)
+			countTag.BackgroundColor3 = Color3.fromRGB(28, 33, 48)
 			countTag.Font = Enum.Font.GothamBold
 			countTag.TextSize = 10
 			countTag.TextColor3 = Color3.fromRGB(220, 225, 240)
@@ -4259,14 +4494,13 @@ local function refreshInventoryUI()
 			addCorner(countTag, 4)
 			countTag.Parent = card
 
-			-- Equipped Indicator
 			if localData.EquippedAura == auraId then
 				local eqTag = Instance.new("TextLabel")
-				eqTag.Size = UDim2.new(0, 52, 0, 16)
-				eqTag.Position = UDim2.new(0, 4, 1, -20)
+				eqTag.Size = UDim2.new(0, 50, 0, 18)
+				eqTag.Position = UDim2.new(0, 4, 1, -22)
 				eqTag.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 				eqTag.Font = Enum.Font.GothamBold
-				eqTag.TextSize = 9
+				eqTag.TextSize = 8
 				eqTag.TextColor3 = Color3.fromRGB(255, 255, 255)
 				eqTag.Text = "EQUIPPED"
 				addCorner(eqTag, 4)
@@ -4284,7 +4518,7 @@ local function refreshInventoryUI()
 				equipActionBtn.Visible = true
 				if localData.EquippedAura == auraId then
 					equipActionBtn.Text = "Unequip"
-					equipActionBtn.BackgroundColor3 = Color3.fromRGB(75, 85, 99)
+					equipActionBtn.BackgroundColor3 = Color3.fromRGB(60, 70, 85)
 				else
 					equipActionBtn.Text = "Equip"
 					equipActionBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
@@ -4296,8 +4530,19 @@ local function refreshInventoryUI()
 		end
 	end
 
-	storageInfo.Text = string.format("Storage: %d / %d", totalCount, localData.MaxStorage)
-	invScroll.CanvasSize = UDim2.new(0, 0, 0, invGrid.AbsoluteContentSize.Y + 20)
+	local maxSlots = localData.MaxStorage or 20
+	storageText.Text = string.format("Storage: %d / %d", totalCount, maxSlots)
+	local ratio = math.clamp(totalCount / maxSlots, 0, 1)
+	storageFill.Size = UDim2.new(ratio, 0, 1, 0)
+	if ratio >= 1.0 then
+		storageFill.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
+	elseif ratio >= 0.8 then
+		storageFill.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
+	else
+		storageFill.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+	end
+
+	invScroll.CanvasSize = UDim2.new(0, 0, 0, invGrid.AbsoluteContentSize.Y + 24)
 end
 
 equipActionBtn.MouseButton1Click:Connect(function()
@@ -4322,7 +4567,6 @@ deleteActionBtn.MouseButton1Click:Connect(function()
 	detailDesc.Text = "Aura scrapped for coins."
 end)
 
--- Cycle auto-delete threshold
 local thresholds = { 0, 2, 4, 16, 64 }
 local thresholdNames = { [0] = "None", [2] = "Common (1/2)", [4] = "Uncommon (1/4)", [16] = "Rare (1/16)", [64] = "Crystallized (1/64)" }
 autoDeleteBtn.MouseButton1Click:Connect(function()
@@ -4335,137 +4579,134 @@ autoDeleteBtn.MouseButton1Click:Connect(function()
 			break
 		end
 	end
-	local nextVal = thresholds[nextIdx]
-	SetAutoDeleteEvent:FireServer(nextVal)
+	SetAutoDeleteEvent:FireServer(thresholds[nextIdx])
 end)
 
 --------------------------------------------------------------------------------
--- 2. CRAFTING ALCHEMIST WINDOW
+-- 6. CRAFTING ALCHEMIST FORGE
 --------------------------------------------------------------------------------
 
-local craftWindow, craftContent = createModalWindow("⚗️ ALCHEMIST CRAFTING FORGE", 720, 500)
+local craftWindow, craftContent = createModal("⚗️ ALCHEMIST CRAFTING FORGE", 720, 500)
 
-local recipeListScroll = Instance.new("ScrollingFrame")
-recipeListScroll.Size = UDim2.new(0, 240, 1, 0)
-recipeListScroll.Position = UDim2.new(0, 0, 0, 0)
-recipeListScroll.BackgroundColor3 = Color3.fromRGB(12, 14, 20)
-recipeListScroll.BackgroundTransparency = 0.5
-recipeListScroll.ScrollBarThickness = 4
-addCorner(recipeListScroll, 8)
-recipeListScroll.Parent = craftContent
+local recipeScroll = Instance.new("ScrollingFrame")
+recipeScroll.Size = UDim2.new(0, 240, 1, 0)
+recipeScroll.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
+recipeScroll.BackgroundTransparency = 0.4
+recipeScroll.ScrollBarThickness = 4
+addCorner(recipeScroll, 8)
+recipeScroll.Parent = craftContent
 
-local recipeListLayout = Instance.new("UIListLayout")
-recipeListLayout.Padding = UDim.new(0, 8)
-recipeListLayout.Parent = recipeListScroll
+local recLayout = Instance.new("UIListLayout")
+recLayout.Padding = UDim.new(0, 8)
+recLayout.Parent = recipeScroll
+addPadding(recipeScroll, 6, 6, 6, 6)
 
--- Recipe Details & Ingredients Panel
 local craftDetail = Instance.new("Frame")
 craftDetail.Size = UDim2.new(1, -255, 1, 0)
 craftDetail.Position = UDim2.new(0, 255, 0, 0)
-craftDetail.BackgroundColor3 = Color3.fromRGB(14, 16, 22)
+craftDetail.BackgroundColor3 = Color3.fromRGB(16, 19, 28)
 addCorner(craftDetail, 8)
-addStroke(craftDetail, Color3.fromRGB(40, 48, 65), 1)
+addStroke(craftDetail, Color3.fromRGB(42, 50, 70), 1)
+addPadding(craftDetail, 12, 12, 12, 12)
 craftDetail.Parent = craftContent
 
-local craftResultName = Instance.new("TextLabel")
-craftResultName.Size = UDim2.new(1, -20, 0, 28)
-craftResultName.Position = UDim2.new(0, 10, 0, 12)
-craftResultName.BackgroundTransparency = 1
-craftResultName.Font = Enum.Font.GothamBlack
-craftResultName.TextSize = 18
-craftResultName.TextColor3 = Color3.fromRGB(255, 255, 255)
-craftResultName.Text = "Select a Recipe"
-craftResultName.Parent = craftDetail
+local craftTitle = Instance.new("TextLabel")
+craftTitle.Size = UDim2.new(1, 0, 0, 28)
+craftTitle.BackgroundTransparency = 1
+craftTitle.Font = Enum.Font.GothamBlack
+craftTitle.TextSize = 18
+craftTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+craftTitle.Text = "Select a Recipe"
+craftTitle.Parent = craftDetail
 
-local craftResultDesc = Instance.new("TextLabel")
-craftResultDesc.Size = UDim2.new(1, -20, 0, 40)
-craftResultDesc.Position = UDim2.new(0, 10, 0, 42)
-craftResultDesc.BackgroundTransparency = 1
-craftResultDesc.Font = Enum.Font.Gotham
-craftResultDesc.TextSize = 12
-craftResultDesc.TextColor3 = Color3.fromRGB(200, 205, 220)
-craftResultDesc.TextWrapped = true
-craftResultDesc.Text = "Combine rare auras to forge exclusive godly auras, luck gauntlets, and elixirs!"
-craftResultDesc.Parent = craftDetail
+local craftDesc = Instance.new("TextLabel")
+craftDesc.Size = UDim2.new(1, 0, 0, 44)
+craftDesc.Position = UDim2.new(0, 0, 0, 32)
+craftDesc.BackgroundTransparency = 1
+craftDesc.Font = Enum.Font.Gotham
+craftDesc.TextSize = 12
+craftDesc.TextColor3 = Color3.fromRGB(180, 185, 200)
+craftDesc.TextWrapped = true
+craftDesc.Text = "Combine auras to synthesize godly auras, luck gauntlets, and elixirs!"
+craftDesc.Parent = craftDetail
 
-local ingredientsHeader = Instance.new("TextLabel")
-ingredientsHeader.Size = UDim2.new(1, -20, 0, 20)
-ingredientsHeader.Position = UDim2.new(0, 10, 0, 92)
-ingredientsHeader.BackgroundTransparency = 1
-ingredientsHeader.Font = Enum.Font.GothamBold
-ingredientsHeader.TextSize = 13
-ingredientsHeader.TextColor3 = Color3.fromRGB(156, 163, 175)
-ingredientsHeader.Text = "REQUIRED INGREDIENTS:"
-ingredientsHeader.TextXAlignment = Enum.TextXAlignment.Left
-ingredientsHeader.Parent = craftDetail
+local ingHeader = Instance.new("TextLabel")
+ingHeader.Size = UDim2.new(1, 0, 0, 20)
+ingHeader.Position = UDim2.new(0, 0, 0, 82)
+ingHeader.BackgroundTransparency = 1
+ingHeader.Font = Enum.Font.GothamBold
+ingHeader.TextSize = 12
+ingHeader.TextColor3 = Color3.fromRGB(156, 163, 175)
+ingHeader.Text = "REQUIRED INGREDIENTS:"
+ingHeader.TextXAlignment = Enum.TextXAlignment.Left
+ingHeader.Parent = craftDetail
 
-local ingredientsFrame = Instance.new("Frame")
-ingredientsFrame.Size = UDim2.new(1, -20, 0, 180)
-ingredientsFrame.Position = UDim2.new(0, 10, 0, 118)
-ingredientsFrame.BackgroundTransparency = 1
-ingredientsFrame.Parent = craftDetail
+local ingListFrame = Instance.new("Frame")
+ingListFrame.Size = UDim2.new(1, 0, 0, 180)
+ingListFrame.Position = UDim2.new(0, 0, 0, 106)
+ingListFrame.BackgroundTransparency = 1
+ingListFrame.Parent = craftDetail
 
-local ingListLayout = Instance.new("UIListLayout")
-ingListLayout.Padding = UDim.new(0, 6)
-ingListLayout.Parent = ingredientsFrame
+local ingLayout = Instance.new("UIListLayout")
+ingLayout.Padding = UDim.new(0, 6)
+ingLayout.Parent = ingListFrame
 
-local craftActionBtn = Instance.new("TextButton")
-craftActionBtn.Size = UDim2.new(1, -20, 0, 44)
-craftActionBtn.Position = UDim2.new(0, 10, 1, -54)
-craftActionBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
-craftActionBtn.Font = Enum.Font.GothamBlack
-craftActionBtn.TextSize = 16
-craftActionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-craftActionBtn.Text = "⚗️ FORGE RECIPE"
-craftActionBtn.Visible = false
-addCorner(craftActionBtn, 10)
-craftActionBtn.Parent = craftDetail
+local forgeBtn = Instance.new("TextButton")
+forgeBtn.Size = UDim2.new(1, 0, 0, 46)
+forgeBtn.Position = UDim2.new(0, 0, 1, -48)
+forgeBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
+forgeBtn.Font = Enum.Font.GothamBlack
+forgeBtn.TextSize = 16
+forgeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+forgeBtn.Text = "⚗️ FORGE RECIPE"
+forgeBtn.Visible = false
+addCorner(forgeBtn, 10)
+forgeBtn.Parent = craftDetail
 
 local function refreshCraftingUI()
-	for _, child in ipairs(recipeListScroll:GetChildren()) do
+	for _, child in ipairs(recipeScroll:GetChildren()) do
 		if child:IsA("TextButton") then child:Destroy() end
 	end
 
 	for _, recipe in ipairs(AuraConfig.Recipes) do
 		local btn = Instance.new("TextButton")
-		btn.Size = UDim2.new(1, -8, 0, 52)
-		btn.BackgroundColor3 = Color3.fromRGB(22, 26, 36)
+		btn.Size = UDim2.new(1, 0, 0, 54)
+		btn.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
 		btn.Text = ""
 		addCorner(btn, 8)
 		addStroke(btn, recipe.Color, 1.2)
 
-		local title = Instance.new("TextLabel")
-		title.Size = UDim2.new(1, -12, 0, 22)
-		title.Position = UDim2.new(0, 8, 0, 6)
-		title.BackgroundTransparency = 1
-		title.Font = Enum.Font.GothamBold
-		title.TextSize = 13
-		title.TextColor3 = recipe.Color
-		title.TextXAlignment = Enum.TextXAlignment.Left
-		title.Text = recipe.Name
-		title.Parent = btn
+		local t = Instance.new("TextLabel")
+		t.Size = UDim2.new(1, -12, 0, 22)
+		t.Position = UDim2.new(0, 8, 0, 6)
+		t.BackgroundTransparency = 1
+		t.Font = Enum.Font.GothamBold
+		t.TextSize = 13
+		t.TextColor3 = recipe.Color
+		t.TextXAlignment = Enum.TextXAlignment.Left
+		t.Text = recipe.Name
+		t.Parent = btn
 
-		local typeLabel = Instance.new("TextLabel")
-		typeLabel.Size = UDim2.new(1, -12, 0, 16)
-		typeLabel.Position = UDim2.new(0, 8, 0, 28)
-		typeLabel.BackgroundTransparency = 1
-		typeLabel.Font = Enum.Font.Gotham
-		typeLabel.TextSize = 11
-		typeLabel.TextColor3 = Color3.fromRGB(156, 163, 175)
-		typeLabel.TextXAlignment = Enum.TextXAlignment.Left
-		typeLabel.Text = string.format("Type: %s", recipe.ResultType)
-		typeLabel.Parent = btn
+		local sub = Instance.new("TextLabel")
+		sub.Size = UDim2.new(1, -12, 0, 16)
+		sub.Position = UDim2.new(0, 8, 0, 28)
+		sub.BackgroundTransparency = 1
+		sub.Font = Enum.Font.Gotham
+		sub.TextSize = 11
+		sub.TextColor3 = Color3.fromRGB(156, 163, 175)
+		sub.TextXAlignment = Enum.TextXAlignment.Left
+		sub.Text = string.format("Reward: %s", recipe.ResultType)
+		sub.Parent = btn
 
 		btn.MouseButton1Click:Connect(function()
 			SoundEffects.Play("Click")
 			selectedCraftRecipe = recipe
-			craftResultName.Text = recipe.Name
-			craftResultName.TextColor3 = recipe.Color
-			craftResultDesc.Text = recipe.Description
+			craftTitle.Text = recipe.Name
+			craftTitle.TextColor3 = recipe.Color
+			craftDesc.Text = recipe.Description
 
-			-- Clear ingredients frame
-			for _, child in ipairs(ingredientsFrame:GetChildren()) do
-				if child:IsA("Frame") then child:Destroy() end
+			for _, c in ipairs(ingListFrame:GetChildren()) do
+				if c:IsA("Frame") then c:Destroy() end
 			end
 
 			local canCraftAll = true
@@ -4476,14 +4717,14 @@ local function refreshCraftingUI()
 				local auraColor = auraData and auraData.Color or Color3.fromRGB(220, 225, 240)
 
 				local row = Instance.new("Frame")
-				row.Size = UDim2.new(1, 0, 0, 32)
-				row.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
+				row.Size = UDim2.new(1, 0, 0, 34)
+				row.BackgroundColor3 = Color3.fromRGB(22, 26, 38)
 				addCorner(row, 6)
-				row.Parent = ingredientsFrame
+				row.Parent = ingListFrame
 
 				local nameLbl = Instance.new("TextLabel")
 				nameLbl.Size = UDim2.new(0.65, 0, 1, 0)
-				nameLbl.Position = UDim2.new(0, 8, 0, 0)
+				nameLbl.Position = UDim2.new(0, 10, 0, 0)
 				nameLbl.BackgroundTransparency = 1
 				nameLbl.Font = Enum.Font.GothamBold
 				nameLbl.TextSize = 12
@@ -4509,23 +4750,23 @@ local function refreshCraftingUI()
 				countLbl.Parent = row
 			end
 
-			craftActionBtn.Visible = true
+			forgeBtn.Visible = true
 			if canCraftAll then
-				craftActionBtn.Text = "⚗️ FORGE NOW"
-				craftActionBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+				forgeBtn.Text = "⚗️ FORGE NOW"
+				forgeBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 			else
-				craftActionBtn.Text = "Missing Auras"
-				craftActionBtn.BackgroundColor3 = Color3.fromRGB(55, 65, 80)
+				forgeBtn.Text = "Missing Ingredients"
+				forgeBtn.BackgroundColor3 = Color3.fromRGB(50, 60, 75)
 			end
 		end)
 
-		btn.Parent = recipeListScroll
+		btn.Parent = recipeScroll
 	end
 
-	recipeListScroll.CanvasSize = UDim2.new(0, 0, 0, recipeListLayout.AbsoluteContentSize.Y + 20)
+	recipeScroll.CanvasSize = UDim2.new(0, 0, 0, recLayout.AbsoluteContentSize.Y + 20)
 end
 
-craftActionBtn.MouseButton1Click:Connect(function()
+forgeBtn.MouseButton1Click:Connect(function()
 	if not selectedCraftRecipe then return end
 	SoundEffects.Play("Click")
 	local result = CraftAuraFunc:InvokeServer(selectedCraftRecipe.Id)
@@ -4537,29 +4778,30 @@ craftActionBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------------------------------------------------
--- 3. SHOP & GAMEPASSES WINDOW
+-- 7. SHOP & MONETIZATION (WITH FREE DEV TEST TOGGLE)
 --------------------------------------------------------------------------------
 
-local shopWindow, shopContent = createModalWindow("🛒 SHOP & PASSES (TEST MODE INCLUDED)", 700, 480)
+local shopWindow, shopContent = createModal("🛒 SHOP & PASSES (TEST MODE INCLUDED)", 700, 480)
 
 local shopScroll = Instance.new("ScrollingFrame")
 shopScroll.Size = UDim2.new(1, 0, 1, 0)
-shopScroll.BackgroundColor3 = Color3.fromRGB(12, 14, 20)
-shopScroll.BackgroundTransparency = 0.5
-shopScroll.ScrollBarThickness = 6
+shopScroll.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
+shopScroll.BackgroundTransparency = 0.4
+shopScroll.ScrollBarThickness = 5
 addCorner(shopScroll, 8)
 shopScroll.Parent = shopContent
 
 local shopLayout = Instance.new("UIListLayout")
 shopLayout.Padding = UDim.new(0, 10)
 shopLayout.Parent = shopScroll
+addPadding(shopScroll, 8, 8, 8, 8)
 
 local passItems = {
 	{
 		Id = "X2Luck",
 		Name = "🎲 x2 Luck Pass",
 		Color = Color3.fromRGB(74, 222, 128),
-		Desc = "Permanently doubles your chance for all rare, mythic, and godly auras!",
+		Desc = "Permanently doubles your chance of rolling rare, mythic, and godly auras!",
 		PerkKey = "X2Luck",
 	},
 	{
@@ -4573,14 +4815,14 @@ local passItems = {
 		Id = "ExtraStorage",
 		Name = "🎨 Aura Storage (+30)",
 		Color = Color3.fromRGB(56, 189, 248),
-		Desc = "Expands your aura inventory capacity by +30 slots to keep all your treasures!",
+		Desc = "Expands your inventory capacity by +30 slots to store all your treasures!",
 		PerkKey = "ExtraStorage",
 	},
 	{
 		Id = "VIP",
 		Name = "⭐ VIP Supporter Pass",
 		Color = Color3.fromRGB(245, 158, 11),
-		Desc = "Exclusive VIP Crown Aura + x1.5 Permanent Luck + Golden VIP Chat & Overhead Tag!",
+		Desc = "Exclusive VIP Crown Aura + x1.5 Permanent Luck + Golden Overhead & Chat Tag!",
 		PerkKey = "VIP",
 	},
 }
@@ -4592,14 +4834,14 @@ local function refreshShopUI()
 
 	for _, item in ipairs(passItems) do
 		local row = Instance.new("Frame")
-		row.Size = UDim2.new(1, -12, 0, 84)
+		row.Size = UDim2.new(1, 0, 0, 84)
 		row.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
 		addCorner(row, 8)
 		addStroke(row, item.Color, 1.2)
+		addPadding(row, 8, 8, 12, 12)
 
 		local nameLbl = Instance.new("TextLabel")
 		nameLbl.Size = UDim2.new(0.65, 0, 0, 24)
-		nameLbl.Position = UDim2.new(0, 12, 0, 10)
 		nameLbl.BackgroundTransparency = 1
 		nameLbl.Font = Enum.Font.GothamBlack
 		nameLbl.TextSize = 16
@@ -4610,7 +4852,7 @@ local function refreshShopUI()
 
 		local descLbl = Instance.new("TextLabel")
 		descLbl.Size = UDim2.new(0.65, 0, 0, 38)
-		descLbl.Position = UDim2.new(0, 12, 0, 36)
+		descLbl.Position = UDim2.new(0, 0, 0, 26)
 		descLbl.BackgroundTransparency = 1
 		descLbl.Font = Enum.Font.Gotham
 		descLbl.TextSize = 12
@@ -4620,10 +4862,9 @@ local function refreshShopUI()
 		descLbl.Text = item.Desc
 		descLbl.Parent = row
 
-		-- Test Toggle Button
 		local testBtn = Instance.new("TextButton")
 		testBtn.Size = UDim2.new(0, 170, 0, 42)
-		testBtn.Position = UDim2.new(1, -182, 0.5, -21)
+		testBtn.Position = UDim2.new(1, -170, 0.5, -21)
 		testBtn.Font = Enum.Font.GothamBold
 		testBtn.TextSize = 12
 		addCorner(testBtn, 8)
@@ -4654,72 +4895,74 @@ local function refreshShopUI()
 end
 
 --------------------------------------------------------------------------------
--- 4. SETTINGS WINDOW
+-- 8. SETTINGS WINDOW
 --------------------------------------------------------------------------------
 
-local settingsWindow, setContent = createModalWindow("⚙️ SETTINGS", 450, 260)
+local setWindow, setContent = createModal("⚙️ SETTINGS", 440, 240)
 
-local setFastRollBtn = Instance.new("TextButton")
-setFastRollBtn.Size = UDim2.new(1, 0, 0, 44)
-setFastRollBtn.Position = UDim2.new(0, 0, 0, 10)
-setFastRollBtn.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
-setFastRollBtn.Font = Enum.Font.GothamBold
-setFastRollBtn.TextSize = 14
-setFastRollBtn.TextColor3 = Color3.fromRGB(220, 225, 240)
-setFastRollBtn.Text = "⏩ Fast Roll Cutscene: OFF"
-addCorner(setFastRollBtn, 8)
-addStroke(setFastRollBtn, Color3.fromRGB(45, 52, 70), 1)
-setFastRollBtn.Parent = setContent
+local setFastBtn = Instance.new("TextButton")
+setFastBtn.Size = UDim2.new(1, 0, 0, 44)
+setFastBtn.Position = UDim2.new(0, 0, 0, 12)
+setFastBtn.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
+setFastBtn.Font = Enum.Font.GothamBold
+setFastBtn.TextSize = 14
+setFastBtn.TextColor3 = Color3.fromRGB(220, 225, 240)
+setFastBtn.Text = "⏩ Fast Roll Cutscene: OFF"
+addCorner(setFastBtn, 8)
+addStroke(setFastBtn, Color3.fromRGB(45, 55, 75), 1)
+setFastBtn.Parent = setContent
 
-local setAutoDeleteInfo = Instance.new("TextLabel")
-setAutoDeleteInfo.Size = UDim2.new(1, 0, 0, 44)
-setAutoDeleteInfo.Position = UDim2.new(0, 0, 0, 68)
-setAutoDeleteInfo.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
-setAutoDeleteInfo.Font = Enum.Font.GothamMedium
-setAutoDeleteInfo.TextSize = 13
-setAutoDeleteInfo.TextColor3 = Color3.fromRGB(200, 205, 220)
-setAutoDeleteInfo.Text = "Auto-Delete: Configure inside Inventory"
-addCorner(setAutoDeleteInfo, 8)
-setAutoDeleteInfo.Parent = setContent
+local setInfo = Instance.new("TextLabel")
+setInfo.Size = UDim2.new(1, 0, 0, 44)
+setInfo.Position = UDim2.new(0, 0, 0, 72)
+setInfo.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
+setInfo.Font = Enum.Font.GothamMedium
+setInfo.TextSize = 13
+setInfo.TextColor3 = Color3.fromRGB(180, 185, 200)
+setInfo.Text = "Auto-Delete threshold can be changed in Inventory."
+addCorner(setInfo, 8)
+setInfo.Parent = setContent
 
-setFastRollBtn.MouseButton1Click:Connect(function()
+setFastBtn.MouseButton1Click:Connect(function()
 	SoundEffects.Play("Click")
 	isFastRollOn = not isFastRollOn
 	if isFastRollOn then
-		setFastRollBtn.Text = "⏩ Fast Roll Cutscene: ON"
+		setFastBtn.Text = "⏩ Fast Roll Cutscene: ON"
 		fastRollBtn.Text = "⏩ FAST: ON"
 		fastRollBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
 	else
-		setFastRollBtn.Text = "⏩ Fast Roll Cutscene: OFF"
+		setFastBtn.Text = "⏩ Fast Roll Cutscene: OFF"
 		fastRollBtn.Text = "⏩ FAST: OFF"
-		fastRollBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
+		fastRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
 	end
 end)
 
 --------------------------------------------------------------------------------
--- 5. ROLL REVEAL CUTSCENE OVERLAY
+-- 9. CINEMATIC ROLL REVEAL CUTSCENE OVERLAY
 --------------------------------------------------------------------------------
 
 local cutsceneOverlay = Instance.new("Frame")
 cutsceneOverlay.Name = "CutsceneOverlay"
 cutsceneOverlay.Size = UDim2.new(1, 0, 1, 0)
-cutsceneOverlay.BackgroundColor3 = Color3.fromRGB(5, 6, 10)
-cutsceneOverlay.BackgroundTransparency = 0.35
+cutsceneOverlay.BackgroundColor3 = Color3.fromRGB(4, 5, 8)
+cutsceneOverlay.BackgroundTransparency = 0.3
 cutsceneOverlay.Visible = false
 cutsceneOverlay.Parent = screenGui
 
+-- Center Card
 local revealCard = Instance.new("Frame")
 revealCard.Name = "RevealCard"
+revealCard.AnchorPoint = Vector2.new(0.5, 0.5)
+revealCard.Position = UDim2.new(0.5, 0, 0.5, 0)
 revealCard.Size = UDim2.new(0, 360, 0, 420)
-revealCard.Position = UDim2.new(0.5, -180, 0.5, -210)
-revealCard.BackgroundColor3 = Color3.fromRGB(18, 20, 28)
-addCorner(revealCard, 16)
-local cardStroke = addStroke(revealCard, Color3.fromRGB(255, 255, 255), 2.5)
+revealCard.BackgroundColor3 = Color3.fromRGB(15, 18, 26)
+addCorner(revealCard, 18)
+local cardStroke = addStroke(revealCard, Color3.fromRGB(255, 255, 255), 3)
+addPadding(revealCard, 20, 20, 20, 20)
 revealCard.Parent = cutsceneOverlay
 
 local cardTierTag = Instance.new("TextLabel")
-cardTierTag.Size = UDim2.new(1, 0, 0, 28)
-cardTierTag.Position = UDim2.new(0, 0, 0, 24)
+cardTierTag.Size = UDim2.new(1, 0, 0, 24)
 cardTierTag.BackgroundTransparency = 1
 cardTierTag.Font = Enum.Font.GothamBlack
 cardTierTag.TextSize = 14
@@ -4728,18 +4971,18 @@ cardTierTag.Text = "[ TIER ]"
 cardTierTag.Parent = revealCard
 
 local cardName = Instance.new("TextLabel")
-cardName.Size = UDim2.new(1, -20, 0, 42)
-cardName.Position = UDim2.new(0, 10, 0, 52)
+cardName.Size = UDim2.new(1, 0, 0, 44)
+cardName.Position = UDim2.new(0, 0, 0, 28)
 cardName.BackgroundTransparency = 1
 cardName.Font = Enum.Font.GothamBlack
-cardName.TextSize = 28
+cardName.TextSize = 30
 cardName.TextColor3 = Color3.fromRGB(255, 255, 255)
 cardName.Text = "Aura Name"
 cardName.Parent = revealCard
 
 local cardRarity = Instance.new("TextLabel")
-cardRarity.Size = UDim2.new(1, 0, 0, 28)
-cardRarity.Position = UDim2.new(0, 0, 0, 100)
+cardRarity.Size = UDim2.new(1, 0, 0, 26)
+cardRarity.Position = UDim2.new(0, 0, 0, 78)
 cardRarity.BackgroundTransparency = 1
 cardRarity.Font = Enum.Font.GothamBold
 cardRarity.TextSize = 18
@@ -4748,21 +4991,21 @@ cardRarity.Text = "1 in 100,000"
 cardRarity.Parent = revealCard
 
 local cardDesc = Instance.new("TextLabel")
-cardDesc.Size = UDim2.new(1, -40, 0, 100)
-cardDesc.Position = UDim2.new(0, 20, 0, 140)
+cardDesc.Size = UDim2.new(1, 0, 0, 110)
+cardDesc.Position = UDim2.new(0, 0, 0, 116)
 cardDesc.BackgroundTransparency = 1
 cardDesc.Font = Enum.Font.Gotham
 cardDesc.TextSize = 13
-cardDesc.TextColor3 = Color3.fromRGB(180, 185, 200)
+cardDesc.TextColor3 = Color3.fromRGB(180, 185, 205)
 cardDesc.TextWrapped = true
-cardDesc.Text = "Aura description..."
+cardDesc.Text = "Aura lore description..."
 cardDesc.Parent = revealCard
 
 local cardEquipBtn = Instance.new("TextButton")
-cardEquipBtn.Size = UDim2.new(0, 150, 0, 44)
-cardEquipBtn.Position = UDim2.new(0.5, -160, 1, -64)
+cardEquipBtn.Size = UDim2.new(0.48, 0, 0, 44)
+cardEquipBtn.Position = UDim2.new(0, 0, 1, -44)
 cardEquipBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
-cardEquipBtn.Font = Enum.Font.GothamBold
+cardEquipBtn.Font = Enum.Font.GothamBlack
 cardEquipBtn.TextSize = 15
 cardEquipBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 cardEquipBtn.Text = "EQUIP"
@@ -4770,10 +5013,10 @@ addCorner(cardEquipBtn, 10)
 cardEquipBtn.Parent = revealCard
 
 local cardCloseBtn = Instance.new("TextButton")
-cardCloseBtn.Size = UDim2.new(0, 150, 0, 44)
-cardCloseBtn.Position = UDim2.new(0.5, 10, 1, -64)
+cardCloseBtn.Size = UDim2.new(0.48, 0, 0, 44)
+cardCloseBtn.Position = UDim2.new(0.52, 0, 1, -44)
 cardCloseBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
-cardCloseBtn.Font = Enum.Font.GothamBold
+cardCloseBtn.Font = Enum.Font.GothamBlack
 cardCloseBtn.TextSize = 15
 cardCloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 cardCloseBtn.Text = "COLLECT"
@@ -4784,14 +5027,13 @@ local currentRolledAura = nil
 
 local function showCutscene(auraData)
 	currentRolledAura = auraData
-	cardTierTag.Text = string.format("[ %s ]", auraData.Tier:upper())
+	cardTierTag.Text = string.format("[ ✦ %s ✦ ]", auraData.Tier:upper())
 	cardName.Text = auraData.Name
 	cardName.TextColor3 = auraData.Color
 	cardRarity.Text = AuraConfig.FormatRarity(auraData.Rarity or 0)
 	cardDesc.Text = auraData.Description
 	cardStroke.Color = auraData.Color
 
-	-- Play sound matching rarity tier
 	if auraData.Rarity >= 250000 then
 		SoundEffects.Play("RevealGodly")
 	elseif auraData.Rarity >= 10000 then
@@ -4806,9 +5048,9 @@ local function showCutscene(auraData)
 
 	cutsceneOverlay.Visible = true
 
-	-- Entrance animation
-	revealCard.Size = UDim2.new(0, 100, 0, 100)
-	TweenService:Create(revealCard, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+	-- Dramatic Spring Bounce-in
+	revealCard.Size = UDim2.new(0, 80, 0, 90)
+	TweenService:Create(revealCard, TweenInfo.new(0.38, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
 		Size = UDim2.new(0, 360, 0, 420),
 	}):Play()
 end
@@ -4827,16 +5069,17 @@ cardCloseBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------------------------------------------------
--- 6. GLOBAL ANNOUNCEMENT BANNER
+-- 10. GLOBAL SERVER ANNOUNCEMENT BANNER
 --------------------------------------------------------------------------------
 
 local banner = Instance.new("Frame")
 banner.Name = "GlobalBanner"
-banner.Size = UDim2.new(0, 520, 0, 44)
-banner.Position = UDim2.new(0.5, -260, 0, -60) -- Start off-screen
-banner.BackgroundColor3 = Color3.fromRGB(24, 28, 42)
+banner.AnchorPoint = Vector2.new(0.5, 0)
+banner.Size = UDim2.new(0, 540, 0, 46)
+banner.Position = UDim2.new(0.5, 0, 0, -65)
+banner.BackgroundColor3 = Color3.fromRGB(20, 24, 38)
 banner.BackgroundTransparency = 0.1
-addCorner(banner, 10)
+addCorner(banner, 12)
 local bannerStroke = addStroke(banner, Color3.fromRGB(250, 204, 21), 2)
 banner.Parent = screenGui
 
@@ -4844,7 +5087,7 @@ local bannerText = Instance.new("TextLabel")
 bannerText.Size = UDim2.new(1, -20, 1, 0)
 bannerText.Position = UDim2.new(0, 10, 0, 0)
 bannerText.BackgroundTransparency = 1
-bannerText.Font = Enum.Font.GothamBold
+bannerText.Font = Enum.Font.GothamBlack
 bannerText.TextSize = 14
 bannerText.TextColor3 = Color3.fromRGB(255, 235, 120)
 bannerText.Text = "🎉 Player rolled MYTHIC!"
@@ -4856,45 +5099,42 @@ GlobalAnnouncementEvent.OnClientEvent:Connect(function(info)
 	bannerText.Text = string.format("🎉 %s rolled %s (%s)!", info.PlayerName, info.AuraName:upper(), AuraConfig.FormatRarity(info.Rarity))
 	bannerText.TextColor3 = tierColor
 
-	-- Slide down
 	TweenService:Create(banner, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-		Position = UDim2.new(0.5, -260, 0, 68),
+		Position = UDim2.new(0.5, 0, 0, 68),
 	}):Play()
 
 	task.delay(4.5, function()
 		TweenService:Create(banner, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
-			Position = UDim2.new(0.5, -260, 0, -60),
+			Position = UDim2.new(0.5, 0, 0, -65),
 		}):Play()
 	end)
 end)
 
 --------------------------------------------------------------------------------
--- 7. ROLL TRIGGER & BUTTON EVENTS
+-- 11. ROLL EXECUTION & AUTOMATION
 --------------------------------------------------------------------------------
 
 local function doRoll()
 	if isRolling then return end
 	isRolling = true
 
-	-- Button bounce
-	TweenService:Create(rollButton, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-		Size = UDim2.new(0, 195, 0, 56),
+	TweenService:Create(rollButton, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+		Size = UDim2.new(0, 225, 0, 58),
 	}):Play()
 
 	SoundEffects.Play("Spin")
 
 	local result = RollRequestFunc:InvokeServer(isFastRollOn)
 
-	task.wait(0.12)
+	task.wait(0.1)
 	TweenService:Create(rollButton, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-		Size = UDim2.new(0, 210, 0, 62),
+		Size = UDim2.new(0, 240, 0, 64),
 	}):Play()
 
 	if result and result.Success and result.Aura then
 		if not isFastRollOn then
 			showCutscene(result.Aura)
 		else
-			-- Fast roll: play sound only
 			SoundEffects.Play("RevealCommon")
 		end
 	end
@@ -4906,18 +5146,19 @@ rollButton.MouseButton1Click:Connect(function()
 	doRoll()
 end)
 
--- Auto Roll Loop
 autoRollBtn.MouseButton1Click:Connect(function()
 	SoundEffects.Play("Click")
 	isAutoRollOn = not isAutoRollOn
 	if isAutoRollOn then
 		autoRollBtn.Text = "⚡ AUTO: ON"
 		autoRollBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
-		autoRollBtn.BackgroundColor3 = Color3.fromRGB(20, 55, 35)
+		autoRollBtn.BackgroundColor3 = Color3.fromRGB(22, 50, 35)
+		autoStroke.Color = Color3.fromRGB(74, 222, 128)
 	else
 		autoRollBtn.Text = "⚡ AUTO: OFF"
-		autoRollBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
-		autoRollBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
+		autoRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
+		autoRollBtn.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
+		autoStroke.Color = Color3.fromRGB(45, 52, 70)
 	end
 end)
 
@@ -4936,11 +5177,11 @@ fastRollBtn.MouseButton1Click:Connect(function()
 	if isFastRollOn then
 		fastRollBtn.Text = "⏩ FAST: ON"
 		fastRollBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
-		setFastRollBtn.Text = "⏩ Fast Roll Cutscene: ON"
+		setFastBtn.Text = "⏩ Fast Roll Cutscene: ON"
 	else
 		fastRollBtn.Text = "⏩ FAST: OFF"
-		fastRollBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
-		setFastRollBtn.Text = "⏩ Fast Roll Cutscene: OFF"
+		fastRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
+		setFastBtn.Text = "⏩ Fast Roll Cutscene: OFF"
 	end
 end)
 
@@ -4949,9 +5190,8 @@ unequipBtn.MouseButton1Click:Connect(function()
 	EquipAuraEvent:FireServer("None")
 end)
 
--- Navigation button clicks
 navInventoryBtn.MouseButton1Click:Connect(function()
-	toggleModal(inventoryWindow)
+	toggleModal(invWindow)
 	refreshInventoryUI()
 end)
 
@@ -4966,22 +5206,18 @@ navShopBtn.MouseButton1Click:Connect(function()
 end)
 
 navSettingsBtn.MouseButton1Click:Connect(function()
-	toggleModal(settingsWindow)
+	toggleModal(setWindow)
 end)
 
--- 3D World ProximityPrompt Trigger for Crafting Altar
-local ProximityPromptService = game:GetService("ProximityPromptService")
 ProximityPromptService.PromptTriggered:Connect(function(prompt, player)
 	if prompt.Name == "CraftingPrompt" and player == LocalPlayer then
-		if not craftWindow.Visible then
-			toggleModal(craftWindow)
-		end
+		if not craftWindow.Visible then toggleModal(craftWindow) end
 		refreshCraftingUI()
 	end
 end)
 
 --------------------------------------------------------------------------------
--- 8. DATA SYNC RECEIVER
+-- 12. DATA SYNCHRONIZATION
 --------------------------------------------------------------------------------
 
 DataSyncEvent.OnClientEvent:Connect(function(data)
@@ -4989,12 +5225,10 @@ DataSyncEvent.OnClientEvent:Connect(function(data)
 		localData[k] = v
 	end
 
-	-- Update Top Stats
 	rollsLabel.Text = string.format("🎲 Rolls: %s", AuraConfig.FormatNumber(localData.Rolls or 0))
 	luckLabel.Text = string.format("🍀 Luck: x%.1f", localData.CurrentLuck or 1.0)
 	coinsLabel.Text = string.format("🪙 %s", AuraConfig.FormatNumber(localData.Coins or 0))
 
-	-- Update Potion label
 	if localData.PotionExpiry and localData.PotionExpiry > os.time() then
 		local remaining = localData.PotionExpiry - os.time()
 		local mins = math.floor(remaining / 60)
@@ -5006,29 +5240,28 @@ DataSyncEvent.OnClientEvent:Connect(function(data)
 		potionLabel.TextColor3 = Color3.fromRGB(156, 163, 175)
 	end
 
-	-- Update Equipped Card
 	local eqAura = AuraConfig.Auras[localData.EquippedAura]
 	if eqAura then
-		equippedTitle.Text = eqAura.Name
-		equippedTitle.TextColor3 = eqAura.Color
-		equippedSubtitle.Text = AuraConfig.FormatRarity(eqAura.Rarity or 0)
+		eqName.Text = eqAura.Name
+		eqName.TextColor3 = eqAura.Color
+		eqSub.Text = AuraConfig.FormatRarity(eqAura.Rarity or 0)
+		eqStroke.Color = eqAura.Color
 	else
-		equippedTitle.Text = "Aura: None"
-		equippedTitle.TextColor3 = Color3.fromRGB(220, 225, 235)
-		equippedSubtitle.Text = "Not Equipped"
+		eqName.Text = "Aura: None"
+		eqName.TextColor3 = Color3.fromRGB(220, 225, 235)
+		eqSub.Text = "Not Equipped"
+		eqStroke.Color = Color3.fromRGB(45, 55, 78)
 	end
 
-	-- Update Auto Delete Threshold Text
 	local autoDelText = thresholdNames[localData.AutoDeleteThreshold or 0] or "None"
 	autoDeleteBtn.Text = "Auto-Delete: " .. autoDelText
 
-	-- Refresh open modal if visible
-	if inventoryWindow.Visible then refreshInventoryUI() end
+	if invWindow.Visible then refreshInventoryUI() end
 	if craftWindow.Visible then refreshCraftingUI() end
 	if shopWindow.Visible then refreshShopUI() end
 end)
 
-print("[Sols RNG] Client GUI initialized!")
+print("[Sols RNG] Professional AAA Client GUI loaded successfully!")
 ]===]
 	clientScript.Parent = existingScreenGui
 end
