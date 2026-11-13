@@ -1,0 +1,3302 @@
+<?xml version="1.0" ?>
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<External>null</External>
+	<External>nil</External>
+	<Item class="Workspace" referent="RBX0">
+		<Properties>
+			<string name="Name">Workspace</string>
+			<bool name="FilteringEnabled">true</bool>
+		</Properties>
+		<Item class="Terrain" referent="RBX_Terrain">
+			<Properties>
+				<string name="Name">Terrain</string>
+			</Properties>
+		</Item>
+		<Item class="SpawnLocation" referent="RBX1">
+			<Properties>
+				<string name="Name">RNG_Spawn</string>
+				<bool name="Anchored">true</bool>
+				<bool name="Neutral">true</bool>
+				<int name="Duration">0</int>
+				<Vector3 name="size">
+					<X>16</X>
+					<Y>1</Y>
+					<Z>16</Z>
+				</Vector3>
+				<CoordinateFrame name="CFrame">
+					<X>0</X>
+					<Y>2</Y>
+					<Z>0</Z>
+					<R00>1</R00>
+					<R01>0</R01>
+					<R02>0</R02>
+					<R10>0</R10>
+					<R11>1</R11>
+					<R12>0</R12>
+					<R20>0</R20>
+					<R21>0</R21>
+					<R22>1</R22>
+				</CoordinateFrame>
+			</Properties>
+		</Item>
+		<Item class="Part" referent="RBX2">
+			<Properties>
+				<string name="Name">MainFloor</string>
+				<bool name="Anchored">true</bool>
+				<Vector3 name="size">
+					<X>120</X>
+					<Y>4</Y>
+					<Z>120</Z>
+				</Vector3>
+				<CoordinateFrame name="CFrame">
+					<X>0</X>
+					<Y>0</Y>
+					<Z>0</Z>
+					<R00>1</R00>
+					<R01>0</R01>
+					<R02>0</R02>
+					<R10>0</R10>
+					<R11>1</R11>
+					<R12>0</R12>
+					<R20>0</R20>
+					<R21>0</R21>
+					<R22>1</R22>
+				</CoordinateFrame>
+			</Properties>
+		</Item>
+	</Item>
+	<Item class="Lighting" referent="RBX_Lighting">
+		<Properties>
+			<string name="Name">Lighting</string>
+			<string name="TimeOfDay">21:30:00</string>
+			<float name="Brightness">1.8</float>
+			<float name="ClockTime">21.5</float>
+		</Properties>
+		<Item class="BloomEffect" referent="RBX3">
+			<Properties>
+				<string name="Name">RNGBloom</string>
+				<float name="Intensity">1.2</float>
+				<float name="Size">24</float>
+				<float name="Threshold">0.85</float>
+			</Properties>
+		</Item>
+		<Item class="ColorCorrectionEffect" referent="RBX4">
+			<Properties>
+				<string name="Name">RNGColorCorrection</string>
+				<float name="Brightness">0.04</float>
+				<float name="Contrast">0.15</float>
+				<float name="Saturation">0.2</float>
+			</Properties>
+		</Item>
+	</Item>
+	<Item class="ReplicatedStorage" referent="RBX_ReplicatedStorage">
+		<Properties>
+			<string name="Name">ReplicatedStorage</string>
+		</Properties>
+		<Item class="Folder" referent="RBX5">
+			<Properties>
+				<string name="Name">AuraRNG</string>
+			</Properties>
+			<Item class="Folder" referent="RBX6">
+				<Properties>
+					<string name="Name">Events</string>
+				</Properties>
+				<Item class="RemoteFunction" referent="RBX8">
+					<Properties>
+						<string name="Name">RollRequest</string>
+					</Properties>
+				</Item>
+				<Item class="RemoteFunction" referent="RBX9">
+					<Properties>
+						<string name="Name">CraftAura</string>
+					</Properties>
+				</Item>
+				<Item class="RemoteEvent" referent="RBX10">
+					<Properties>
+						<string name="Name">EquipAura</string>
+					</Properties>
+				</Item>
+				<Item class="RemoteEvent" referent="RBX11">
+					<Properties>
+						<string name="Name">DeleteAura</string>
+					</Properties>
+				</Item>
+				<Item class="RemoteEvent" referent="RBX12">
+					<Properties>
+						<string name="Name">SetAutoDelete</string>
+					</Properties>
+				</Item>
+				<Item class="RemoteEvent" referent="RBX13">
+					<Properties>
+						<string name="Name">ToggleTestPerk</string>
+					</Properties>
+				</Item>
+				<Item class="RemoteEvent" referent="RBX14">
+					<Properties>
+						<string name="Name">DataSync</string>
+					</Properties>
+				</Item>
+				<Item class="RemoteEvent" referent="RBX15">
+					<Properties>
+						<string name="Name">GlobalAnnouncement</string>
+					</Properties>
+				</Item>
+			</Item>
+			<Item class="Folder" referent="RBX7">
+				<Properties>
+					<string name="Name">Modules</string>
+				</Properties>
+				<Item class="ModuleScript" referent="RBX16">
+					<Properties>
+						<string name="Name">AuraConfig</string>
+						<ProtectedString name="Source">-- AuraConfig.lua
+-- Central configuration for all Auras, Rarities, Colors, Visual Styles, and Crafting Recipes in Sol's RNG game.
+
+local AuraConfig = {}
+
+-- Visual Cutscene Tiers
+AuraConfig.CutsceneTier = {
+	Normal = &quot;Normal&quot;,
+	Rare = &quot;Rare&quot;,
+	Legendary = &quot;Legendary&quot;,
+	Mythic = &quot;Mythic&quot;,
+	Godly = &quot;Godly&quot;,
+}
+
+-- Game Settings &amp; Balance
+AuraConfig.Settings = {
+	BaseRollCooldown = 2.0,      -- Seconds between manual rolls
+	FastRollCooldown = 0.5,      -- Fast roll mode cooldown
+	AutoRollInterval = 2.2,      -- Auto roll interval
+	DefaultStorage = 20,         -- Base inventory slots
+	ExtraStorageBonus = 30,      -- Bonus slots from gamepass or upgrade
+	MaxStorageLimit = 100,       -- Max inventory limit
+	
+	-- Base coins awarded per roll based on tier
+	CoinsPerRoll = {
+		Common = 5,
+		Good = 10,
+		Rare = 25,
+		Epic = 50,
+		Legendary = 150,
+		Mythic = 500,
+		Godly = 2000,
+		Crafted = 1000,
+	},
+
+	-- Global broadcast threshold (1 in X)
+	GlobalBroadcastThreshold = 10000,
+
+	-- Gamepass IDs (Replace with your actual Roblox Gamepass IDs when published)
+	GamepassIds = {
+		X2Luck = 0,         -- e.g. 12345678
+		AutoRoll = 0,       -- e.g. 12345679
+		ExtraStorage = 0,   -- e.g. 12345680
+		VIP = 0,            -- e.g. 12345681
+	},
+
+	-- DevProduct IDs for instant boosts (Optional)
+	DevProductIds = {
+		LuckPotion10Min = 0,
+		Instant1000Coins = 0,
+	}
+}
+
+-- Catalog of all Rollable and Special Auras
+AuraConfig.Auras = {
+	-- COMMON TIER (1 in 2 to 1 in 4)
+	Common = {
+		Id = &quot;Common&quot;,
+		Name = &quot;Common&quot;,
+		Rarity = 2,
+		Tier = &quot;Common&quot;,
+		Color = Color3.fromRGB(220, 220, 225),
+		Description = &quot;A faint, gentle aura of pure simple energy.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Normal,
+		ParticleColor = Color3.fromRGB(230, 230, 240),
+		ParticleShape = &quot;Dust&quot;,
+	},
+	Uncommon = {
+		Id = &quot;Uncommon&quot;,
+		Name = &quot;Uncommon&quot;,
+		Rarity = 4,
+		Tier = &quot;Common&quot;,
+		Color = Color3.fromRGB(160, 230, 160),
+		Description = &quot;Subtle green sparks glowing with mild vitality.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Normal,
+		ParticleColor = Color3.fromRGB(140, 240, 140),
+		ParticleShape = &quot;Sparks&quot;,
+	},
+
+	-- GOOD TIER (1 in 8 to 1 in 16)
+	Natural = {
+		Id = &quot;Natural&quot;,
+		Name = &quot;Natural&quot;,
+		Rarity = 8,
+		Tier = &quot;Good&quot;,
+		Color = Color3.fromRGB(72, 199, 116),
+		Description = &quot;Leaves and emerald orbs dancing with forest vitality.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Normal,
+		ParticleColor = Color3.fromRGB(60, 220, 100),
+		ParticleShape = &quot;Leaves&quot;,
+	},
+	Rare = {
+		Id = &quot;Rare&quot;,
+		Name = &quot;Rare&quot;,
+		Rarity = 16,
+		Tier = &quot;Good&quot;,
+		Color = Color3.fromRGB(56, 189, 248),
+		Description = &quot;A vivid sky-blue aura shimmering with rising azure flames.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Rare,
+		ParticleColor = Color3.fromRGB(70, 200, 255),
+		ParticleShape = &quot;Flame&quot;,
+	},
+
+	-- RARE TIER (1 in 32 to 1 in 64)
+	Divinus = {
+		Id = &quot;Divinus&quot;,
+		Name = &quot;Divinus&quot;,
+		Rarity = 32,
+		Tier = &quot;Rare&quot;,
+		Color = Color3.fromRGB(250, 204, 21),
+		Description = &quot;Holy golden sparkles blessing the bearer with light.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Rare,
+		ParticleColor = Color3.fromRGB(255, 220, 50),
+		ParticleShape = &quot;Sparkles&quot;,
+	},
+	Crystallized = {
+		Id = &quot;Crystallized&quot;,
+		Name = &quot;Crystallized&quot;,
+		Rarity = 64,
+		Tier = &quot;Rare&quot;,
+		Color = Color3.fromRGB(6, 182, 212),
+		Description = &quot;Sharp diamond shards and icy cyan glow.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Rare,
+		ParticleColor = Color3.fromRGB(50, 230, 255),
+		ParticleShape = &quot;Shards&quot;,
+	},
+
+	-- EPIC TIER (1 in 150 to 1 in 400)
+	Topaz = {
+		Id = &quot;Topaz&quot;,
+		Name = &quot;Topaz&quot;,
+		Rarity = 150,
+		Tier = &quot;Epic&quot;,
+		Color = Color3.fromRGB(245, 158, 11),
+		Description = &quot;Deep amber embers floating in orbital harmony.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Rare,
+		ParticleColor = Color3.fromRGB(250, 170, 20),
+		ParticleShape = &quot;Embers&quot;,
+	},
+	Glacier = {
+		Id = &quot;Glacier&quot;,
+		Name = &quot;Glacier&quot;,
+		Rarity = 300,
+		Tier = &quot;Epic&quot;,
+		Color = Color3.fromRGB(147, 197, 253),
+		Description = &quot;An arctic chill radiating sub-zero frost and blizzard mists.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Rare,
+		ParticleColor = Color3.fromRGB(180, 220, 255),
+		ParticleShape = &quot;Frost&quot;,
+	},
+	Wind = {
+		Id = &quot;Wind&quot;,
+		Name = &quot;Wind&quot;,
+		Rarity = 400,
+		Tier = &quot;Epic&quot;,
+		Color = Color3.fromRGB(167, 243, 208),
+		Description = &quot;A raging cyclone spiral enveloping the character in swift breezes.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Rare,
+		ParticleColor = Color3.fromRGB(180, 255, 220),
+		ParticleShape = &quot;Vortex&quot;,
+	},
+
+	-- LEGENDARY TIER (1 in 1,000 to 1 in 5,000)
+	Ruby = {
+		Id = &quot;Ruby&quot;,
+		Name = &quot;Ruby&quot;,
+		Rarity = 1000,
+		Tier = &quot;Legendary&quot;,
+		Color = Color3.fromRGB(239, 68, 68),
+		Description = &quot;Blazing crimson volcanic flame pillar ascending to the heavens.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Legendary,
+		ParticleColor = Color3.fromRGB(255, 50, 50),
+		ParticleShape = &quot;FireColumn&quot;,
+	},
+	Undead = {
+		Id = &quot;Undead&quot;,
+		Name = &quot;Undead&quot;,
+		Rarity = 2000,
+		Tier = &quot;Legendary&quot;,
+		Color = Color3.fromRGB(16, 185, 129),
+		Description = &quot;Ominous necrotic souls and radioactive green mist rising from below.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Legendary,
+		ParticleColor = Color3.fromRGB(20, 230, 140),
+		ParticleShape = &quot;Souls&quot;,
+	},
+	Solar = {
+		Id = &quot;Solar&quot;,
+		Name = &quot;Solar&quot;,
+		Rarity = 5000,
+		Tier = &quot;Legendary&quot;,
+		Color = Color3.fromRGB(249, 115, 22),
+		Description = &quot;A blinding solar corona flaring with pure thermonuclear radiance.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Legendary,
+		ParticleColor = Color3.fromRGB(255, 140, 30),
+		ParticleShape = &quot;Sunburst&quot;,
+	},
+
+	-- MYTHIC TIER (1 in 10,000 to 1 in 100,000)
+	Lunar = {
+		Id = &quot;Lunar&quot;,
+		Name = &quot;Lunar&quot;,
+		Rarity = 10000,
+		Tier = &quot;Mythic&quot;,
+		Color = Color3.fromRGB(139, 92, 246),
+		Description = &quot;A mystical crescent night sky with floating celestial starlight.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Mythic,
+		ParticleColor = Color3.fromRGB(170, 120, 255),
+		ParticleShape = &quot;MoonStars&quot;,
+	},
+	Poseidon = {
+		Id = &quot;Poseidon&quot;,
+		Name = &quot;Poseidon&quot;,
+		Rarity = 25000,
+		Tier = &quot;Mythic&quot;,
+		Color = Color3.fromRGB(2, 132, 199),
+		Description = &quot;Lord of the deep seas summoning aquatic geysers and roaring tidal crests.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Mythic,
+		ParticleColor = Color3.fromRGB(20, 170, 255),
+		ParticleShape = &quot;Tsunami&quot;,
+	},
+	Hades = {
+		Id = &quot;Hades&quot;,
+		Name = &quot;Hades&quot;,
+		Rarity = 50000,
+		Tier = &quot;Mythic&quot;,
+		Color = Color3.fromRGB(220, 38, 38),
+		Description = &quot;Underworld hellfire and demonic dark red lightning crashing around.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Mythic,
+		ParticleColor = Color3.fromRGB(240, 20, 20),
+		ParticleShape = &quot;Hellfire&quot;,
+	},
+	Galaxy = {
+		Id = &quot;Galaxy&quot;,
+		Name = &quot;Galaxy&quot;,
+		Rarity = 100000,
+		Tier = &quot;Mythic&quot;,
+		Color = Color3.fromRGB(99, 102, 241),
+		Description = &quot;A deep cosmic spiral galaxy with swirling nebulae and newborn stars.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Mythic,
+		ParticleColor = Color3.fromRGB(130, 140, 255),
+		ParticleShape = &quot;NebulaSpiral&quot;,
+	},
+
+	-- GODLY &amp; CELESTIAL TIER (1 in 250,000 to 1 in 1,000,000)
+	Archangel = {
+		Id = &quot;Archangel&quot;,
+		Name = &quot;Archangel&quot;,
+		Rarity = 250000,
+		Tier = &quot;Godly&quot;,
+		Color = Color3.fromRGB(252, 211, 77),
+		Description = &quot;Six wings of divine light, holy choir resonance and celestial halos.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Godly,
+		ParticleColor = Color3.fromRGB(255, 235, 120),
+		ParticleShape = &quot;DivineHalo&quot;,
+	},
+	ExoticApex = {
+		Id = &quot;ExoticApex&quot;,
+		Name = &quot;Exotic: Apex&quot;,
+		Rarity = 500000,
+		Tier = &quot;Godly&quot;,
+		Color = Color3.fromRGB(236, 72, 153),
+		Description = &quot;Reality-bending prismatic chromatic spectrum shifting through all hues.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Godly,
+		ParticleColor = Color3.fromRGB(255, 90, 190),
+		ParticleShape = &quot;PrismaticGlitch&quot;,
+	},
+	AbyssalHunter = {
+		Id = &quot;AbyssalHunter&quot;,
+		Name = &quot;Abyssal Hunter&quot;,
+		Rarity = 1000000,
+		Tier = &quot;Godly&quot;,
+		Color = Color3.fromRGB(124, 58, 237),
+		Description = &quot;A singularity black hole radiating neon violet cosmic lightning bolts.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Godly,
+		ParticleColor = Color3.fromRGB(160, 80, 255),
+		ParticleShape = &quot;Singularity&quot;,
+	},
+
+	-- CRAFTED / SPECIAL AURAS
+	Eclipse = {
+		Id = &quot;Eclipse&quot;,
+		Name = &quot;Eclipse&quot;,
+		Rarity = 0, -- Crafted only
+		Tier = &quot;Crafted&quot;,
+		Color = Color3.fromRGB(245, 158, 11),
+		Description = &quot;The convergence of Solar and Lunar energies. Sun and Moon orbital harmony.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Godly,
+		ParticleColor = Color3.fromRGB(255, 180, 40),
+		ParticleShape = &quot;EclipseCorona&quot;,
+		IsCrafted = true,
+	},
+	Chronos = {
+		Id = &quot;Chronos&quot;,
+		Name = &quot;Chronos&quot;,
+		Rarity = 0,
+		Tier = &quot;Crafted&quot;,
+		Color = Color3.fromRGB(6, 182, 212),
+		Description = &quot;Time bends to your command. Spinning clock dials and golden time gears.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Godly,
+		ParticleColor = Color3.fromRGB(80, 230, 255),
+		ParticleShape = &quot;TimeClock&quot;,
+		IsCrafted = true,
+	},
+	HellforgedLeviathan = {
+		Id = &quot;HellforgedLeviathan&quot;,
+		Name = &quot;Hellforged Leviathan&quot;,
+		Rarity = 0,
+		Tier = &quot;Crafted&quot;,
+		Color = Color3.fromRGB(185, 28, 28),
+		Description = &quot;Boiling magma geysers and abyss waters clashing in an unstoppable storm.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Godly,
+		ParticleColor = Color3.fromRGB(240, 60, 30),
+		ParticleShape = &quot;LavaTide&quot;,
+		IsCrafted = true,
+	},
+	VIPCrown = {
+		Id = &quot;VIPCrown&quot;,
+		Name = &quot;VIP Crown&quot;,
+		Rarity = 0,
+		Tier = &quot;VIP&quot;,
+		Color = Color3.fromRGB(251, 191, 36),
+		Description = &quot;Exclusive regal golden crown aura gifted only to prestigious VIP supporters.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Legendary,
+		ParticleColor = Color3.fromRGB(255, 215, 0),
+		ParticleShape = &quot;CrownGlow&quot;,
+		IsSpecial = true,
+	}
+}
+
+-- CRAFTING RECIPES CATALOG
+AuraConfig.Recipes = {
+	{
+		Id = &quot;Recipe_Eclipse&quot;,
+		ResultType = &quot;Aura&quot;,
+		ResultId = &quot;Eclipse&quot;,
+		Name = &quot;Eclipse Aura&quot;,
+		Tier = &quot;Crafted&quot;,
+		Color = Color3.fromRGB(245, 158, 11),
+		Description = &quot;Synthesize the cosmic dance of Sun and Moon into a legendary dual aura.&quot;,
+		Ingredients = {
+			{ AuraId = &quot;Solar&quot;, Count = 1 },
+			{ AuraId = &quot;Lunar&quot;, Count = 1 },
+			{ AuraId = &quot;Rare&quot;, Count = 3 },
+		},
+	},
+	{
+		Id = &quot;Recipe_LuckGauntlet&quot;,
+		ResultType = &quot;Gear&quot;,
+		ResultId = &quot;LuckGauntlet&quot;,
+		Name = &quot;Luck Gauntlet (Gear)&quot;,
+		Tier = &quot;Gear&quot;,
+		Color = Color3.fromRGB(234, 179, 8),
+		Description = &quot;Permanent equippable gear granting a passive +50% Luck Multiplier (x1.5).&quot;,
+		LuckBonus = 1.5,
+		Ingredients = {
+			{ AuraId = &quot;Topaz&quot;, Count = 1 },
+			{ AuraId = &quot;Divinus&quot;, Count = 2 },
+			{ AuraId = &quot;Ruby&quot;, Count = 1 },
+		},
+	},
+	{
+		Id = &quot;Recipe_FortuneElixir&quot;,
+		ResultType = &quot;Potion&quot;,
+		ResultId = &quot;FortuneElixir&quot;,
+		Name = &quot;Fortune Elixir (10m)&quot;,
+		Tier = &quot;Potion&quot;,
+		Color = Color3.fromRGB(34, 197, 94),
+		Description = &quot;A shimmering brew granting 2x Luck for 10 minutes upon creation.&quot;,
+		Duration = 600,
+		LuckBonus = 2.0,
+		Ingredients = {
+			{ AuraId = &quot;Crystallized&quot;, Count = 2 },
+			{ AuraId = &quot;Uncommon&quot;, Count = 4 },
+			{ AuraId = &quot;Natural&quot;, Count = 2 },
+		},
+	},
+	{
+		Id = &quot;Recipe_Chronos&quot;,
+		ResultType = &quot;Aura&quot;,
+		ResultId = &quot;Chronos&quot;,
+		Name = &quot;Chronos Aura&quot;,
+		Tier = &quot;Godly&quot;,
+		Color = Color3.fromRGB(6, 182, 212),
+		Description = &quot;Weave the fabric of spacetime using celestial remnants.&quot;,
+		Ingredients = {
+			{ AuraId = &quot;Galaxy&quot;, Count = 1 },
+			{ AuraId = &quot;Archangel&quot;, Count = 1 },
+			{ AuraId = &quot;Glacier&quot;, Count = 2 },
+		},
+	},
+	{
+		Id = &quot;Recipe_HellforgedLeviathan&quot;,
+		ResultType = &quot;Aura&quot;,
+		ResultId = &quot;HellforgedLeviathan&quot;,
+		Name = &quot;Hellforged Leviathan&quot;,
+		Tier = &quot;Godly&quot;,
+		Color = Color3.fromRGB(185, 28, 28),
+		Description = &quot;Combine underworld hellfire with deep sea titans.&quot;,
+		Ingredients = {
+			{ AuraId = &quot;Hades&quot;, Count = 1 },
+			{ AuraId = &quot;Poseidon&quot;, Count = 1 },
+			{ AuraId = &quot;Ruby&quot;, Count = 2 },
+		},
+	},
+}
+
+-- Pre-sorted list of rollable auras ordered by rarity descending (hardest first)
+AuraConfig.RollableAuras = {}
+for id, aura in pairs(AuraConfig.Auras) do
+	if aura.Rarity and aura.Rarity &gt; 0 then
+		table.insert(AuraConfig.RollableAuras, aura)
+	end
+end
+table.sort(AuraConfig.RollableAuras, function(a, b)
+	return a.Rarity &gt; b.Rarity
+end)
+
+-- Helper to format numbers like 1,000,000
+function AuraConfig.FormatNumber(n)
+	local formatted = tostring(n)
+	local k
+	while true do
+		formatted, k = string.gsub(formatted, &quot;^(-?%d+)(%d%d%d)&quot;, &quot;%1,%2&quot;)
+		if k == 0 then
+			break
+		end
+	end
+	return formatted
+end
+
+-- Helper to format Rarity string
+function AuraConfig.FormatRarity(rarity)
+	if not rarity or rarity &lt;= 0 then
+		return &quot;Special&quot;
+	end
+	return &quot;1 in &quot; .. AuraConfig.FormatNumber(rarity)
+end
+
+-- Helper to get tier color
+function AuraConfig.GetTierColor(tier)
+	if tier == &quot;Common&quot; then
+		return Color3.fromRGB(220, 220, 225)
+	elseif tier == &quot;Good&quot; then
+		return Color3.fromRGB(72, 199, 116)
+	elseif tier == &quot;Rare&quot; then
+		return Color3.fromRGB(56, 189, 248)
+	elseif tier == &quot;Epic&quot; then
+		return Color3.fromRGB(168, 85, 247)
+	elseif tier == &quot;Legendary&quot; then
+		return Color3.fromRGB(239, 68, 68)
+	elseif tier == &quot;Mythic&quot; then
+		return Color3.fromRGB(217, 70, 239)
+	elseif tier == &quot;Godly&quot; then
+		return Color3.fromRGB(250, 204, 21)
+	elseif tier == &quot;Crafted&quot; then
+		return Color3.fromRGB(245, 158, 11)
+	elseif tier == &quot;Gear&quot; then
+		return Color3.fromRGB(234, 179, 8)
+	elseif tier == &quot;Potion&quot; then
+		return Color3.fromRGB(34, 197, 94)
+	elseif tier == &quot;VIP&quot; then
+		return Color3.fromRGB(251, 191, 36)
+	end
+	return Color3.fromRGB(255, 255, 255)
+end
+
+return AuraConfig
+</ProtectedString>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBX17">
+					<Properties>
+						<string name="Name">AuraVisuals</string>
+						<ProtectedString name="Source">-- AuraVisuals.lua
+-- Procedurally creates and attaches high-quality particle emitters, highlights,
+-- light beams, and overhead billboards for all Auras in the game.
+
+local AuraConfig = require(script.Parent.AuraConfig)
+
+local AuraVisuals = {}
+
+-- Standard particle texture asset IDs built into Roblox or reliable default library assets
+local TEXTURES = {
+	Sparkle = &quot;rbxasset://textures/particles/sparkles_main.dds&quot;,
+	Smoke = &quot;rbxasset://textures/particles/smoke_main.dds&quot;,
+	Point = &quot;rbxassetid://241594419&quot;,   -- Glowing soft dot / star
+	Flame = &quot;rbxassetid://258128463&quot;,   -- Rising flame wisps
+	Ring = &quot;rbxassetid://243664672&quot;,    -- Circular energy ring
+	Cross = &quot;rbxassetid://258127006&quot;,   -- Divine sparkle / star
+	Shard = &quot;rbxassetid://241594432&quot;,   -- Crystal diamond shard
+}
+
+-- Helper to safely get or create character's ActiveAura folder
+local function getActiveFolder(character)
+	local existing = character:FindFirstChild(&quot;ActiveAura&quot;)
+	if existing and existing:IsA(&quot;Folder&quot;) then
+		existing:ClearAllChildren()
+		return existing
+	end
+	if existing then
+		existing:Destroy()
+	end
+	local folder = Instance.new(&quot;Folder&quot;)
+	folder.Name = &quot;ActiveAura&quot;
+	folder.Parent = character
+	return folder
+end
+
+-- Clear aura effects
+function AuraVisuals.ClearAura(character)
+	local existing = character:FindFirstChild(&quot;ActiveAura&quot;)
+	if existing then
+		existing:Destroy()
+	end
+	
+	local head = character:FindFirstChild(&quot;Head&quot;)
+	if head then
+		local oldBillboard = head:FindFirstChild(&quot;AuraBillboardGui&quot;)
+		if oldBillboard then
+			oldBillboard:Destroy()
+		end
+	end
+end
+
+-- Build standard particle emitter
+local function createEmitter(parent, config)
+	local emitter = Instance.new(&quot;ParticleEmitter&quot;)
+	emitter.Color = config.Color
+	emitter.Size = config.Size
+	emitter.Transparency = config.Transparency
+	emitter.Lifetime = config.Lifetime
+	emitter.Rate = config.Rate
+	emitter.Speed = config.Speed
+	emitter.SpreadAngle = config.SpreadAngle or Vector2.new(15, 15)
+	emitter.Acceleration = config.Acceleration or Vector3.new(0, 2, 0)
+	emitter.Drag = config.Drag or 0.5
+	emitter.LightEmission = config.LightEmission or 0.9
+	emitter.Texture = config.Texture or TEXTURES.Point
+	emitter.RotSpeed = config.RotSpeed or NumberRange.new(-45, 45)
+	emitter.EmissionDirection = config.EmissionDirection or Enum.NormalId.Top
+	emitter.Parent = parent
+	return emitter
+end
+
+-- Create overhead Billboard GUI above character head
+local function createOverheadGui(character, auraData, isVIP)
+	local head = character:FindFirstChild(&quot;Head&quot;)
+	if not head or not head:IsA(&quot;BasePart&quot;) then return end
+
+	local oldGui = head:FindFirstChild(&quot;AuraBillboardGui&quot;)
+	if oldGui then oldGui:Destroy() end
+
+	local billboard = Instance.new(&quot;BillboardGui&quot;)
+	billboard.Name = &quot;AuraBillboardGui&quot;
+	billboard.Size = UDim2.new(0, 260, 0, 65)
+	billboard.StudsOffset = Vector3.new(0, 3.2, 0)
+	billboard.AlwaysOnTop = true
+	billboard.MaxDistance = 120
+	billboard.Parent = head
+
+	local container = Instance.new(&quot;Frame&quot;)
+	container.Size = UDim2.new(1, 0, 1, 0)
+	container.BackgroundTransparency = 1
+	container.Parent = billboard
+
+	local listLayout = Instance.new(&quot;UIListLayout&quot;)
+	listLayout.FillDirection = Enum.FillDirection.Vertical
+	listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	listLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+	listLayout.Padding = UDim.new(0, 2)
+	listLayout.Parent = container
+
+	-- VIP Tag (if VIP)
+	if isVIP then
+		local vipLabel = Instance.new(&quot;TextLabel&quot;)
+		vipLabel.Size = UDim2.new(1, 0, 0, 16)
+		vipLabel.BackgroundTransparency = 1
+		vipLabel.Font = Enum.Font.GothamBlack
+		vipLabel.TextSize = 13
+		vipLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+		vipLabel.Text = &quot;[ ⭐ VIP ⭐ ]&quot;
+		vipLabel.TextStrokeColor3 = Color3.fromRGB(50, 40, 0)
+		vipLabel.TextStrokeTransparency = 0.2
+		vipLabel.Parent = container
+	end
+
+	-- Aura Name
+	local nameLabel = Instance.new(&quot;TextLabel&quot;)
+	nameLabel.Size = UDim2.new(1, 0, 0, 24)
+	nameLabel.BackgroundTransparency = 1
+	nameLabel.Font = Enum.Font.GothamBold
+	nameLabel.TextSize = 18
+	nameLabel.TextColor3 = auraData.Color
+	nameLabel.Text = auraData.Name
+	nameLabel.TextStrokeColor3 = Color3.fromRGB(15, 15, 20)
+	nameLabel.TextStrokeTransparency = 0.1
+	nameLabel.Parent = container
+
+	-- Rarity / Tier Tag
+	local rarityLabel = Instance.new(&quot;TextLabel&quot;)
+	rarityLabel.Size = UDim2.new(1, 0, 0, 16)
+	rarityLabel.BackgroundTransparency = 1
+	rarityLabel.Font = Enum.Font.GothamMedium
+	rarityLabel.TextSize = 13
+	rarityLabel.TextColor3 = Color3.fromRGB(220, 225, 235)
+	
+	local rarityText = AuraConfig.FormatRarity(auraData.Rarity or 0)
+	if auraData.Tier == &quot;Crafted&quot; then
+		rarityText = &quot;Crafted Masterpiece&quot;
+	end
+	rarityLabel.Text = string.format(&quot;%s • %s&quot;, auraData.Tier:upper(), rarityText)
+	rarityLabel.TextStrokeColor3 = Color3.fromRGB(10, 10, 15)
+	rarityLabel.TextStrokeTransparency = 0.3
+	rarityLabel.Parent = container
+end
+
+-- Create Vertical Light Pillar Beam (for Legendary+)
+local function createVerticalBeam(parent, rootPart, color)
+	local attBottom = Instance.new(&quot;Attachment&quot;)
+	attBottom.Name = &quot;BeamAttBottom&quot;
+	attBottom.Position = Vector3.new(0, -2.5, 0)
+	attBottom.Parent = rootPart
+
+	local attTop = Instance.new(&quot;Attachment&quot;)
+	attTop.Name = &quot;BeamAttTop&quot;
+	attTop.Position = Vector3.new(0, 10, 0)
+	attTop.Parent = rootPart
+
+	local beam = Instance.new(&quot;Beam&quot;)
+	beam.Name = &quot;AuraPillarBeam&quot;
+	beam.Attachment0 = attBottom
+	beam.Attachment1 = attTop
+	beam.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, color),
+		ColorSequenceKeypoint.new(0.5, Color3.new(1, 1, 1)),
+		ColorSequenceKeypoint.new(1, color),
+	})
+	beam.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.4),
+		NumberSequenceKeypoint.new(0.5, 0.1),
+		NumberSequenceKeypoint.new(1, 0.9),
+	})
+	beam.Width0 = 3.5
+	beam.Width1 = 5.0
+	beam.LightEmission = 1.0
+	beam.TextureSpeed = 1.5
+	beam.Texture = TEXTURES.Flame
+	beam.Parent = parent
+end
+
+-- Main function to apply an aura to a character model
+function AuraVisuals.ApplyAura(character, auraId, isVIP)
+	AuraVisuals.ClearAura(character)
+
+	if not auraId or auraId == &quot;None&quot; or auraId == &quot;&quot; then
+		return
+	end
+
+	local auraData = AuraConfig.Auras[auraId]
+	if not auraData then
+		return
+	end
+
+	local rootPart = character:FindFirstChild(&quot;HumanoidRootPart&quot;)
+		or character:FindFirstChild(&quot;Torso&quot;)
+		or character:FindFirstChild(&quot;UpperTorso&quot;)
+	
+	if not rootPart or not rootPart:IsA(&quot;BasePart&quot;) then
+		return
+	end
+
+	local activeFolder = getActiveFolder(character)
+	local auraColor = auraData.Color or Color3.fromRGB(255, 255, 255)
+	local pColor = auraData.ParticleColor or auraColor
+
+	-- 1. Attachment on RootPart
+	local rootAttachment = Instance.new(&quot;Attachment&quot;)
+	rootAttachment.Name = &quot;AuraRootAttachment&quot;
+	rootAttachment.Position = Vector3.new(0, -0.5, 0)
+	rootAttachment.Parent = rootPart
+
+	-- 2. Character Highlight (Glow outline)
+	local highlight = Instance.new(&quot;Highlight&quot;)
+	highlight.Name = &quot;AuraHighlight&quot;
+	highlight.Adornee = character
+	highlight.OutlineColor = auraColor
+	highlight.OutlineTransparency = 0.1
+	highlight.FillColor = auraColor
+	highlight.FillTransparency = 0.85
+	highlight.Parent = activeFolder
+
+	-- 3. Dynamic PointLight
+	local light = Instance.new(&quot;PointLight&quot;)
+	light.Name = &quot;AuraLight&quot;
+	light.Color = auraColor
+	light.Range = (auraData.Rarity &gt;= 10000 or auraData.IsCrafted) and 18 or 12
+	light.Brightness = (auraData.Rarity &gt;= 10000 or auraData.IsCrafted) and 3.5 or 2.0
+	light.Shadows = false
+	light.Parent = rootAttachment
+
+	-- 4. Overhead Billboard GUI
+	createOverheadGui(character, auraData, isVIP or false)
+
+	-- 5. Build Tailored Particle Emitters based on ParticleShape / Tier
+	local shape = auraData.ParticleShape or &quot;Sparks&quot;
+
+	if shape == &quot;Dust&quot; then
+		-- Common: subtle ambient dust
+		createEmitter(rootAttachment, {
+			Color = ColorSequence.new(pColor),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.2),
+				NumberSequenceKeypoint.new(0.5, 0.6),
+				NumberSequenceKeypoint.new(1, 0.1),
+			}),
+			Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.8),
+				NumberSequenceKeypoint.new(0.5, 0.3),
+				NumberSequenceKeypoint.new(1, 1.0),
+			}),
+			Lifetime = NumberRange.new(1.5, 2.5),
+			Rate = 12,
+			Speed = NumberRange.new(1.0, 2.0),
+			SpreadAngle = Vector2.new(45, 45),
+			Acceleration = Vector3.new(0, 1.5, 0),
+			Texture = TEXTURES.Point,
+		})
+
+	elseif shape == &quot;Leaves&quot; then
+		-- Natural: swirling leaves &amp; green vitality
+		createEmitter(rootAttachment, {
+			Color = ColorSequence.new(pColor),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.3),
+				NumberSequenceKeypoint.new(0.5, 0.8),
+				NumberSequenceKeypoint.new(1, 0.2),
+			}),
+			Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.2),
+				NumberSequenceKeypoint.new(0.8, 0.4),
+				NumberSequenceKeypoint.new(1, 1.0),
+			}),
+			Lifetime = NumberRange.new(2.0, 3.2),
+			Rate = 22,
+			Speed = NumberRange.new(2.0, 4.0),
+			SpreadAngle = Vector2.new(60, 60),
+			Acceleration = Vector3.new(0, 3, 0),
+			RotSpeed = NumberRange.new(-90, 90),
+			Texture = TEXTURES.Sparkle,
+		})
+
+	elseif shape == &quot;Flame&quot; or shape == &quot;Embers&quot; then
+		-- Rising flames or fiery embers
+		createEmitter(rootAttachment, {
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, pColor),
+				ColorSequenceKeypoint.new(0.6, auraColor),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 200)),
+			}),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.3),
+				NumberSequenceKeypoint.new(0.4, 1.2),
+				NumberSequenceKeypoint.new(1, 0.1),
+			}),
+			Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.1),
+				NumberSequenceKeypoint.new(0.7, 0.3),
+				NumberSequenceKeypoint.new(1, 1.0),
+			}),
+			Lifetime = NumberRange.new(1.2, 2.0),
+			Rate = 35,
+			Speed = NumberRange.new(3.0, 6.0),
+			SpreadAngle = Vector2.new(25, 25),
+			Acceleration = Vector3.new(0, 5, 0),
+			Texture = TEXTURES.Flame,
+		})
+
+	elseif shape == &quot;Shards&quot; or shape == &quot;Frost&quot; then
+		-- Diamond crystal shards &amp; sub-zero mist
+		createEmitter(rootAttachment, {
+			Color = ColorSequence.new(pColor),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.2),
+				NumberSequenceKeypoint.new(0.5, 0.9),
+				NumberSequenceKeypoint.new(1, 0.2),
+			}),
+			Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.1),
+				NumberSequenceKeypoint.new(0.6, 0.2),
+				NumberSequenceKeypoint.new(1, 1.0),
+			}),
+			Lifetime = NumberRange.new(1.8, 2.8),
+			Rate = 30,
+			Speed = NumberRange.new(2.0, 4.5),
+			SpreadAngle = Vector2.new(40, 40),
+			Acceleration = Vector3.new(0, 2.5, 0),
+			RotSpeed = NumberRange.new(-120, 120),
+			Texture = TEXTURES.Shard,
+		})
+		-- Frost ambient mist
+		createEmitter(rootAttachment, {
+			Color = ColorSequence.new(Color3.fromRGB(200, 240, 255)),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 1.0),
+				NumberSequenceKeypoint.new(1, 2.5),
+			}),
+			Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.6),
+				NumberSequenceKeypoint.new(1, 1.0),
+			}),
+			Lifetime = NumberRange.new(1.5, 2.2),
+			Rate = 12,
+			Speed = NumberRange.new(0.5, 1.5),
+			Texture = TEXTURES.Smoke,
+		})
+
+	elseif shape == &quot;FireColumn&quot; or shape == &quot;Hellfire&quot; then
+		-- High-tier Fire Column (Ruby, Hades)
+		createEmitter(rootAttachment, {
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 50, 20)),
+				ColorSequenceKeypoint.new(0.5, pColor),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 220, 100)),
+			}),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.5),
+				NumberSequenceKeypoint.new(0.4, 2.2),
+				NumberSequenceKeypoint.new(1, 0.3),
+			}),
+			Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.05),
+				NumberSequenceKeypoint.new(0.7, 0.25),
+				NumberSequenceKeypoint.new(1, 1.0),
+			}),
+			Lifetime = NumberRange.new(1.0, 1.8),
+			Rate = 50,
+			Speed = NumberRange.new(6.0, 11.0),
+			SpreadAngle = Vector2.new(20, 20),
+			Acceleration = Vector3.new(0, 8, 0),
+			Texture = TEXTURES.Flame,
+		})
+		-- Fiery sparks
+		createEmitter(rootAttachment, {
+			Color = ColorSequence.new(Color3.fromRGB(255, 240, 150)),
+			Size = NumberSequence.new(0.3, 0.1),
+			Transparency = NumberSequence.new(0.1, 1.0),
+			Lifetime = NumberRange.new(1.0, 2.0),
+			Rate = 35,
+			Speed = NumberRange.new(4.0, 9.0),
+			SpreadAngle = Vector2.new(35, 35),
+			Acceleration = Vector3.new(0, 6, 0),
+			Texture = TEXTURES.Cross,
+		})
+		createVerticalBeam(activeFolder, rootPart, pColor)
+
+	elseif shape == &quot;Sunburst&quot; or shape == &quot;EclipseCorona&quot; then
+		-- Solar / Eclipse: Blinding solar rays &amp; energy corona
+		createEmitter(rootAttachment, {
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 180, 40)),
+				ColorSequenceKeypoint.new(0.5, pColor),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
+			}),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.6),
+				NumberSequenceKeypoint.new(0.5, 2.5),
+				NumberSequenceKeypoint.new(1, 0.2),
+			}),
+			Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.1),
+				NumberSequenceKeypoint.new(0.8, 0.4),
+				NumberSequenceKeypoint.new(1, 1.0),
+			}),
+			Lifetime = NumberRange.new(1.4, 2.2),
+			Rate = 60,
+			Speed = NumberRange.new(4.0, 9.0),
+			SpreadAngle = Vector2.new(45, 45),
+			Acceleration = Vector3.new(0, 4, 0),
+			Texture = TEXTURES.Cross,
+		})
+		createVerticalBeam(activeFolder, rootPart, pColor)
+
+	elseif shape == &quot;MoonStars&quot; or shape == &quot;NebulaSpiral&quot; or shape == &quot;Singularity&quot; then
+		-- Cosmic / Galaxy / Abyssal Hunter / Lunar: Deep space stars &amp; swirling nebula
+		createEmitter(rootAttachment, {
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, pColor),
+				ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 200, 255)),
+				ColorSequenceKeypoint.new(1, pColor),
+			}),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.4),
+				NumberSequenceKeypoint.new(0.5, 1.6),
+				NumberSequenceKeypoint.new(1, 0.2),
+			}),
+			Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.1),
+				NumberSequenceKeypoint.new(0.7, 0.2),
+				NumberSequenceKeypoint.new(1, 1.0),
+			}),
+			Lifetime = NumberRange.new(2.0, 3.2),
+			Rate = 45,
+			Speed = NumberRange.new(3.0, 6.5),
+			SpreadAngle = Vector2.new(50, 50),
+			Acceleration = Vector3.new(0, 3, 0),
+			RotSpeed = NumberRange.new(-60, 60),
+			Texture = TEXTURES.Cross,
+		})
+		-- Swirling cosmic mist
+		createEmitter(rootAttachment, {
+			Color = ColorSequence.new(pColor),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 1.5),
+				NumberSequenceKeypoint.new(1, 3.8),
+			}),
+			Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.5),
+				NumberSequenceKeypoint.new(1, 1.0),
+			}),
+			Lifetime = NumberRange.new(2.0, 3.0),
+			Rate = 20,
+			Speed = NumberRange.new(1.0, 3.0),
+			SpreadAngle = Vector2.new(70, 70),
+			Texture = TEXTURES.Smoke,
+		})
+		createVerticalBeam(activeFolder, rootPart, pColor)
+
+	elseif shape == &quot;DivineHalo&quot; or shape == &quot;TimeClock&quot; or shape == &quot;PrismaticGlitch&quot; then
+		-- Archangel / Chronos / Exotic Apex: Celestial divine radiance
+		createEmitter(rootAttachment, {
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 220)),
+				ColorSequenceKeypoint.new(0.5, pColor),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
+			}),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.4),
+				NumberSequenceKeypoint.new(0.5, 2.0),
+				NumberSequenceKeypoint.new(1, 0.3),
+			}),
+			Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.05),
+				NumberSequenceKeypoint.new(0.8, 0.2),
+				NumberSequenceKeypoint.new(1, 1.0),
+			}),
+			Lifetime = NumberRange.new(1.5, 2.5),
+			Rate = 55,
+			Speed = NumberRange.new(4.0, 8.0),
+			SpreadAngle = Vector2.new(40, 40),
+			Acceleration = Vector3.new(0, 5, 0),
+			Texture = TEXTURES.Cross,
+		})
+		createVerticalBeam(activeFolder, rootPart, pColor)
+
+	else
+		-- General fallback emitter
+		createEmitter(rootAttachment, {
+			Color = ColorSequence.new(pColor),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.3),
+				NumberSequenceKeypoint.new(0.5, 1.0),
+				NumberSequenceKeypoint.new(1, 0.2),
+			}),
+			Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.2),
+				NumberSequenceKeypoint.new(0.7, 0.3),
+				NumberSequenceKeypoint.new(1, 1.0),
+			}),
+			Lifetime = NumberRange.new(1.5, 2.5),
+			Rate = 30,
+			Speed = NumberRange.new(2.5, 5.0),
+			SpreadAngle = Vector2.new(30, 30),
+			Acceleration = Vector3.new(0, 3, 0),
+			Texture = TEXTURES.Point,
+		})
+		if auraData.Rarity and auraData.Rarity &gt;= 1000 then
+			createVerticalBeam(activeFolder, rootPart, pColor)
+		end
+	end
+end
+
+return AuraVisuals
+</ProtectedString>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBX18">
+					<Properties>
+						<string name="Name">SoundEffects</string>
+						<ProtectedString name="Source">-- SoundEffects.lua
+-- Audio manager for Sol's RNG game.
+
+local SoundEffects = {}
+
+local SOUND_IDS = {
+	Click = &quot;rbxasset://sounds/electronicpingshort.wav&quot;,
+	Spin = &quot;rbxasset://sounds/action_footstep_plastic.mp3&quot;,
+	RevealCommon = &quot;rbxasset://sounds/snap.mp3&quot;,
+	RevealRare = &quot;rbxassetid://9114221192&quot;,      -- Magical high bell chime
+	RevealLegendary = &quot;rbxassetid://9114220524&quot;, -- Dramatic fanfare
+	RevealMythic = &quot;rbxassetid://9114222384&quot;,    -- Celestial blast / angelic chord
+	RevealGodly = &quot;rbxassetid://9114223175&quot;,     -- Deep cosmic thunder resonance
+	Craft = &quot;rbxassetid://9114221580&quot;,           -- Anvil clang &amp; magical burst
+	Equip = &quot;rbxasset://sounds/uianimation.mp3&quot;,
+}
+
+local soundFolder = nil
+
+local function getSoundFolder()
+	if soundFolder and soundFolder.Parent then
+		return soundFolder
+	end
+	local workspace = game:GetService(&quot;Workspace&quot;)
+	local existing = workspace:FindFirstChild(&quot;RNG_SoundFolder&quot;)
+	if existing and existing:IsA(&quot;Folder&quot;) then
+		soundFolder = existing
+		return existing
+	end
+	local folder = Instance.new(&quot;Folder&quot;)
+	folder.Name = &quot;RNG_SoundFolder&quot;
+	folder.Parent = workspace
+	soundFolder = folder
+	return folder
+end
+
+function SoundEffects.Play(soundKey, volume, playbackSpeed)
+	local assetId = SOUND_IDS[soundKey] or SOUND_IDS.Click
+	local folder = getSoundFolder()
+
+	local sound = Instance.new(&quot;Sound&quot;)
+	sound.SoundId = assetId
+	sound.Volume = volume or 0.8
+	sound.PlaybackSpeed = playbackSpeed or 1.0
+	sound.PlayOnRemove = false
+	sound.Parent = folder
+
+	sound.Ended:Connect(function()
+		sound:Destroy()
+	end)
+
+	sound:Play()
+
+	-- Safety cleanup
+	task.delay(5, function()
+		if sound and sound.Parent then
+			sound:Destroy()
+		end
+	end)
+end
+
+return SoundEffects
+</ProtectedString>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBX19">
+					<Properties>
+						<string name="Name">CraftingStationSetup</string>
+						<ProtectedString name="Source">--!strict
+-- CraftingStationSetup.lua
+-- Creates the sleek cyber-mystic floating platform, interactive Crafting Altar with ProximityPrompt,
+-- and atmospheric lighting for Sol's RNG game.
+
+local Lighting = game:GetService(&quot;Lighting&quot;)
+local Workspace = game:GetService(&quot;Workspace&quot;)
+
+local CraftingStationSetup = {}
+
+function CraftingStationSetup.BuildMap()
+	-- 1. Setup Atmospheric Lighting
+	Lighting.TimeOfDay = &quot;21:30:00&quot;
+	Lighting.Brightness = 1.8
+	Lighting.ClockTime = 21.5
+	Lighting.Ambient = Color3.fromRGB(40, 45, 60)
+	Lighting.OutdoorAmbient = Color3.fromRGB(30, 35, 50)
+	Lighting.GlobalShadows = true
+
+	if not Lighting:FindFirstChild(&quot;RNGBloom&quot;) then
+		local bloom = Instance.new(&quot;BloomEffect&quot;)
+		bloom.Name = &quot;RNGBloom&quot;
+		bloom.Intensity = 1.2
+		bloom.Size = 24
+		bloom.Threshold = 0.85
+		bloom.Parent = Lighting
+	end
+
+	if not Lighting:FindFirstChild(&quot;RNGColorCorrection&quot;) then
+		local cc = Instance.new(&quot;ColorCorrectionEffect&quot;)
+		cc.Name = &quot;RNGColorCorrection&quot;
+		cc.Brightness = 0.04
+		cc.Contrast = 0.15
+		cc.Saturation = 0.2
+		cc.Parent = Lighting
+	end
+
+	-- 2. Build Base Platform
+	local existingPlatform = Workspace:FindFirstChild(&quot;RNG_Platform&quot;)
+	if existingPlatform then
+		existingPlatform:Destroy()
+	end
+
+	local platformFolder = Instance.new(&quot;Folder&quot;)
+	platformFolder.Name = &quot;RNG_Platform&quot;
+	platformFolder.Parent = Workspace
+
+	-- Main Deck
+	local mainFloor = Instance.new(&quot;Part&quot;)
+	mainFloor.Name = &quot;MainFloor&quot;
+	mainFloor.Size = Vector3.new(120, 4, 120)
+	mainFloor.Position = Vector3.new(0, 0, 0)
+	mainFloor.Anchored = true
+	mainFloor.Material = Enum.Material.Slate
+	mainFloor.Color = Color3.fromRGB(22, 25, 34)
+	mainFloor.TopSurface = Enum.SurfaceType.Smooth
+	mainFloor.BottomSurface = Enum.SurfaceType.Smooth
+	mainFloor.Parent = platformFolder
+
+	-- Glowing Neon Border Ring
+	local border = Instance.new(&quot;Part&quot;)
+	border.Name = &quot;BorderGlow&quot;
+	border.Size = Vector3.new(122, 1, 122)
+	border.Position = Vector3.new(0, 2.1, 0)
+	border.Anchored = true
+	border.CanCollide = false
+	border.Material = Enum.Material.Neon
+	border.Color = Color3.fromRGB(56, 189, 248)
+	border.Transparency = 0.4
+	border.Parent = platformFolder
+
+	-- Center Spawn Location
+	local spawn = Instance.new(&quot;SpawnLocation&quot;)
+	spawn.Name = &quot;RNG_Spawn&quot;
+	spawn.Size = Vector3.new(16, 1, 16)
+	spawn.Position = Vector3.new(0, 2.1, 0)
+	spawn.Anchored = true
+	spawn.Material = Enum.Material.Neon
+	spawn.Color = Color3.fromRGB(37, 99, 235)
+	spawn.TopSurface = Enum.SurfaceType.Smooth
+	spawn.BottomSurface = Enum.SurfaceType.Smooth
+	spawn.Neutral = true
+	spawn.Duration = 0
+	spawn.Parent = platformFolder
+
+	-- Center Ambient Light
+	local spawnLight = Instance.new(&quot;PointLight&quot;)
+	spawnLight.Color = Color3.fromRGB(96, 165, 250)
+	spawnLight.Brightness = 2.0
+	spawnLight.Range = 25
+	spawnLight.Parent = spawn
+
+	-- 3. Interactive Crafting Altar
+	local altarModel = Instance.new(&quot;Model&quot;)
+	altarModel.Name = &quot;CraftingAltar&quot;
+	altarModel.Parent = platformFolder
+
+	-- Pedestal Base
+	local altarBase = Instance.new(&quot;Part&quot;)
+	altarBase.Name = &quot;AltarBase&quot;
+	altarBase.Size = Vector3.new(10, 2, 10)
+	altarBase.Position = Vector3.new(35, 2.5, 0)
+	altarBase.Anchored = true
+	altarBase.Material = Enum.Material.SmoothPlastic
+	altarBase.Color = Color3.fromRGB(30, 35, 48)
+	altarBase.Parent = altarModel
+
+	-- Glowing Rune Disc
+	local runeDisc = Instance.new(&quot;Part&quot;)
+	runeDisc.Name = &quot;RuneDisc&quot;
+	runeDisc.Size = Vector3.new(8, 0.4, 8)
+	runeDisc.Position = Vector3.new(35, 3.6, 0)
+	runeDisc.Anchored = true
+	runeDisc.Material = Enum.Material.Neon
+	runeDisc.Color = Color3.fromRGB(168, 85, 247)
+	runeDisc.Parent = altarModel
+
+	-- Floating Mystical Crystal Anvil
+	local anvil = Instance.new(&quot;Part&quot;)
+	anvil.Name = &quot;FloatingCrystal&quot;
+	anvil.Size = Vector3.new(3.5, 4, 3.5)
+	anvil.Position = Vector3.new(35, 6.5, 0)
+	anvil.Anchored = true
+	anvil.CanCollide = false
+	anvil.Material = Enum.Material.Neon
+	anvil.Color = Color3.fromRGB(245, 158, 11)
+	anvil.Orientation = Vector3.new(45, 45, 0)
+	anvil.Parent = altarModel
+
+	-- Anvil Light &amp; Particle Emitter
+	local anvilLight = Instance.new(&quot;PointLight&quot;)
+	anvilLight.Color = Color3.fromRGB(250, 204, 21)
+	anvilLight.Brightness = 3.5
+	anvilLight.Range = 22
+	anvilLight.Parent = anvil
+
+	local anvilEmitter = Instance.new(&quot;ParticleEmitter&quot;)
+	anvilEmitter.Color = ColorSequence.new(Color3.fromRGB(255, 215, 0))
+	anvilEmitter.Size = NumberSequence.new(0.4, 0.1)
+	anvilEmitter.Transparency = NumberSequence.new(0.1, 1.0)
+	anvilEmitter.Lifetime = NumberRange.new(1.2, 2.0)
+	anvilEmitter.Rate = 25
+	anvilEmitter.Speed = NumberRange.new(2.0, 4.0)
+	anvilEmitter.SpreadAngle = Vector2.new(180, 180)
+	anvilEmitter.Texture = &quot;rbxasset://textures/particles/sparkles_main.dds&quot;
+	anvilEmitter.Parent = anvil
+
+	-- Proximity Prompt on Altar
+	local prompt = Instance.new(&quot;ProximityPrompt&quot;)
+	prompt.Name = &quot;CraftingPrompt&quot;
+	prompt.ObjectText = &quot;Alchemist Altar&quot;
+	prompt.ActionText = &quot;Open Crafting Forge&quot;
+	prompt.KeyboardKeyCode = Enum.KeyCode.E
+	prompt.HoldDuration = 0
+	prompt.MaxActivationDistance = 14
+	prompt.Parent = anvil
+
+	-- Overhead Billboard
+	local bb = Instance.new(&quot;BillboardGui&quot;)
+	bb.Size = UDim2.new(0, 200, 0, 40)
+	bb.StudsOffset = Vector3.new(0, 3.5, 0)
+	bb.AlwaysOnTop = true
+	bb.MaxDistance = 50
+	bb.Parent = anvil
+
+	local bbLabel = Instance.new(&quot;TextLabel&quot;)
+	bbLabel.Size = UDim2.new(1, 0, 1, 0)
+	bbLabel.BackgroundTransparency = 1
+	bbLabel.Font = Enum.Font.GothamBlack
+	bbLabel.TextSize = 16
+	bbLabel.TextColor3 = Color3.fromRGB(251, 191, 36)
+	bbLabel.Text = &quot;⚗️ CRAFTING FORGE&quot;
+	bbLabel.TextStrokeColor3 = Color3.fromRGB(20, 20, 30)
+	bbLabel.TextStrokeTransparency = 0.2
+	bbLabel.Parent = bb
+
+	print(&quot;[Sols RNG] Platform, Crafting Altar, and Atmospheric Lighting successfully built!&quot;)
+end
+
+return CraftingStationSetup
+</ProtectedString>
+					</Properties>
+				</Item>
+			</Item>
+		</Item>
+	</Item>
+	<Item class="ServerScriptService" referent="RBX_ServerScriptService">
+		<Properties>
+			<string name="Name">ServerScriptService</string>
+		</Properties>
+		<Item class="Script" referent="RBX20">
+			<Properties>
+				<string name="Name">RNGServer</string>
+				<ProtectedString name="Source">-- RNGServer.server.lua
+-- Core game server manager for Sol's RNG game.
+-- Handles Roll mechanics, Inventories, Crafting, Gamepasses, Leaderstats, and Data Saving.
+
+local Players = game:GetService(&quot;Players&quot;)
+local ReplicatedStorage = game:GetService(&quot;ReplicatedStorage&quot;)
+local DataStoreService = game:GetService(&quot;DataStoreService&quot;)
+local MarketplaceService = game:GetService(&quot;MarketplaceService&quot;)
+local TextChatService = game:GetService(&quot;TextChatService&quot;)
+
+-- Ensure ReplicatedStorage modules are accessible
+local AuraRNGFolder = ReplicatedStorage:FindFirstChild(&quot;AuraRNG&quot;)
+if not AuraRNGFolder then
+	AuraRNGFolder = Instance.new(&quot;Folder&quot;)
+	AuraRNGFolder.Name = &quot;AuraRNG&quot;
+	AuraRNGFolder.Parent = ReplicatedStorage
+end
+
+local EventsFolder = AuraRNGFolder:FindFirstChild(&quot;Events&quot;)
+if not EventsFolder then
+	EventsFolder = Instance.new(&quot;Folder&quot;)
+	EventsFolder.Name = &quot;Events&quot;
+	EventsFolder.Parent = AuraRNGFolder
+end
+
+-- Helper to find or create RemoteEvent/RemoteFunction
+local function getRemoteEvent(name)
+	local existing = EventsFolder:FindFirstChild(name)
+	if existing and existing:IsA(&quot;RemoteEvent&quot;) then
+		return existing
+	end
+	local event = Instance.new(&quot;RemoteEvent&quot;)
+	event.Name = name
+	event.Parent = EventsFolder
+	return event
+end
+
+local function getRemoteFunction(name)
+	local existing = EventsFolder:FindFirstChild(name)
+	if existing and existing:IsA(&quot;RemoteFunction&quot;) then
+		return existing
+	end
+	local func = Instance.new(&quot;RemoteFunction&quot;)
+	func.Name = name
+	func.Parent = EventsFolder
+	return func
+end
+
+local RollRequestFunc = getRemoteFunction(&quot;RollRequest&quot;)
+local CraftAuraFunc = getRemoteFunction(&quot;CraftAura&quot;)
+local EquipAuraEvent = getRemoteEvent(&quot;EquipAura&quot;)
+local DeleteAuraEvent = getRemoteEvent(&quot;DeleteAura&quot;)
+local SetAutoDeleteEvent = getRemoteEvent(&quot;SetAutoDelete&quot;)
+local ToggleTestPerkEvent = getRemoteEvent(&quot;ToggleTestPerk&quot;)
+local DataSyncEvent = getRemoteEvent(&quot;DataSync&quot;)
+local GlobalAnnouncementEvent = getRemoteEvent(&quot;GlobalAnnouncement&quot;)
+
+-- Require shared modules
+local ModulesFolder = AuraRNGFolder:WaitForChild(&quot;Modules&quot;)
+local AuraConfig = require(ModulesFolder:WaitForChild(&quot;AuraConfig&quot;))
+local AuraVisuals = require(ModulesFolder:WaitForChild(&quot;AuraVisuals&quot;))
+
+-- Auto-build base platform, spawn location, and crafting altar if not already present
+task.spawn(function()
+	pcall(function()
+		local setupModule = ModulesFolder:FindFirstChild(&quot;CraftingStationSetup&quot;)
+		if setupModule and not game:GetService(&quot;Workspace&quot;):FindFirstChild(&quot;RNG_Platform&quot;) then
+			local CraftingStationSetup = require(setupModule)
+			CraftingStationSetup.BuildMap()
+		end
+	end)
+end)
+
+-- Optional DataStore setup with safe fallback for local Studio testing
+local DATA_STORE_KEY = &quot;SolsRNG_PlayerData_v1&quot;
+local playerDataStore = nil
+pcall(function()
+	playerDataStore = DataStoreService:GetDataStore(DATA_STORE_KEY)
+end)
+
+-- In-memory session store: Player -&gt; Data table
+local sessionData = {}
+local lastRollTime = {}
+
+-- Calculate active luck for a player
+local function calculateLuck(player, data)
+	local luck = 1.0
+
+	-- x2 Luck Gamepass or Test Perk
+	if data.Gamepasses.X2Luck or data.TestPerks.X2Luck then
+		luck = luck * 2.0
+	end
+
+	-- VIP Gamepass or Test Perk (x1.5 Luck)
+	if data.Gamepasses.VIP or data.TestPerks.VIP then
+		luck = luck * 1.5
+	end
+
+	-- Crafted Luck Gauntlet Gear (+50% Luck)
+	if data.EquippedGear == &quot;LuckGauntlet&quot; then
+		luck = luck * 1.5
+	end
+
+	-- Active Fortune Elixir Potion (x2 Luck)
+	if data.PotionExpiry and os.time() &lt; data.PotionExpiry then
+		luck = luck * 2.0
+	end
+
+	return luck
+end
+
+-- Calculate current inventory item count
+local function getInventoryCount(data)
+	local count = 0
+	for _, qty in pairs(data.Inventory) do
+		count = count + qty
+	end
+	return count
+end
+
+-- Sync full data to client
+local function syncClient(player)
+	local data = sessionData[player]
+	if not data then return end
+
+	local currentLuck = calculateLuck(player, data)
+
+	-- Update leaderstats
+	local leaderstats = player:FindFirstChild(&quot;leaderstats&quot;)
+	if leaderstats then
+		local rollsVal = leaderstats:FindFirstChild(&quot;Rolls&quot;)
+		if rollsVal and rollsVal:IsA(&quot;IntValue&quot;) then
+			rollsVal.Value = data.Rolls or 0
+		end
+
+		local bestVal = leaderstats:FindFirstChild(&quot;Best Aura&quot;)
+		if bestVal and bestVal:IsA(&quot;StringValue&quot;) then
+			bestVal.Value = data.BestAura or &quot;None&quot;
+		end
+
+		local coinsVal = leaderstats:FindFirstChild(&quot;Coins&quot;)
+		if coinsVal and coinsVal:IsA(&quot;IntValue&quot;) then
+			coinsVal.Value = data.Coins or 0
+		end
+
+		local luckVal = leaderstats:FindFirstChild(&quot;Luck&quot;)
+		if luckVal and luckVal:IsA(&quot;NumberValue&quot;) then
+			luckVal.Value = currentLuck
+		end
+	end
+
+	-- Calculate max storage
+	local maxStorage = AuraConfig.Settings.DefaultStorage
+	if data.Gamepasses.ExtraStorage or data.TestPerks.ExtraStorage then
+		maxStorage = maxStorage + AuraConfig.Settings.ExtraStorageBonus
+	end
+	data.MaxStorage = maxStorage
+
+	DataSyncEvent:FireClient(player, {
+		Rolls = data.Rolls,
+		Coins = data.Coins,
+		BestAura = data.BestAura,
+		BestRarity = data.BestRarity,
+		EquippedAura = data.EquippedAura,
+		EquippedGear = data.EquippedGear,
+		Inventory = data.Inventory,
+		MaxStorage = data.MaxStorage,
+		AutoDeleteThreshold = data.AutoDeleteThreshold,
+		PotionExpiry = data.PotionExpiry,
+		Gamepasses = data.Gamepasses,
+		TestPerks = data.TestPerks,
+		CurrentLuck = currentLuck,
+	})
+end
+
+-- Save player data safely
+local function savePlayerData(player)
+	local data = sessionData[player]
+	if not data or not playerDataStore then return end
+
+	local success, err = pcall(function()
+		local toSave = {
+			Rolls = data.Rolls,
+			Coins = data.Coins,
+			BestAura = data.BestAura,
+			BestRarity = data.BestRarity,
+			EquippedAura = data.EquippedAura,
+			EquippedGear = data.EquippedGear,
+			Inventory = data.Inventory,
+			AutoDeleteThreshold = data.AutoDeleteThreshold,
+			PotionExpiry = data.PotionExpiry,
+			Gamepasses = data.Gamepasses,
+		}
+		playerDataStore:SetAsync(tostring(player.UserId), toSave)
+	end)
+
+	if not success then
+		warn(string.format(&quot;[RNG Server] Failed to save data for %s: %s&quot;, player.Name, tostring(err)))
+	end
+end
+
+-- Load player data
+local function loadPlayerData(player)
+	local defaultData = {
+		Rolls = 0,
+		Coins = 100,
+		BestAura = &quot;None&quot;,
+		BestRarity = 1,
+		EquippedAura = &quot;None&quot;,
+		EquippedGear = &quot;None&quot;,
+		Inventory = {
+			Common = 1,
+		},
+		MaxStorage = AuraConfig.Settings.DefaultStorage,
+		AutoDeleteThreshold = 0,
+		PotionExpiry = 0,
+		Gamepasses = {
+			X2Luck = false,
+			AutoRoll = false,
+			ExtraStorage = false,
+			VIP = false,
+		},
+		TestPerks = {
+			X2Luck = false,
+			AutoRoll = false,
+			ExtraStorage = false,
+			VIP = false,
+		},
+	}
+
+	if playerDataStore then
+		local success, saved = pcall(function()
+			return playerDataStore:GetAsync(tostring(player.UserId))
+		end)
+		if success and type(saved) == &quot;table&quot; then
+			for k, v in pairs(saved) do
+				defaultData[k] = v
+			end
+		end
+	end
+
+	-- Check real Gamepass ownership from Roblox API
+	pcall(function()
+		local gp = AuraConfig.Settings.GamepassIds
+		if gp.X2Luck and gp.X2Luck &gt; 0 then
+			defaultData.Gamepasses.X2Luck = MarketplaceService:UserOwnsGamePassAsync(player.UserId, gp.X2Luck)
+		end
+		if gp.AutoRoll and gp.AutoRoll &gt; 0 then
+			defaultData.Gamepasses.AutoRoll = MarketplaceService:UserOwnsGamePassAsync(player.UserId, gp.AutoRoll)
+		end
+		if gp.ExtraStorage and gp.ExtraStorage &gt; 0 then
+			defaultData.Gamepasses.ExtraStorage = MarketplaceService:UserOwnsGamePassAsync(player.UserId, gp.ExtraStorage)
+		end
+		if gp.VIP and gp.VIP &gt; 0 then
+			defaultData.Gamepasses.VIP = MarketplaceService:UserOwnsGamePassAsync(player.UserId, gp.VIP)
+		end
+	end)
+
+	sessionData[player] = defaultData
+	syncClient(player)
+end
+
+-- Initialize player leaderstats and character setup
+local function onPlayerAdded(player)
+	local leaderstats = Instance.new(&quot;Folder&quot;)
+	leaderstats.Name = &quot;leaderstats&quot;
+	leaderstats.Parent = player
+
+	local rolls = Instance.new(&quot;IntValue&quot;)
+	rolls.Name = &quot;Rolls&quot;
+	rolls.Value = 0
+	rolls.Parent = leaderstats
+
+	local bestAura = Instance.new(&quot;StringValue&quot;)
+	bestAura.Name = &quot;Best Aura&quot;
+	bestAura.Value = &quot;None&quot;
+	bestAura.Parent = leaderstats
+
+	local coins = Instance.new(&quot;IntValue&quot;)
+	coins.Name = &quot;Coins&quot;
+	coins.Value = 100
+	coins.Parent = leaderstats
+
+	local luck = Instance.new(&quot;NumberValue&quot;)
+	luck.Name = &quot;Luck&quot;
+	luck.Value = 1.0
+	luck.Parent = leaderstats
+
+	loadPlayerData(player)
+
+	player.CharacterAdded:Connect(function(character)
+		task.wait(0.5)
+		local data = sessionData[player]
+		if data and data.EquippedAura and data.EquippedAura ~= &quot;None&quot; then
+			local isVIP = (data.Gamepasses.VIP or data.TestPerks.VIP)
+			AuraVisuals.ApplyAura(character, data.EquippedAura, isVIP)
+		end
+	end)
+end
+
+local function onPlayerRemoving(player)
+	savePlayerData(player)
+	sessionData[player] = nil
+	lastRollTime[player] = nil
+end
+
+-- CORE ROLL LOGIC
+local function executeRoll(player, isFastRoll)
+	local data = sessionData[player]
+	if not data then
+		return { Success = false, Message = &quot;Player data not loaded&quot; }
+	end
+
+	-- Rate limiting check
+	local now = os.clock()
+	local minCooldown = isFastRoll and AuraConfig.Settings.FastRollCooldown or (AuraConfig.Settings.BaseRollCooldown * 0.7)
+	local lastTime = lastRollTime[player] or 0
+	if (now - lastTime) &lt; minCooldown then
+		return { Success = false, Message = &quot;Roll on cooldown&quot; }
+	end
+	lastRollTime[player] = now
+
+	local totalLuck = calculateLuck(player, data)
+	local rolledAura = nil
+
+	-- Loop through rollable auras sorted by Rarity descending (rarest first)
+	for _, aura in ipairs(AuraConfig.RollableAuras) do
+		local effectiveRarity = math.max(1, math.floor(aura.Rarity / totalLuck))
+		if math.random(1, effectiveRarity) == 1 then
+			rolledAura = aura
+			break
+		end
+	end
+
+	-- Fallback if no rare hits
+	if not rolledAura then
+		if math.random(1, 2) == 1 then
+			rolledAura = AuraConfig.Auras.Uncommon
+		else
+			rolledAura = AuraConfig.Auras.Common
+		end
+	end
+
+	data.Rolls = (data.Rolls or 0) + 1
+
+	-- Determine coins earned
+	local coinsEarned = AuraConfig.Settings.CoinsPerRoll[rolledAura.Tier] or 5
+	data.Coins = (data.Coins or 0) + coinsEarned
+
+	-- Check if auto-delete applies
+	local wasAutoDeleted = false
+	if data.AutoDeleteThreshold and data.AutoDeleteThreshold &gt; 0 and rolledAura.Rarity &lt;= data.AutoDeleteThreshold then
+		wasAutoDeleted = true
+		-- Give bonus scrap coins for auto-deleted auras
+		data.Coins = data.Coins + math.max(1, math.floor(rolledAura.Rarity * 0.5))
+	else
+		-- Storage capacity check
+		local currentCount = getInventoryCount(data)
+		if currentCount &gt;= data.MaxStorage then
+			-- Inventory full fallback: give extra coin compensation
+			wasAutoDeleted = true
+			data.Coins = data.Coins + math.max(5, rolledAura.Rarity)
+		else
+			data.Inventory[rolledAura.Id] = (data.Inventory[rolledAura.Id] or 0) + 1
+		end
+	end
+
+	-- Check for new best aura
+	local isNewBest = false
+	if rolledAura.Rarity &gt; (data.BestRarity or 1) then
+		data.BestRarity = rolledAura.Rarity
+		data.BestAura = rolledAura.Name
+		isNewBest = true
+	end
+
+	-- Global announcement for high tier auras (1 in 10,000+)
+	if rolledAura.Rarity &gt;= AuraConfig.Settings.GlobalBroadcastThreshold then
+		GlobalAnnouncementEvent:FireAllClients({
+			PlayerName = player.DisplayName or player.Name,
+			AuraName = rolledAura.Name,
+			Rarity = rolledAura.Rarity,
+			Tier = rolledAura.Tier,
+		})
+	end
+
+	syncClient(player)
+
+	return {
+		Success = true,
+		Aura = rolledAura,
+		WasAutoDeleted = wasAutoDeleted,
+		CoinsEarned = coinsEarned,
+		IsNewBest = isNewBest,
+		TotalRolls = data.Rolls,
+	}
+end
+
+-- REMOTE EVENT &amp; FUNCTION HANDLERS
+
+RollRequestFunc.OnServerInvoke = function(player, isFastRoll)
+	return executeRoll(player, isFastRoll)
+end
+
+EquipAuraEvent.OnServerEvent:Connect(function(player, auraId)
+	local data = sessionData[player]
+	if not data then return end
+
+	if not auraId or auraId == &quot;None&quot; or auraId == &quot;&quot; then
+		data.EquippedAura = &quot;None&quot;
+		if player.Character then
+			AuraVisuals.ClearAura(player.Character)
+		end
+		syncClient(player)
+		return
+	end
+
+	-- Verify player owns at least 1 of this aura
+	if not data.Inventory[auraId] or data.Inventory[auraId] &lt;= 0 then
+		-- Check if it's the VIP special aura and player is VIP
+		if auraId == &quot;VIPCrown&quot; and (data.Gamepasses.VIP or data.TestPerks.VIP) then
+			-- Allowed
+		else
+			return
+		end
+	end
+
+	data.EquippedAura = auraId
+	if player.Character then
+		local isVIP = (data.Gamepasses.VIP or data.TestPerks.VIP)
+		AuraVisuals.ApplyAura(player.Character, auraId, isVIP)
+	end
+	syncClient(player)
+end)
+
+DeleteAuraEvent.OnServerEvent:Connect(function(player, auraId)
+	local data = sessionData[player]
+	if not data then return end
+
+	local currentCount = data.Inventory[auraId] or 0
+	if currentCount &lt;= 0 then return end
+
+	data.Inventory[auraId] = currentCount - 1
+	if data.Inventory[auraId] &lt;= 0 then
+		data.Inventory[auraId] = nil
+	end
+
+	-- If this was equipped, unequip it
+	if data.EquippedAura == auraId and (data.Inventory[auraId] == nil) then
+		data.EquippedAura = &quot;None&quot;
+		if player.Character then
+			AuraVisuals.ClearAura(player.Character)
+		end
+	end
+
+	local auraData = AuraConfig.Auras[auraId]
+	local scrapValue = auraData and math.max(2, math.floor(auraData.Rarity * 0.4)) or 2
+	data.Coins = (data.Coins or 0) + scrapValue
+
+	syncClient(player)
+end)
+
+SetAutoDeleteEvent.OnServerEvent:Connect(function(player, threshold)
+	local data = sessionData[player]
+	if not data then return end
+
+	data.AutoDeleteThreshold = math.max(0, math.floor(threshold or 0))
+	syncClient(player)
+end)
+
+-- CRAFTING HANDLER
+CraftAuraFunc.OnServerInvoke = function(player, recipeId)
+	local data = sessionData[player]
+	if not data then
+		return { Success = false, Message = &quot;Data not loaded&quot; }
+	end
+
+	-- Find recipe
+	local targetRecipe = nil
+	for _, recipe in ipairs(AuraConfig.Recipes) do
+		if recipe.Id == recipeId then
+			targetRecipe = recipe
+			break
+		end
+	end
+
+	if not targetRecipe then
+		return { Success = false, Message = &quot;Recipe not found&quot; }
+	end
+
+	-- Validate all ingredients exist in player inventory
+	for _, ing in ipairs(targetRecipe.Ingredients) do
+		local owned = data.Inventory[ing.AuraId] or 0
+		if owned &lt; ing.Count then
+			local auraName = AuraConfig.Auras[ing.AuraId] and AuraConfig.Auras[ing.AuraId].Name or ing.AuraId
+			return {
+				Success = false,
+				Message = string.format(&quot;Need %d of %s (You have %d)&quot;, ing.Count, auraName, owned),
+			}
+		end
+	end
+
+	-- Deduct ingredients
+	for _, ing in ipairs(targetRecipe.Ingredients) do
+		data.Inventory[ing.AuraId] = data.Inventory[ing.AuraId] - ing.Count
+		if data.Inventory[ing.AuraId] &lt;= 0 then
+			data.Inventory[ing.AuraId] = nil
+		end
+		-- Unequip if deducted aura was equipped and no more exist
+		if data.EquippedAura == ing.AuraId and not data.Inventory[ing.AuraId] then
+			data.EquippedAura = &quot;None&quot;
+			if player.Character then
+				AuraVisuals.ClearAura(player.Character)
+			end
+		end
+	end
+
+	-- Award result based on type
+	if targetRecipe.ResultType == &quot;Aura&quot; then
+		data.Inventory[targetRecipe.ResultId] = (data.Inventory[targetRecipe.ResultId] or 0) + 1
+	elseif targetRecipe.ResultType == &quot;Gear&quot; then
+		data.EquippedGear = targetRecipe.ResultId
+	elseif targetRecipe.ResultType == &quot;Potion&quot; then
+		local duration = targetRecipe.Duration or 600
+		data.PotionExpiry = os.time() + duration
+	end
+
+	-- Award crafting bonus coins
+	data.Coins = (data.Coins or 0) + 100
+
+	syncClient(player)
+
+	return {
+		Success = true,
+		Recipe = targetRecipe,
+		Message = &quot;Crafting Successful!&quot;,
+	}
+end
+
+-- TEST PERK TOGGLE (Allows free testing of all monetization features without Robux!)
+ToggleTestPerkEvent.OnServerEvent:Connect(function(player, perkName)
+	local data = sessionData[player]
+	if not data then return end
+
+	if data.TestPerks[perkName] ~= nil then
+		data.TestPerks[perkName] = not data.TestPerks[perkName]
+
+		-- If VIP was toggled on, give VIP Crown
+		if perkName == &quot;VIP&quot; and data.TestPerks.VIP then
+			data.Inventory[&quot;VIPCrown&quot;] = (data.Inventory[&quot;VIPCrown&quot;] or 0) + 1
+		end
+
+		syncClient(player)
+	end
+end)
+
+-- Connect PlayerAdded / PlayerRemoving
+Players.PlayerAdded:Connect(onPlayerAdded)
+Players.PlayerRemoving:Connect(onPlayerRemoving)
+
+for _, p in ipairs(Players:GetPlayers()) do
+	task.spawn(onPlayerAdded, p)
+end
+
+-- Periodic auto-save every 120 seconds
+task.spawn(function()
+	while true do
+		task.wait(120)
+		for _, player in ipairs(Players:GetPlayers()) do
+			savePlayerData(player)
+		end
+	end
+end)
+
+print(&quot;[Sols RNG] Server initialized successfully! All systems running.&quot;)
+</ProtectedString>
+			</Properties>
+		</Item>
+	</Item>
+	<Item class="ServerStorage" referent="RBX_ServerStorage">
+		<Properties>
+			<string name="Name">ServerStorage</string>
+		</Properties>
+	</Item>
+	<Item class="StarterGui" referent="RBX_StarterGui">
+		<Properties>
+			<string name="Name">StarterGui</string>
+		</Properties>
+		<Item class="ScreenGui" referent="RBX21">
+			<Properties>
+				<string name="Name">RNG_ScreenGui</string>
+				<bool name="ResetOnSpawn">false</bool>
+				<token name="ZIndexBehavior">1</token>
+			</Properties>
+			<Item class="LocalScript" referent="RBX22">
+				<Properties>
+					<string name="Name">RNGClient</string>
+					<ProtectedString name="Source">-- RNGClient.client.lua
+-- Client controller and complete GUI manager for Sol's RNG game.
+-- Manages HUD, Rolling Animations, Cutscenes, Inventory, Crafting, Shop &amp; Passes, and Settings.
+
+local Players = game:GetService(&quot;Players&quot;)
+local ReplicatedStorage = game:GetService(&quot;ReplicatedStorage&quot;)
+local TweenService = game:GetService(&quot;TweenService&quot;)
+local SoundService = game:GetService(&quot;SoundService&quot;)
+
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild(&quot;PlayerGui&quot;)
+
+-- ReplicatedStorage references
+local AuraRNGFolder = ReplicatedStorage:WaitForChild(&quot;AuraRNG&quot;)
+local EventsFolder = AuraRNGFolder:WaitForChild(&quot;Events&quot;)
+local ModulesFolder = AuraRNGFolder:WaitForChild(&quot;Modules&quot;)
+
+local AuraConfig = require(ModulesFolder:WaitForChild(&quot;AuraConfig&quot;))
+local SoundEffects = require(ModulesFolder:WaitForChild(&quot;SoundEffects&quot;))
+
+-- Remotes
+local RollRequestFunc = EventsFolder:WaitForChild(&quot;RollRequest&quot;)
+local CraftAuraFunc = EventsFolder:WaitForChild(&quot;CraftAura&quot;)
+local EquipAuraEvent = EventsFolder:WaitForChild(&quot;EquipAura&quot;)
+local DeleteAuraEvent = EventsFolder:WaitForChild(&quot;DeleteAura&quot;)
+local SetAutoDeleteEvent = EventsFolder:WaitForChild(&quot;SetAutoDelete&quot;)
+local ToggleTestPerkEvent = EventsFolder:WaitForChild(&quot;ToggleTestPerk&quot;)
+local DataSyncEvent = EventsFolder:WaitForChild(&quot;DataSync&quot;)
+local GlobalAnnouncementEvent = EventsFolder:WaitForChild(&quot;GlobalAnnouncement&quot;)
+
+-- Local Player Cache State
+local localData = {
+	Rolls = 0,
+	Coins = 100,
+	BestAura = &quot;None&quot;,
+	BestRarity = 1,
+	EquippedAura = &quot;None&quot;,
+	EquippedGear = &quot;None&quot;,
+	Inventory = {},
+	MaxStorage = 20,
+	AutoDeleteThreshold = 0,
+	PotionExpiry = 0,
+	Gamepasses = {},
+	TestPerks = {},
+	CurrentLuck = 1.0,
+}
+
+local isAutoRollOn = false
+local isFastRollOn = false
+local isRolling = false
+local selectedInventoryAura = nil
+local selectedCraftRecipe = nil
+
+--------------------------------------------------------------------------------
+-- UI CONSTRUCTION &amp; INSTANCES
+--------------------------------------------------------------------------------
+
+local screenGui = script.Parent
+if not screenGui:IsA(&quot;ScreenGui&quot;) then
+	screenGui = Instance.new(&quot;ScreenGui&quot;)
+	screenGui.Name = &quot;RNG_ScreenGui&quot;
+	screenGui.ResetOnSpawn = false
+	screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	screenGui.Parent = PlayerGui
+end
+
+-- Helper: Rounded corner
+local function addCorner(parent, radius)
+	local corner = Instance.new(&quot;UICorner&quot;)
+	corner.CornerRadius = UDim.new(0, radius or 10)
+	corner.Parent = parent
+	return corner
+end
+
+-- Helper: Stroke outline
+local function addStroke(parent, color, thickness)
+	local stroke = Instance.new(&quot;UIStroke&quot;)
+	stroke.Color = color or Color3.fromRGB(60, 65, 80)
+	stroke.Thickness = thickness or 1.5
+	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	stroke.Parent = parent
+	return stroke
+end
+
+-- Top HUD Container
+local topHud = Instance.new(&quot;Frame&quot;)
+topHud.Name = &quot;TopHUD&quot;
+topHud.Size = UDim2.new(0, 720, 0, 48)
+topHud.Position = UDim2.new(0.5, -360, 0, 14)
+topHud.BackgroundColor3 = Color3.fromRGB(18, 20, 28)
+topHud.BackgroundTransparency = 0.15
+addCorner(topHud, 12)
+addStroke(topHud, Color3.fromRGB(45, 52, 70), 1.5)
+topHud.Parent = screenGui
+
+local topListLayout = Instance.new(&quot;UIListLayout&quot;)
+topListLayout.FillDirection = Enum.FillDirection.Horizontal
+topListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+topListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+topListLayout.Padding = UDim.new(0, 20)
+topListLayout.Parent = topHud
+
+-- Top Stat Labels
+local function createTopStat(icon, defaultText, color)
+	local label = Instance.new(&quot;TextLabel&quot;)
+	label.Size = UDim2.new(0, 140, 1, 0)
+	label.BackgroundTransparency = 1
+	label.Font = Enum.Font.GothamBold
+	label.TextSize = 15
+	label.TextColor3 = color
+	label.Text = icon .. &quot; &quot; .. defaultText
+	label.TextXAlignment = Enum.TextXAlignment.Center
+	label.Parent = topHud
+	return label
+end
+
+local rollsLabel = createTopStat(&quot;🎲&quot;, &quot;Rolls: 0&quot;, Color3.fromRGB(220, 225, 240))
+local luckLabel = createTopStat(&quot;🍀&quot;, &quot;Luck: x1.0&quot;, Color3.fromRGB(74, 222, 128))
+local coinsLabel = createTopStat(&quot;🪙&quot;, &quot;Coins: 100&quot;, Color3.fromRGB(250, 204, 21))
+local potionLabel = createTopStat(&quot;⏳&quot;, &quot;Potion: None&quot;, Color3.fromRGB(56, 189, 248))
+
+-- Bottom Center Controls Container
+local bottomControls = Instance.new(&quot;Frame&quot;)
+bottomControls.Name = &quot;BottomControls&quot;
+bottomControls.Size = UDim2.new(0, 400, 0, 100)
+bottomControls.Position = UDim2.new(0.5, -200, 1, -115)
+bottomControls.BackgroundTransparency = 1
+bottomControls.Parent = screenGui
+
+-- Big ROLL Button
+local rollButton = Instance.new(&quot;TextButton&quot;)
+rollButton.Name = &quot;RollButton&quot;
+rollButton.Size = UDim2.new(0, 210, 0, 62)
+rollButton.Position = UDim2.new(0.5, -105, 0, 0)
+rollButton.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
+rollButton.Font = Enum.Font.GothamBlack
+rollButton.TextSize = 24
+rollButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+rollButton.Text = &quot;🎲 ROLL&quot;
+addCorner(rollButton, 14)
+addStroke(rollButton, Color3.fromRGB(96, 165, 250), 2)
+rollButton.Parent = bottomControls
+
+-- Roll Button Gradient
+local rollGradient = Instance.new(&quot;UIGradient&quot;)
+rollGradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(59, 130, 246)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(29, 78, 216)),
+})
+rollGradient.Rotation = 45
+rollGradient.Parent = rollButton
+
+-- Auto Roll Button
+local autoRollBtn = Instance.new(&quot;TextButton&quot;)
+autoRollBtn.Name = &quot;AutoRollButton&quot;
+autoRollBtn.Size = UDim2.new(0, 130, 0, 32)
+autoRollBtn.Position = UDim2.new(0.5, -140, 1, -34)
+autoRollBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
+autoRollBtn.Font = Enum.Font.GothamBold
+autoRollBtn.TextSize = 13
+autoRollBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
+autoRollBtn.Text = &quot;⚡ AUTO: OFF&quot;
+addCorner(autoRollBtn, 8)
+addStroke(autoRollBtn, Color3.fromRGB(55, 62, 80), 1)
+autoRollBtn.Parent = bottomControls
+
+-- Fast Roll Button
+local fastRollBtn = Instance.new(&quot;TextButton&quot;)
+fastRollBtn.Name = &quot;FastRollButton&quot;
+fastRollBtn.Size = UDim2.new(0, 130, 0, 32)
+fastRollBtn.Position = UDim2.new(0.5, 10, 1, -34)
+fastRollBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
+fastRollBtn.Font = Enum.Font.GothamBold
+fastRollBtn.TextSize = 13
+fastRollBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
+fastRollBtn.Text = &quot;⏩ FAST: OFF&quot;
+addCorner(fastRollBtn, 8)
+addStroke(fastRollBtn, Color3.fromRGB(55, 62, 80), 1)
+fastRollBtn.Parent = bottomControls
+
+-- Left Navigation Bar
+local leftNav = Instance.new(&quot;Frame&quot;)
+leftNav.Name = &quot;LeftNav&quot;
+leftNav.Size = UDim2.new(0, 68, 0, 280)
+leftNav.Position = UDim2.new(0, 16, 0.5, -140)
+leftNav.BackgroundColor3 = Color3.fromRGB(18, 20, 28)
+leftNav.BackgroundTransparency = 0.2
+addCorner(leftNav, 14)
+addStroke(leftNav, Color3.fromRGB(45, 52, 70), 1.5)
+leftNav.Parent = screenGui
+
+local navListLayout = Instance.new(&quot;UIListLayout&quot;)
+navListLayout.FillDirection = Enum.FillDirection.Vertical
+navListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+navListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+navListLayout.Padding = UDim.new(0, 12)
+navListLayout.Parent = leftNav
+
+local function createNavButton(name, icon, tooltip)
+	local btn = Instance.new(&quot;TextButton&quot;)
+	btn.Name = name .. &quot;Btn&quot;
+	btn.Size = UDim2.new(0, 52, 0, 52)
+	btn.BackgroundColor3 = Color3.fromRGB(28, 33, 46)
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 22
+	btn.Text = icon
+	addCorner(btn, 10)
+	addStroke(btn, Color3.fromRGB(50, 58, 78), 1.2)
+	btn.Parent = leftNav
+	return btn
+end
+
+local navInventoryBtn = createNavButton(&quot;Inventory&quot;, &quot;🎒&quot;, &quot;Inventory&quot;)
+local navCraftingBtn = createNavButton(&quot;Crafting&quot;, &quot;⚗️&quot;, &quot;Crafting&quot;)
+local navShopBtn = createNavButton(&quot;Shop&quot;, &quot;🛒&quot;, &quot;Shop &amp; Passes&quot;)
+local navSettingsBtn = createNavButton(&quot;Settings&quot;, &quot;⚙️&quot;, &quot;Settings&quot;)
+
+-- Bottom Left: Equipped Aura Card
+local equippedCard = Instance.new(&quot;Frame&quot;)
+equippedCard.Name = &quot;EquippedCard&quot;
+equippedCard.Size = UDim2.new(0, 210, 0, 62)
+equippedCard.Position = UDim2.new(0, 16, 1, -78)
+equippedCard.BackgroundColor3 = Color3.fromRGB(18, 20, 28)
+equippedCard.BackgroundTransparency = 0.2
+addCorner(equippedCard, 10)
+addStroke(equippedCard, Color3.fromRGB(45, 52, 70), 1.5)
+equippedCard.Parent = screenGui
+
+local equippedTitle = Instance.new(&quot;TextLabel&quot;)
+equippedTitle.Size = UDim2.new(1, -65, 0, 20)
+equippedTitle.Position = UDim2.new(0, 12, 0, 10)
+equippedTitle.BackgroundTransparency = 1
+equippedTitle.Font = Enum.Font.GothamBold
+equippedTitle.TextSize = 14
+equippedTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+equippedTitle.TextXAlignment = Enum.TextXAlignment.Left
+equippedTitle.Text = &quot;Aura: None&quot;
+equippedTitle.Parent = equippedCard
+
+local equippedSubtitle = Instance.new(&quot;TextLabel&quot;)
+equippedSubtitle.Size = UDim2.new(1, -65, 0, 16)
+equippedSubtitle.Position = UDim2.new(0, 12, 0, 32)
+equippedSubtitle.BackgroundTransparency = 1
+equippedSubtitle.Font = Enum.Font.GothamMedium
+equippedSubtitle.TextSize = 12
+equippedSubtitle.TextColor3 = Color3.fromRGB(156, 163, 175)
+equippedSubtitle.TextXAlignment = Enum.TextXAlignment.Left
+equippedSubtitle.Text = &quot;Not Equipped&quot;
+equippedSubtitle.Parent = equippedCard
+
+local unequipBtn = Instance.new(&quot;TextButton&quot;)
+unequipBtn.Name = &quot;UnequipBtn&quot;
+unequipBtn.Size = UDim2.new(0, 42, 0, 42)
+unequipBtn.Position = UDim2.new(1, -52, 0.5, -21)
+unequipBtn.BackgroundColor3 = Color3.fromRGB(35, 40, 55)
+unequipBtn.Font = Enum.Font.GothamBold
+unequipBtn.TextSize = 12
+unequipBtn.TextColor3 = Color3.fromRGB(239, 68, 68)
+unequipBtn.Text = &quot;✕&quot;
+addCorner(unequipBtn, 8)
+unequipBtn.Parent = equippedCard
+
+--------------------------------------------------------------------------------
+-- MODAL WINDOW HELPER
+--------------------------------------------------------------------------------
+
+local activeModal = nil
+
+local function createModalWindow(titleText, width, height)
+	local window = Instance.new(&quot;Frame&quot;)
+	window.Size = UDim2.new(0, width, 0, height)
+	window.Position = UDim2.new(0.5, -width/2, 0.5, -height/2)
+	window.BackgroundColor3 = Color3.fromRGB(18, 20, 28)
+	window.BackgroundTransparency = 0.05
+	window.Visible = false
+	addCorner(window, 14)
+	addStroke(window, Color3.fromRGB(55, 65, 88), 2)
+	window.Parent = screenGui
+
+	-- Header Bar
+	local header = Instance.new(&quot;Frame&quot;)
+	header.Size = UDim2.new(1, 0, 0, 48)
+	header.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
+	header.BackgroundTransparency = 0.3
+	addCorner(header, 14)
+	header.Parent = window
+
+	local titleLabel = Instance.new(&quot;TextLabel&quot;)
+	titleLabel.Size = UDim2.new(1, -60, 1, 0)
+	titleLabel.Position = UDim2.new(0, 18, 0, 0)
+	titleLabel.BackgroundTransparency = 1
+	titleLabel.Font = Enum.Font.GothamBlack
+	titleLabel.TextSize = 18
+	titleLabel.TextColor3 = Color3.fromRGB(240, 243, 250)
+	titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+	titleLabel.Text = titleText
+	titleLabel.Parent = header
+
+	local closeBtn = Instance.new(&quot;TextButton&quot;)
+	closeBtn.Size = UDim2.new(0, 32, 0, 32)
+	closeBtn.Position = UDim2.new(1, -40, 0.5, -16)
+	closeBtn.BackgroundColor3 = Color3.fromRGB(40, 45, 60)
+	closeBtn.Font = Enum.Font.GothamBold
+	closeBtn.TextSize = 16
+	closeBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
+	closeBtn.Text = &quot;✕&quot;
+	addCorner(closeBtn, 8)
+	closeBtn.Parent = header
+
+	local content = Instance.new(&quot;Frame&quot;)
+	content.Size = UDim2.new(1, -32, 1, -64)
+	content.Position = UDim2.new(0, 16, 0, 54)
+	content.BackgroundTransparency = 1
+	content.Parent = window
+
+	closeBtn.MouseButton1Click:Connect(function()
+		SoundEffects.Play(&quot;Click&quot;)
+		window.Visible = false
+		if activeModal == window then
+			activeModal = nil
+		end
+	end)
+
+	return window, content, closeBtn
+end
+
+local function toggleModal(modal)
+	SoundEffects.Play(&quot;Click&quot;)
+	if activeModal == modal then
+		modal.Visible = false
+		activeModal = nil
+	else
+		if activeModal then
+			activeModal.Visible = false
+		end
+		modal.Visible = true
+		activeModal = modal
+	end
+end
+
+--------------------------------------------------------------------------------
+-- 1. INVENTORY WINDOW
+--------------------------------------------------------------------------------
+
+local inventoryWindow, invContent = createModalWindow(&quot;🎒 AURA INVENTORY&quot;, 680, 480)
+
+-- Top Storage Bar
+local storageInfo = Instance.new(&quot;TextLabel&quot;)
+storageInfo.Size = UDim2.new(0, 200, 0, 24)
+storageInfo.Position = UDim2.new(0, 0, 0, 0)
+storageInfo.BackgroundTransparency = 1
+storageInfo.Font = Enum.Font.GothamBold
+storageInfo.TextSize = 14
+storageInfo.TextColor3 = Color3.fromRGB(156, 163, 175)
+storageInfo.TextXAlignment = Enum.TextXAlignment.Left
+storageInfo.Text = &quot;Storage: 0 / 20&quot;
+storageInfo.Parent = invContent
+
+-- Auto Delete Threshold Dropdown/Button
+local autoDeleteBtn = Instance.new(&quot;TextButton&quot;)
+autoDeleteBtn.Size = UDim2.new(0, 180, 0, 26)
+autoDeleteBtn.Position = UDim2.new(1, -180, 0, 0)
+autoDeleteBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
+autoDeleteBtn.Font = Enum.Font.GothamMedium
+autoDeleteBtn.TextSize = 12
+autoDeleteBtn.TextColor3 = Color3.fromRGB(220, 225, 235)
+autoDeleteBtn.Text = &quot;Auto-Delete: None&quot;
+addCorner(autoDeleteBtn, 6)
+addStroke(autoDeleteBtn, Color3.fromRGB(50, 58, 78), 1)
+autoDeleteBtn.Parent = invContent
+
+-- Left Grid Container
+local invScroll = Instance.new(&quot;ScrollingFrame&quot;)
+invScroll.Size = UDim2.new(1, -210, 1, -36)
+invScroll.Position = UDim2.new(0, 0, 0, 32)
+invScroll.BackgroundColor3 = Color3.fromRGB(12, 14, 20)
+invScroll.BackgroundTransparency = 0.5
+invScroll.ScrollBarThickness = 6
+invScroll.ScrollBarImageColor3 = Color3.fromRGB(60, 70, 95)
+addCorner(invScroll, 8)
+invScroll.Parent = invContent
+
+local invGrid = Instance.new(&quot;UIGridLayout&quot;)
+invGrid.CellSize = UDim2.new(0, 100, 0, 100)
+invGrid.CellPadding = UDim2.new(0, 8, 0, 8)
+invGrid.Parent = invScroll
+
+-- Right Detail Panel
+local detailPanel = Instance.new(&quot;Frame&quot;)
+detailPanel.Size = UDim2.new(0, 195, 1, -36)
+detailPanel.Position = UDim2.new(1, -195, 0, 32)
+detailPanel.BackgroundColor3 = Color3.fromRGB(14, 16, 22)
+addCorner(detailPanel, 8)
+addStroke(detailPanel, Color3.fromRGB(40, 48, 65), 1)
+detailPanel.Parent = invContent
+
+local detailName = Instance.new(&quot;TextLabel&quot;)
+detailName.Size = UDim2.new(1, -16, 0, 28)
+detailName.Position = UDim2.new(0, 8, 0, 10)
+detailName.BackgroundTransparency = 1
+detailName.Font = Enum.Font.GothamBlack
+detailName.TextSize = 16
+detailName.TextColor3 = Color3.fromRGB(255, 255, 255)
+detailName.Text = &quot;Select an Aura&quot;
+detailName.Parent = detailPanel
+
+local detailRarity = Instance.new(&quot;TextLabel&quot;)
+detailRarity.Size = UDim2.new(1, -16, 0, 20)
+detailRarity.Position = UDim2.new(0, 8, 0, 38)
+detailRarity.BackgroundTransparency = 1
+detailRarity.Font = Enum.Font.GothamBold
+detailRarity.TextSize = 13
+detailRarity.TextColor3 = Color3.fromRGB(156, 163, 175)
+detailRarity.Text = &quot;&quot;
+detailRarity.Parent = detailPanel
+
+local detailDesc = Instance.new(&quot;TextLabel&quot;)
+detailDesc.Size = UDim2.new(1, -16, 0, 80)
+detailDesc.Position = UDim2.new(0, 8, 0, 64)
+detailDesc.BackgroundTransparency = 1
+detailDesc.Font = Enum.Font.Gotham
+detailDesc.TextSize = 12
+detailDesc.TextColor3 = Color3.fromRGB(200, 205, 220)
+detailDesc.TextWrapped = true
+detailDesc.TextYAlignment = Enum.TextYAlignment.Top
+detailDesc.Text = &quot;Click any aura card on the left to equip or manage.&quot;
+detailDesc.Parent = detailPanel
+
+local equipActionBtn = Instance.new(&quot;TextButton&quot;)
+equipActionBtn.Size = UDim2.new(1, -20, 0, 38)
+equipActionBtn.Position = UDim2.new(0, 10, 1, -94)
+equipActionBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
+equipActionBtn.Font = Enum.Font.GothamBold
+equipActionBtn.TextSize = 14
+equipActionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+equipActionBtn.Text = &quot;Equip&quot;
+equipActionBtn.Visible = false
+addCorner(equipActionBtn, 8)
+equipActionBtn.Parent = detailPanel
+
+local deleteActionBtn = Instance.new(&quot;TextButton&quot;)
+deleteActionBtn.Size = UDim2.new(1, -20, 0, 36)
+deleteActionBtn.Position = UDim2.new(0, 10, 1, -48)
+deleteActionBtn.BackgroundColor3 = Color3.fromRGB(45, 25, 28)
+deleteActionBtn.Font = Enum.Font.GothamMedium
+deleteActionBtn.TextSize = 12
+deleteActionBtn.TextColor3 = Color3.fromRGB(248, 113, 113)
+deleteActionBtn.Text = &quot;Scrap (+Coins)&quot;
+deleteActionBtn.Visible = false
+addCorner(deleteActionBtn, 8)
+deleteActionBtn.Parent = detailPanel
+
+-- Function to refresh inventory UI
+local function refreshInventoryUI()
+	-- Clear old item cards
+	for _, child in ipairs(invScroll:GetChildren()) do
+		if child:IsA(&quot;TextButton&quot;) then
+			child:Destroy()
+		end
+	end
+
+	local totalCount = 0
+	for auraId, count in pairs(localData.Inventory) do
+		totalCount = totalCount + count
+		local auraData = AuraConfig.Auras[auraId]
+		if auraData then
+			local card = Instance.new(&quot;TextButton&quot;)
+			card.Name = &quot;Card_&quot; .. auraId
+			card.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
+			card.Text = &quot;&quot;
+			addCorner(card, 8)
+			local stroke = addStroke(card, auraData.Color, 1.5)
+
+			local name = Instance.new(&quot;TextLabel&quot;)
+			name.Size = UDim2.new(1, -8, 0, 28)
+			name.Position = UDim2.new(0, 4, 0, 6)
+			name.BackgroundTransparency = 1
+			name.Font = Enum.Font.GothamBold
+			name.TextSize = 12
+			name.TextColor3 = auraData.Color
+			name.Text = auraData.Name
+			name.TextWrapped = true
+			name.Parent = card
+
+			local rarity = Instance.new(&quot;TextLabel&quot;)
+			rarity.Size = UDim2.new(1, -8, 0, 16)
+			rarity.Position = UDim2.new(0, 4, 0, 36)
+			rarity.BackgroundTransparency = 1
+			rarity.Font = Enum.Font.GothamMedium
+			rarity.TextSize = 10
+			rarity.TextColor3 = Color3.fromRGB(156, 163, 175)
+			rarity.Text = AuraConfig.FormatRarity(auraData.Rarity or 0)
+			rarity.Parent = card
+
+			local countTag = Instance.new(&quot;TextLabel&quot;)
+			countTag.Size = UDim2.new(0, 30, 0, 16)
+			countTag.Position = UDim2.new(1, -34, 1, -20)
+			countTag.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
+			countTag.Font = Enum.Font.GothamBold
+			countTag.TextSize = 10
+			countTag.TextColor3 = Color3.fromRGB(220, 225, 240)
+			countTag.Text = &quot;x&quot; .. tostring(count)
+			addCorner(countTag, 4)
+			countTag.Parent = card
+
+			-- Equipped Indicator
+			if localData.EquippedAura == auraId then
+				local eqTag = Instance.new(&quot;TextLabel&quot;)
+				eqTag.Size = UDim2.new(0, 52, 0, 16)
+				eqTag.Position = UDim2.new(0, 4, 1, -20)
+				eqTag.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+				eqTag.Font = Enum.Font.GothamBold
+				eqTag.TextSize = 9
+				eqTag.TextColor3 = Color3.fromRGB(255, 255, 255)
+				eqTag.Text = &quot;EQUIPPED&quot;
+				addCorner(eqTag, 4)
+				eqTag.Parent = card
+			end
+
+			card.MouseButton1Click:Connect(function()
+				SoundEffects.Play(&quot;Click&quot;)
+				selectedInventoryAura = auraId
+				detailName.Text = auraData.Name
+				detailName.TextColor3 = auraData.Color
+				detailRarity.Text = AuraConfig.FormatRarity(auraData.Rarity or 0)
+				detailDesc.Text = auraData.Description
+
+				equipActionBtn.Visible = true
+				if localData.EquippedAura == auraId then
+					equipActionBtn.Text = &quot;Unequip&quot;
+					equipActionBtn.BackgroundColor3 = Color3.fromRGB(75, 85, 99)
+				else
+					equipActionBtn.Text = &quot;Equip&quot;
+					equipActionBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
+				end
+				deleteActionBtn.Visible = true
+			end)
+
+			card.Parent = invScroll
+		end
+	end
+
+	storageInfo.Text = string.format(&quot;Storage: %d / %d&quot;, totalCount, localData.MaxStorage)
+	invScroll.CanvasSize = UDim2.new(0, 0, 0, invGrid.AbsoluteContentSize.Y + 20)
+end
+
+equipActionBtn.MouseButton1Click:Connect(function()
+	if not selectedInventoryAura then return end
+	SoundEffects.Play(&quot;Equip&quot;)
+	if localData.EquippedAura == selectedInventoryAura then
+		EquipAuraEvent:FireServer(&quot;None&quot;)
+	else
+		EquipAuraEvent:FireServer(selectedInventoryAura)
+	end
+end)
+
+deleteActionBtn.MouseButton1Click:Connect(function()
+	if not selectedInventoryAura then return end
+	SoundEffects.Play(&quot;Click&quot;)
+	DeleteAuraEvent:FireServer(selectedInventoryAura)
+	selectedInventoryAura = nil
+	equipActionBtn.Visible = false
+	deleteActionBtn.Visible = false
+	detailName.Text = &quot;Select an Aura&quot;
+	detailRarity.Text = &quot;&quot;
+	detailDesc.Text = &quot;Aura scrapped for coins.&quot;
+end)
+
+-- Cycle auto-delete threshold
+local thresholds = { 0, 2, 4, 16, 64 }
+local thresholdNames = { [0] = &quot;None&quot;, [2] = &quot;Common (1/2)&quot;, [4] = &quot;Uncommon (1/4)&quot;, [16] = &quot;Rare (1/16)&quot;, [64] = &quot;Crystallized (1/64)&quot; }
+autoDeleteBtn.MouseButton1Click:Connect(function()
+	SoundEffects.Play(&quot;Click&quot;)
+	local cur = localData.AutoDeleteThreshold or 0
+	local nextIdx = 1
+	for i, v in ipairs(thresholds) do
+		if v == cur then
+			nextIdx = (i % #thresholds) + 1
+			break
+		end
+	end
+	local nextVal = thresholds[nextIdx]
+	SetAutoDeleteEvent:FireServer(nextVal)
+end)
+
+--------------------------------------------------------------------------------
+-- 2. CRAFTING ALCHEMIST WINDOW
+--------------------------------------------------------------------------------
+
+local craftWindow, craftContent = createModalWindow(&quot;⚗️ ALCHEMIST CRAFTING FORGE&quot;, 720, 500)
+
+local recipeListScroll = Instance.new(&quot;ScrollingFrame&quot;)
+recipeListScroll.Size = UDim2.new(0, 240, 1, 0)
+recipeListScroll.Position = UDim2.new(0, 0, 0, 0)
+recipeListScroll.BackgroundColor3 = Color3.fromRGB(12, 14, 20)
+recipeListScroll.BackgroundTransparency = 0.5
+recipeListScroll.ScrollBarThickness = 4
+addCorner(recipeListScroll, 8)
+recipeListScroll.Parent = craftContent
+
+local recipeListLayout = Instance.new(&quot;UIListLayout&quot;)
+recipeListLayout.Padding = UDim.new(0, 8)
+recipeListLayout.Parent = recipeListScroll
+
+-- Recipe Details &amp; Ingredients Panel
+local craftDetail = Instance.new(&quot;Frame&quot;)
+craftDetail.Size = UDim2.new(1, -255, 1, 0)
+craftDetail.Position = UDim2.new(0, 255, 0, 0)
+craftDetail.BackgroundColor3 = Color3.fromRGB(14, 16, 22)
+addCorner(craftDetail, 8)
+addStroke(craftDetail, Color3.fromRGB(40, 48, 65), 1)
+craftDetail.Parent = craftContent
+
+local craftResultName = Instance.new(&quot;TextLabel&quot;)
+craftResultName.Size = UDim2.new(1, -20, 0, 28)
+craftResultName.Position = UDim2.new(0, 10, 0, 12)
+craftResultName.BackgroundTransparency = 1
+craftResultName.Font = Enum.Font.GothamBlack
+craftResultName.TextSize = 18
+craftResultName.TextColor3 = Color3.fromRGB(255, 255, 255)
+craftResultName.Text = &quot;Select a Recipe&quot;
+craftResultName.Parent = craftDetail
+
+local craftResultDesc = Instance.new(&quot;TextLabel&quot;)
+craftResultDesc.Size = UDim2.new(1, -20, 0, 40)
+craftResultDesc.Position = UDim2.new(0, 10, 0, 42)
+craftResultDesc.BackgroundTransparency = 1
+craftResultDesc.Font = Enum.Font.Gotham
+craftResultDesc.TextSize = 12
+craftResultDesc.TextColor3 = Color3.fromRGB(200, 205, 220)
+craftResultDesc.TextWrapped = true
+craftResultDesc.Text = &quot;Combine rare auras to forge exclusive godly auras, luck gauntlets, and elixirs!&quot;
+craftResultDesc.Parent = craftDetail
+
+local ingredientsHeader = Instance.new(&quot;TextLabel&quot;)
+ingredientsHeader.Size = UDim2.new(1, -20, 0, 20)
+ingredientsHeader.Position = UDim2.new(0, 10, 0, 92)
+ingredientsHeader.BackgroundTransparency = 1
+ingredientsHeader.Font = Enum.Font.GothamBold
+ingredientsHeader.TextSize = 13
+ingredientsHeader.TextColor3 = Color3.fromRGB(156, 163, 175)
+ingredientsHeader.Text = &quot;REQUIRED INGREDIENTS:&quot;
+ingredientsHeader.TextXAlignment = Enum.TextXAlignment.Left
+ingredientsHeader.Parent = craftDetail
+
+local ingredientsFrame = Instance.new(&quot;Frame&quot;)
+ingredientsFrame.Size = UDim2.new(1, -20, 0, 180)
+ingredientsFrame.Position = UDim2.new(0, 10, 0, 118)
+ingredientsFrame.BackgroundTransparency = 1
+ingredientsFrame.Parent = craftDetail
+
+local ingListLayout = Instance.new(&quot;UIListLayout&quot;)
+ingListLayout.Padding = UDim.new(0, 6)
+ingListLayout.Parent = ingredientsFrame
+
+local craftActionBtn = Instance.new(&quot;TextButton&quot;)
+craftActionBtn.Size = UDim2.new(1, -20, 0, 44)
+craftActionBtn.Position = UDim2.new(0, 10, 1, -54)
+craftActionBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
+craftActionBtn.Font = Enum.Font.GothamBlack
+craftActionBtn.TextSize = 16
+craftActionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+craftActionBtn.Text = &quot;⚗️ FORGE RECIPE&quot;
+craftActionBtn.Visible = false
+addCorner(craftActionBtn, 10)
+craftActionBtn.Parent = craftDetail
+
+local function refreshCraftingUI()
+	for _, child in ipairs(recipeListScroll:GetChildren()) do
+		if child:IsA(&quot;TextButton&quot;) then child:Destroy() end
+	end
+
+	for _, recipe in ipairs(AuraConfig.Recipes) do
+		local btn = Instance.new(&quot;TextButton&quot;)
+		btn.Size = UDim2.new(1, -8, 0, 52)
+		btn.BackgroundColor3 = Color3.fromRGB(22, 26, 36)
+		btn.Text = &quot;&quot;
+		addCorner(btn, 8)
+		addStroke(btn, recipe.Color, 1.2)
+
+		local title = Instance.new(&quot;TextLabel&quot;)
+		title.Size = UDim2.new(1, -12, 0, 22)
+		title.Position = UDim2.new(0, 8, 0, 6)
+		title.BackgroundTransparency = 1
+		title.Font = Enum.Font.GothamBold
+		title.TextSize = 13
+		title.TextColor3 = recipe.Color
+		title.TextXAlignment = Enum.TextXAlignment.Left
+		title.Text = recipe.Name
+		title.Parent = btn
+
+		local typeLabel = Instance.new(&quot;TextLabel&quot;)
+		typeLabel.Size = UDim2.new(1, -12, 0, 16)
+		typeLabel.Position = UDim2.new(0, 8, 0, 28)
+		typeLabel.BackgroundTransparency = 1
+		typeLabel.Font = Enum.Font.Gotham
+		typeLabel.TextSize = 11
+		typeLabel.TextColor3 = Color3.fromRGB(156, 163, 175)
+		typeLabel.TextXAlignment = Enum.TextXAlignment.Left
+		typeLabel.Text = string.format(&quot;Type: %s&quot;, recipe.ResultType)
+		typeLabel.Parent = btn
+
+		btn.MouseButton1Click:Connect(function()
+			SoundEffects.Play(&quot;Click&quot;)
+			selectedCraftRecipe = recipe
+			craftResultName.Text = recipe.Name
+			craftResultName.TextColor3 = recipe.Color
+			craftResultDesc.Text = recipe.Description
+
+			-- Clear ingredients frame
+			for _, child in ipairs(ingredientsFrame:GetChildren()) do
+				if child:IsA(&quot;Frame&quot;) then child:Destroy() end
+			end
+
+			local canCraftAll = true
+			for _, ing in ipairs(recipe.Ingredients) do
+				local owned = localData.Inventory[ing.AuraId] or 0
+				local auraData = AuraConfig.Auras[ing.AuraId]
+				local auraName = auraData and auraData.Name or ing.AuraId
+				local auraColor = auraData and auraData.Color or Color3.fromRGB(220, 225, 240)
+
+				local row = Instance.new(&quot;Frame&quot;)
+				row.Size = UDim2.new(1, 0, 0, 32)
+				row.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
+				addCorner(row, 6)
+				row.Parent = ingredientsFrame
+
+				local nameLbl = Instance.new(&quot;TextLabel&quot;)
+				nameLbl.Size = UDim2.new(0.65, 0, 1, 0)
+				nameLbl.Position = UDim2.new(0, 8, 0, 0)
+				nameLbl.BackgroundTransparency = 1
+				nameLbl.Font = Enum.Font.GothamBold
+				nameLbl.TextSize = 12
+				nameLbl.TextColor3 = auraColor
+				nameLbl.TextXAlignment = Enum.TextXAlignment.Left
+				nameLbl.Text = auraName
+				nameLbl.Parent = row
+
+				local countLbl = Instance.new(&quot;TextLabel&quot;)
+				countLbl.Size = UDim2.new(0.3, 0, 1, 0)
+				countLbl.Position = UDim2.new(0.68, 0, 0, 0)
+				countLbl.BackgroundTransparency = 1
+				countLbl.Font = Enum.Font.GothamBold
+				countLbl.TextSize = 12
+				if owned &gt;= ing.Count then
+					countLbl.TextColor3 = Color3.fromRGB(74, 222, 128)
+					countLbl.Text = string.format(&quot;✓ %d / %d&quot;, owned, ing.Count)
+				else
+					countLbl.TextColor3 = Color3.fromRGB(248, 113, 113)
+					countLbl.Text = string.format(&quot;✕ %d / %d&quot;, owned, ing.Count)
+					canCraftAll = false
+				end
+				countLbl.Parent = row
+			end
+
+			craftActionBtn.Visible = true
+			if canCraftAll then
+				craftActionBtn.Text = &quot;⚗️ FORGE NOW&quot;
+				craftActionBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+			else
+				craftActionBtn.Text = &quot;Missing Auras&quot;
+				craftActionBtn.BackgroundColor3 = Color3.fromRGB(55, 65, 80)
+			end
+		end)
+
+		btn.Parent = recipeListScroll
+	end
+
+	recipeListScroll.CanvasSize = UDim2.new(0, 0, 0, recipeListLayout.AbsoluteContentSize.Y + 20)
+end
+
+craftActionBtn.MouseButton1Click:Connect(function()
+	if not selectedCraftRecipe then return end
+	SoundEffects.Play(&quot;Click&quot;)
+	local result = CraftAuraFunc:InvokeServer(selectedCraftRecipe.Id)
+	if result and result.Success then
+		SoundEffects.Play(&quot;Craft&quot;)
+		refreshCraftingUI()
+		refreshInventoryUI()
+	end
+end)
+
+--------------------------------------------------------------------------------
+-- 3. SHOP &amp; GAMEPASSES WINDOW
+--------------------------------------------------------------------------------
+
+local shopWindow, shopContent = createModalWindow(&quot;🛒 SHOP &amp; PASSES (TEST MODE INCLUDED)&quot;, 700, 480)
+
+local shopScroll = Instance.new(&quot;ScrollingFrame&quot;)
+shopScroll.Size = UDim2.new(1, 0, 1, 0)
+shopScroll.BackgroundColor3 = Color3.fromRGB(12, 14, 20)
+shopScroll.BackgroundTransparency = 0.5
+shopScroll.ScrollBarThickness = 6
+addCorner(shopScroll, 8)
+shopScroll.Parent = shopContent
+
+local shopLayout = Instance.new(&quot;UIListLayout&quot;)
+shopLayout.Padding = UDim.new(0, 10)
+shopLayout.Parent = shopScroll
+
+local passItems = {
+	{
+		Id = &quot;X2Luck&quot;,
+		Name = &quot;🎲 x2 Luck Pass&quot;,
+		Color = Color3.fromRGB(74, 222, 128),
+		Desc = &quot;Permanently doubles your chance for all rare, mythic, and godly auras!&quot;,
+		PerkKey = &quot;X2Luck&quot;,
+	},
+	{
+		Id = &quot;AutoRoll&quot;,
+		Name = &quot;⚡ Auto Roll Pass&quot;,
+		Color = Color3.fromRGB(250, 204, 21),
+		Desc = &quot;Automatically rolls in the background while you chat, explore, or AFK!&quot;,
+		PerkKey = &quot;AutoRoll&quot;,
+	},
+	{
+		Id = &quot;ExtraStorage&quot;,
+		Name = &quot;🎨 Aura Storage (+30)&quot;,
+		Color = Color3.fromRGB(56, 189, 248),
+		Desc = &quot;Expands your aura inventory capacity by +30 slots to keep all your treasures!&quot;,
+		PerkKey = &quot;ExtraStorage&quot;,
+	},
+	{
+		Id = &quot;VIP&quot;,
+		Name = &quot;⭐ VIP Supporter Pass&quot;,
+		Color = Color3.fromRGB(245, 158, 11),
+		Desc = &quot;Exclusive VIP Crown Aura + x1.5 Permanent Luck + Golden VIP Chat &amp; Overhead Tag!&quot;,
+		PerkKey = &quot;VIP&quot;,
+	},
+}
+
+local function refreshShopUI()
+	for _, child in ipairs(shopScroll:GetChildren()) do
+		if child:IsA(&quot;Frame&quot;) then child:Destroy() end
+	end
+
+	for _, item in ipairs(passItems) do
+		local row = Instance.new(&quot;Frame&quot;)
+		row.Size = UDim2.new(1, -12, 0, 84)
+		row.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
+		addCorner(row, 8)
+		addStroke(row, item.Color, 1.2)
+
+		local nameLbl = Instance.new(&quot;TextLabel&quot;)
+		nameLbl.Size = UDim2.new(0.65, 0, 0, 24)
+		nameLbl.Position = UDim2.new(0, 12, 0, 10)
+		nameLbl.BackgroundTransparency = 1
+		nameLbl.Font = Enum.Font.GothamBlack
+		nameLbl.TextSize = 16
+		nameLbl.TextColor3 = item.Color
+		nameLbl.TextXAlignment = Enum.TextXAlignment.Left
+		nameLbl.Text = item.Name
+		nameLbl.Parent = row
+
+		local descLbl = Instance.new(&quot;TextLabel&quot;)
+		descLbl.Size = UDim2.new(0.65, 0, 0, 38)
+		descLbl.Position = UDim2.new(0, 12, 0, 36)
+		descLbl.BackgroundTransparency = 1
+		descLbl.Font = Enum.Font.Gotham
+		descLbl.TextSize = 12
+		descLbl.TextColor3 = Color3.fromRGB(180, 185, 200)
+		descLbl.TextXAlignment = Enum.TextXAlignment.Left
+		descLbl.TextWrapped = true
+		descLbl.Text = item.Desc
+		descLbl.Parent = row
+
+		-- Test Toggle Button
+		local testBtn = Instance.new(&quot;TextButton&quot;)
+		testBtn.Size = UDim2.new(0, 170, 0, 42)
+		testBtn.Position = UDim2.new(1, -182, 0.5, -21)
+		testBtn.Font = Enum.Font.GothamBold
+		testBtn.TextSize = 12
+		addCorner(testBtn, 8)
+
+		local isOwned = (localData.Gamepasses and localData.Gamepasses[item.PerkKey])
+			or (localData.TestPerks and localData.TestPerks[item.PerkKey])
+
+		if isOwned then
+			testBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+			testBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+			testBtn.Text = &quot;ACTIVE (TEST ON)&quot;
+		else
+			testBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
+			testBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+			testBtn.Text = &quot;TEST FOR FREE&quot;
+		end
+
+		testBtn.MouseButton1Click:Connect(function()
+			SoundEffects.Play(&quot;Click&quot;)
+			ToggleTestPerkEvent:FireServer(item.PerkKey)
+		end)
+
+		testBtn.Parent = row
+		row.Parent = shopScroll
+	end
+
+	shopScroll.CanvasSize = UDim2.new(0, 0, 0, shopLayout.AbsoluteContentSize.Y + 20)
+end
+
+--------------------------------------------------------------------------------
+-- 4. SETTINGS WINDOW
+--------------------------------------------------------------------------------
+
+local settingsWindow, setContent = createModalWindow(&quot;⚙️ SETTINGS&quot;, 450, 260)
+
+local setFastRollBtn = Instance.new(&quot;TextButton&quot;)
+setFastRollBtn.Size = UDim2.new(1, 0, 0, 44)
+setFastRollBtn.Position = UDim2.new(0, 0, 0, 10)
+setFastRollBtn.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
+setFastRollBtn.Font = Enum.Font.GothamBold
+setFastRollBtn.TextSize = 14
+setFastRollBtn.TextColor3 = Color3.fromRGB(220, 225, 240)
+setFastRollBtn.Text = &quot;⏩ Fast Roll Cutscene: OFF&quot;
+addCorner(setFastRollBtn, 8)
+addStroke(setFastRollBtn, Color3.fromRGB(45, 52, 70), 1)
+setFastRollBtn.Parent = setContent
+
+local setAutoDeleteInfo = Instance.new(&quot;TextLabel&quot;)
+setAutoDeleteInfo.Size = UDim2.new(1, 0, 0, 44)
+setAutoDeleteInfo.Position = UDim2.new(0, 0, 0, 68)
+setAutoDeleteInfo.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
+setAutoDeleteInfo.Font = Enum.Font.GothamMedium
+setAutoDeleteInfo.TextSize = 13
+setAutoDeleteInfo.TextColor3 = Color3.fromRGB(200, 205, 220)
+setAutoDeleteInfo.Text = &quot;Auto-Delete: Configure inside Inventory&quot;
+addCorner(setAutoDeleteInfo, 8)
+setAutoDeleteInfo.Parent = setContent
+
+setFastRollBtn.MouseButton1Click:Connect(function()
+	SoundEffects.Play(&quot;Click&quot;)
+	isFastRollOn = not isFastRollOn
+	if isFastRollOn then
+		setFastRollBtn.Text = &quot;⏩ Fast Roll Cutscene: ON&quot;
+		fastRollBtn.Text = &quot;⏩ FAST: ON&quot;
+		fastRollBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
+	else
+		setFastRollBtn.Text = &quot;⏩ Fast Roll Cutscene: OFF&quot;
+		fastRollBtn.Text = &quot;⏩ FAST: OFF&quot;
+		fastRollBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
+	end
+end)
+
+--------------------------------------------------------------------------------
+-- 5. ROLL REVEAL CUTSCENE OVERLAY
+--------------------------------------------------------------------------------
+
+local cutsceneOverlay = Instance.new(&quot;Frame&quot;)
+cutsceneOverlay.Name = &quot;CutsceneOverlay&quot;
+cutsceneOverlay.Size = UDim2.new(1, 0, 1, 0)
+cutsceneOverlay.BackgroundColor3 = Color3.fromRGB(5, 6, 10)
+cutsceneOverlay.BackgroundTransparency = 0.35
+cutsceneOverlay.Visible = false
+cutsceneOverlay.Parent = screenGui
+
+local revealCard = Instance.new(&quot;Frame&quot;)
+revealCard.Name = &quot;RevealCard&quot;
+revealCard.Size = UDim2.new(0, 360, 0, 420)
+revealCard.Position = UDim2.new(0.5, -180, 0.5, -210)
+revealCard.BackgroundColor3 = Color3.fromRGB(18, 20, 28)
+addCorner(revealCard, 16)
+local cardStroke = addStroke(revealCard, Color3.fromRGB(255, 255, 255), 2.5)
+revealCard.Parent = cutsceneOverlay
+
+local cardTierTag = Instance.new(&quot;TextLabel&quot;)
+cardTierTag.Size = UDim2.new(1, 0, 0, 28)
+cardTierTag.Position = UDim2.new(0, 0, 0, 24)
+cardTierTag.BackgroundTransparency = 1
+cardTierTag.Font = Enum.Font.GothamBlack
+cardTierTag.TextSize = 14
+cardTierTag.TextColor3 = Color3.fromRGB(156, 163, 175)
+cardTierTag.Text = &quot;[ TIER ]&quot;
+cardTierTag.Parent = revealCard
+
+local cardName = Instance.new(&quot;TextLabel&quot;)
+cardName.Size = UDim2.new(1, -20, 0, 42)
+cardName.Position = UDim2.new(0, 10, 0, 52)
+cardName.BackgroundTransparency = 1
+cardName.Font = Enum.Font.GothamBlack
+cardName.TextSize = 28
+cardName.TextColor3 = Color3.fromRGB(255, 255, 255)
+cardName.Text = &quot;Aura Name&quot;
+cardName.Parent = revealCard
+
+local cardRarity = Instance.new(&quot;TextLabel&quot;)
+cardRarity.Size = UDim2.new(1, 0, 0, 28)
+cardRarity.Position = UDim2.new(0, 0, 0, 100)
+cardRarity.BackgroundTransparency = 1
+cardRarity.Font = Enum.Font.GothamBold
+cardRarity.TextSize = 18
+cardRarity.TextColor3 = Color3.fromRGB(240, 243, 250)
+cardRarity.Text = &quot;1 in 100,000&quot;
+cardRarity.Parent = revealCard
+
+local cardDesc = Instance.new(&quot;TextLabel&quot;)
+cardDesc.Size = UDim2.new(1, -40, 0, 100)
+cardDesc.Position = UDim2.new(0, 20, 0, 140)
+cardDesc.BackgroundTransparency = 1
+cardDesc.Font = Enum.Font.Gotham
+cardDesc.TextSize = 13
+cardDesc.TextColor3 = Color3.fromRGB(180, 185, 200)
+cardDesc.TextWrapped = true
+cardDesc.Text = &quot;Aura description...&quot;
+cardDesc.Parent = revealCard
+
+local cardEquipBtn = Instance.new(&quot;TextButton&quot;)
+cardEquipBtn.Size = UDim2.new(0, 150, 0, 44)
+cardEquipBtn.Position = UDim2.new(0.5, -160, 1, -64)
+cardEquipBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+cardEquipBtn.Font = Enum.Font.GothamBold
+cardEquipBtn.TextSize = 15
+cardEquipBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+cardEquipBtn.Text = &quot;EQUIP&quot;
+addCorner(cardEquipBtn, 10)
+cardEquipBtn.Parent = revealCard
+
+local cardCloseBtn = Instance.new(&quot;TextButton&quot;)
+cardCloseBtn.Size = UDim2.new(0, 150, 0, 44)
+cardCloseBtn.Position = UDim2.new(0.5, 10, 1, -64)
+cardCloseBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
+cardCloseBtn.Font = Enum.Font.GothamBold
+cardCloseBtn.TextSize = 15
+cardCloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+cardCloseBtn.Text = &quot;COLLECT&quot;
+addCorner(cardCloseBtn, 10)
+cardCloseBtn.Parent = revealCard
+
+local currentRolledAura = nil
+
+local function showCutscene(auraData)
+	currentRolledAura = auraData
+	cardTierTag.Text = string.format(&quot;[ %s ]&quot;, auraData.Tier:upper())
+	cardName.Text = auraData.Name
+	cardName.TextColor3 = auraData.Color
+	cardRarity.Text = AuraConfig.FormatRarity(auraData.Rarity or 0)
+	cardDesc.Text = auraData.Description
+	cardStroke.Color = auraData.Color
+
+	-- Play sound matching rarity tier
+	if auraData.Rarity &gt;= 250000 then
+		SoundEffects.Play(&quot;RevealGodly&quot;)
+	elseif auraData.Rarity &gt;= 10000 then
+		SoundEffects.Play(&quot;RevealMythic&quot;)
+	elseif auraData.Rarity &gt;= 1000 then
+		SoundEffects.Play(&quot;RevealLegendary&quot;)
+	elseif auraData.Rarity &gt;= 16 then
+		SoundEffects.Play(&quot;RevealRare&quot;)
+	else
+		SoundEffects.Play(&quot;RevealCommon&quot;)
+	end
+
+	cutsceneOverlay.Visible = true
+
+	-- Entrance animation
+	revealCard.Size = UDim2.new(0, 100, 0, 100)
+	TweenService:Create(revealCard, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+		Size = UDim2.new(0, 360, 0, 420),
+	}):Play()
+end
+
+cardEquipBtn.MouseButton1Click:Connect(function()
+	SoundEffects.Play(&quot;Equip&quot;)
+	cutsceneOverlay.Visible = false
+	if currentRolledAura then
+		EquipAuraEvent:FireServer(currentRolledAura.Id)
+	end
+end)
+
+cardCloseBtn.MouseButton1Click:Connect(function()
+	SoundEffects.Play(&quot;Click&quot;)
+	cutsceneOverlay.Visible = false
+end)
+
+--------------------------------------------------------------------------------
+-- 6. GLOBAL ANNOUNCEMENT BANNER
+--------------------------------------------------------------------------------
+
+local banner = Instance.new(&quot;Frame&quot;)
+banner.Name = &quot;GlobalBanner&quot;
+banner.Size = UDim2.new(0, 520, 0, 44)
+banner.Position = UDim2.new(0.5, -260, 0, -60) -- Start off-screen
+banner.BackgroundColor3 = Color3.fromRGB(24, 28, 42)
+banner.BackgroundTransparency = 0.1
+addCorner(banner, 10)
+local bannerStroke = addStroke(banner, Color3.fromRGB(250, 204, 21), 2)
+banner.Parent = screenGui
+
+local bannerText = Instance.new(&quot;TextLabel&quot;)
+bannerText.Size = UDim2.new(1, -20, 1, 0)
+bannerText.Position = UDim2.new(0, 10, 0, 0)
+bannerText.BackgroundTransparency = 1
+bannerText.Font = Enum.Font.GothamBold
+bannerText.TextSize = 14
+bannerText.TextColor3 = Color3.fromRGB(255, 235, 120)
+bannerText.Text = &quot;🎉 Player rolled MYTHIC!&quot;
+bannerText.Parent = banner
+
+GlobalAnnouncementEvent.OnClientEvent:Connect(function(info)
+	local tierColor = AuraConfig.GetTierColor(info.Tier)
+	bannerStroke.Color = tierColor
+	bannerText.Text = string.format(&quot;🎉 %s rolled %s (%s)!&quot;, info.PlayerName, info.AuraName:upper(), AuraConfig.FormatRarity(info.Rarity))
+	bannerText.TextColor3 = tierColor
+
+	-- Slide down
+	TweenService:Create(banner, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+		Position = UDim2.new(0.5, -260, 0, 68),
+	}):Play()
+
+	task.delay(4.5, function()
+		TweenService:Create(banner, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
+			Position = UDim2.new(0.5, -260, 0, -60),
+		}):Play()
+	end)
+end)
+
+--------------------------------------------------------------------------------
+-- 7. ROLL TRIGGER &amp; BUTTON EVENTS
+--------------------------------------------------------------------------------
+
+local function doRoll()
+	if isRolling then return end
+	isRolling = true
+
+	-- Button bounce
+	TweenService:Create(rollButton, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+		Size = UDim2.new(0, 195, 0, 56),
+	}):Play()
+
+	SoundEffects.Play(&quot;Spin&quot;)
+
+	local result = RollRequestFunc:InvokeServer(isFastRollOn)
+
+	task.wait(0.12)
+	TweenService:Create(rollButton, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+		Size = UDim2.new(0, 210, 0, 62),
+	}):Play()
+
+	if result and result.Success and result.Aura then
+		if not isFastRollOn then
+			showCutscene(result.Aura)
+		else
+			-- Fast roll: play sound only
+			SoundEffects.Play(&quot;RevealCommon&quot;)
+		end
+	end
+
+	isRolling = false
+end
+
+rollButton.MouseButton1Click:Connect(function()
+	doRoll()
+end)
+
+-- Auto Roll Loop
+autoRollBtn.MouseButton1Click:Connect(function()
+	SoundEffects.Play(&quot;Click&quot;)
+	isAutoRollOn = not isAutoRollOn
+	if isAutoRollOn then
+		autoRollBtn.Text = &quot;⚡ AUTO: ON&quot;
+		autoRollBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
+		autoRollBtn.BackgroundColor3 = Color3.fromRGB(20, 55, 35)
+	else
+		autoRollBtn.Text = &quot;⚡ AUTO: OFF&quot;
+		autoRollBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
+		autoRollBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
+	end
+end)
+
+task.spawn(function()
+	while true do
+		task.wait(AuraConfig.Settings.AutoRollInterval)
+		if isAutoRollOn and not isRolling and not cutsceneOverlay.Visible then
+			doRoll()
+		end
+	end
+end)
+
+fastRollBtn.MouseButton1Click:Connect(function()
+	SoundEffects.Play(&quot;Click&quot;)
+	isFastRollOn = not isFastRollOn
+	if isFastRollOn then
+		fastRollBtn.Text = &quot;⏩ FAST: ON&quot;
+		fastRollBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
+		setFastRollBtn.Text = &quot;⏩ Fast Roll Cutscene: ON&quot;
+	else
+		fastRollBtn.Text = &quot;⏩ FAST: OFF&quot;
+		fastRollBtn.TextColor3 = Color3.fromRGB(200, 205, 220)
+		setFastRollBtn.Text = &quot;⏩ Fast Roll Cutscene: OFF&quot;
+	end
+end)
+
+unequipBtn.MouseButton1Click:Connect(function()
+	SoundEffects.Play(&quot;Equip&quot;)
+	EquipAuraEvent:FireServer(&quot;None&quot;)
+end)
+
+-- Navigation button clicks
+navInventoryBtn.MouseButton1Click:Connect(function()
+	toggleModal(inventoryWindow)
+	refreshInventoryUI()
+end)
+
+navCraftingBtn.MouseButton1Click:Connect(function()
+	toggleModal(craftWindow)
+	refreshCraftingUI()
+end)
+
+navShopBtn.MouseButton1Click:Connect(function()
+	toggleModal(shopWindow)
+	refreshShopUI()
+end)
+
+navSettingsBtn.MouseButton1Click:Connect(function()
+	toggleModal(settingsWindow)
+end)
+
+-- 3D World ProximityPrompt Trigger for Crafting Altar
+local ProximityPromptService = game:GetService(&quot;ProximityPromptService&quot;)
+ProximityPromptService.PromptTriggered:Connect(function(prompt, player)
+	if prompt.Name == &quot;CraftingPrompt&quot; and player == LocalPlayer then
+		if not craftWindow.Visible then
+			toggleModal(craftWindow)
+		end
+		refreshCraftingUI()
+	end
+end)
+
+--------------------------------------------------------------------------------
+-- 8. DATA SYNC RECEIVER
+--------------------------------------------------------------------------------
+
+DataSyncEvent.OnClientEvent:Connect(function(data)
+	for k, v in pairs(data) do
+		localData[k] = v
+	end
+
+	-- Update Top Stats
+	rollsLabel.Text = string.format(&quot;🎲 Rolls: %s&quot;, AuraConfig.FormatNumber(localData.Rolls or 0))
+	luckLabel.Text = string.format(&quot;🍀 Luck: x%.1f&quot;, localData.CurrentLuck or 1.0)
+	coinsLabel.Text = string.format(&quot;🪙 %s&quot;, AuraConfig.FormatNumber(localData.Coins or 0))
+
+	-- Update Potion label
+	if localData.PotionExpiry and localData.PotionExpiry &gt; os.time() then
+		local remaining = localData.PotionExpiry - os.time()
+		local mins = math.floor(remaining / 60)
+		local secs = remaining % 60
+		potionLabel.Text = string.format(&quot;⏳ 2x Pot: %02d:%02d&quot;, mins, secs)
+		potionLabel.TextColor3 = Color3.fromRGB(74, 222, 128)
+	else
+		potionLabel.Text = &quot;⏳ Pot: None&quot;
+		potionLabel.TextColor3 = Color3.fromRGB(156, 163, 175)
+	end
+
+	-- Update Equipped Card
+	local eqAura = AuraConfig.Auras[localData.EquippedAura]
+	if eqAura then
+		equippedTitle.Text = eqAura.Name
+		equippedTitle.TextColor3 = eqAura.Color
+		equippedSubtitle.Text = AuraConfig.FormatRarity(eqAura.Rarity or 0)
+	else
+		equippedTitle.Text = &quot;Aura: None&quot;
+		equippedTitle.TextColor3 = Color3.fromRGB(220, 225, 235)
+		equippedSubtitle.Text = &quot;Not Equipped&quot;
+	end
+
+	-- Update Auto Delete Threshold Text
+	local autoDelText = thresholdNames[localData.AutoDeleteThreshold or 0] or &quot;None&quot;
+	autoDeleteBtn.Text = &quot;Auto-Delete: &quot; .. autoDelText
+
+	-- Refresh open modal if visible
+	if inventoryWindow.Visible then refreshInventoryUI() end
+	if craftWindow.Visible then refreshCraftingUI() end
+	if shopWindow.Visible then refreshShopUI() end
+end)
+
+print(&quot;[Sols RNG] Client GUI initialized!&quot;)
+</ProtectedString>
+				</Properties>
+			</Item>
+		</Item>
+	</Item>
+	<Item class="StarterPack" referent="RBX_StarterPack">
+		<Properties>
+			<string name="Name">StarterPack</string>
+		</Properties>
+	</Item>
+	<Item class="StarterPlayer" referent="RBX_StarterPlayer">
+		<Properties>
+			<string name="Name">StarterPlayer</string>
+		</Properties>
+		<Item class="StarterPlayerScripts" referent="RBX_StarterPlayerScripts">
+			<Properties>
+				<string name="Name">StarterPlayerScripts</string>
+			</Properties>
+		</Item>
+		<Item class="StarterCharacterScripts" referent="RBX_StarterCharacterScripts">
+			<Properties>
+				<string name="Name">StarterCharacterScripts</string>
+			</Properties>
+		</Item>
+	</Item>
+	<Item class="SoundService" referent="RBX_SoundService">
+		<Properties>
+			<string name="Name">SoundService</string>
+		</Properties>
+	</Item>
+</roblox>

@@ -1,0 +1,28 @@
+{
+  "name": "SolsRNG",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "AuraRNG": {
+        "$className": "Folder",
+        "Modules": {
+          "$className": "Folder",
+          "$path": "src/ReplicatedStorage/Modules"
+        }
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "$path": "src/ServerScriptService"
+    },
+    "StarterGui": {
+      "$className": "StarterGui",
+      "RNG_ScreenGui": {
+        "$className": "ScreenGui",
+        "ResetOnSpawn": false,
+        "$path": "src/StarterGui/RNG_ScreenGui"
+      }
+    }
+  }
+}
