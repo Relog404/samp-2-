@@ -1,13 +1,12 @@
 -- RNGClient.client.lua
--- Professional, high-end User Interface (UI) controller for Sol's RNG.
--- Features Glassmorphic Dark Design, Responsive Scaling (Mobile/PC/Tablet),
--- Spring Tweens, Addictive Cutscenes, Full Inventory, Alchemist Crafting Forge, and Monetization.
+-- Dynamic CS2-style Case Opening Roulette, Glassmorphic UI, Clear Sell & Equip Controls,
+-- and High-Performance Client Controller for Sol's RNG.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 local ProximityPromptService = game:GetService("ProximityPromptService")
-local SoundService = game:GetService("SoundService")
 
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
@@ -161,7 +160,6 @@ bottomControls.Size = UDim2.new(0, 460, 0, 110)
 bottomControls.BackgroundTransparency = 1
 bottomControls.Parent = screenGui
 
--- Main ROLL Button (Pulsing Centerpiece)
 local rollButton = Instance.new("TextButton")
 rollButton.Name = "RollButton"
 rollButton.AnchorPoint = Vector2.new(0.5, 0)
@@ -184,7 +182,6 @@ rollGrad.Rotation = 45
 rollGrad.Parent = rollButton
 rollButton.Parent = bottomControls
 
--- Secondary Controls (Auto Roll & Fast Roll Pills)
 local secondaryBar = Instance.new("Frame")
 secondaryBar.Size = UDim2.new(0, 320, 0, 34)
 secondaryBar.AnchorPoint = Vector2.new(0.5, 1)
@@ -221,20 +218,6 @@ fastRollBtn.Text = "⏩ FAST: OFF"
 addCorner(fastRollBtn, 8)
 local fastStroke = addStroke(fastRollBtn, Color3.fromRGB(45, 52, 70), 1.2)
 fastRollBtn.Parent = secondaryBar
-
--- Subtle breathing animation on Roll Button
-task.spawn(function()
-	while true do
-		TweenService:Create(rollStroke, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-			Color = Color3.fromRGB(147, 197, 253),
-		}):Play()
-		task.wait(1.2)
-		TweenService:Create(rollStroke, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-			Color = Color3.fromRGB(59, 130, 246),
-		}):Play()
-		task.wait(1.2)
-	end
-end)
 
 --------------------------------------------------------------------------------
 -- 3. LEFT DOCK NAVIGATION BAR
@@ -283,10 +266,10 @@ local function createDockButton(name, icon, tooltipText)
 	return btn
 end
 
-local navInventoryBtn = createDockButton("Inventory", "🎒", "Inventory")
-local navCraftingBtn = createDockButton("Crafting", "⚗️", "Crafting Forge")
-local navShopBtn = createDockButton("Shop", "🛒", "Shop & Passes")
-local navSettingsBtn = createDockButton("Settings", "⚙️", "Settings")
+local navInventoryBtn = createDockButton("Inventory", "🎒", "Инвентарь")
+local navCraftingBtn = createDockButton("Crafting", "⚗️", "Кузница Крафта")
+local navShopBtn = createDockButton("Shop", "🛒", "Магазин и Пассы")
+local navSettingsBtn = createDockButton("Settings", "⚙️", "Настройки")
 
 --------------------------------------------------------------------------------
 -- 4. BOTTOM-LEFT EQUIPPED AURA SHOWCASE CARD
@@ -338,7 +321,7 @@ addCorner(unequipBtn, 6)
 unequipBtn.Parent = equippedCard
 
 --------------------------------------------------------------------------------
--- MODAL WINDOW FACTORY
+-- 5. MODAL WINDOW CREATOR
 --------------------------------------------------------------------------------
 
 local function createModal(titleText, width, height)
@@ -353,7 +336,6 @@ local function createModal(titleText, width, height)
 	addStroke(window, Color3.fromRGB(55, 65, 90), 2)
 	window.Parent = screenGui
 
-	-- Header
 	local header = Instance.new("Frame")
 	header.Size = UDim2.new(1, 0, 0, 48)
 	header.BackgroundColor3 = Color3.fromRGB(20, 24, 36)
@@ -415,12 +397,11 @@ local function toggleModal(modal)
 end
 
 --------------------------------------------------------------------------------
--- 5. INVENTORY WINDOW (MODERN GRID + DETAIL PANEL)
+-- 6. INVENTORY WINDOW (CLEAR EQUIP & SELL CONTROLS)
 --------------------------------------------------------------------------------
 
-local invWindow, invContent = createModal("🎒 AURA INVENTORY", 680, 480)
+local invWindow, invContent = createModal("🎒 ИНВЕНТАРЬ АУР", 680, 480)
 
--- Top Info Bar: Slots + Auto Delete Threshold
 local topInvBar = Instance.new("Frame")
 topInvBar.Size = UDim2.new(1, 0, 0, 28)
 topInvBar.BackgroundTransparency = 1
@@ -444,7 +425,7 @@ storageText.BackgroundTransparency = 1
 storageText.Font = Enum.Font.GothamBold
 storageText.TextSize = 12
 storageText.TextColor3 = Color3.fromRGB(255, 255, 255)
-storageText.Text = "Storage: 0 / 20"
+storageText.Text = "Слоты: 0 / 20"
 storageText.Parent = storageBarBg
 
 local autoDeleteBtn = Instance.new("TextButton")
@@ -454,32 +435,30 @@ autoDeleteBtn.BackgroundColor3 = Color3.fromRGB(28, 33, 48)
 autoDeleteBtn.Font = Enum.Font.GothamMedium
 autoDeleteBtn.TextSize = 12
 autoDeleteBtn.TextColor3 = Color3.fromRGB(220, 225, 240)
-autoDeleteBtn.Text = "Auto-Delete: None"
+autoDeleteBtn.Text = "Авто-продажа: Нет"
 addCorner(autoDeleteBtn, 6)
 addStroke(autoDeleteBtn, Color3.fromRGB(50, 60, 82), 1)
 autoDeleteBtn.Parent = topInvBar
 
--- Left: Scrollable Inventory Grid
 local invScroll = Instance.new("ScrollingFrame")
-invScroll.Size = UDim2.new(1, -220, 1, -38)
+invScroll.Size = UDim2.new(1, -230, 1, -38)
 invScroll.Position = UDim2.new(0, 0, 0, 36)
 invScroll.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
 invScroll.BackgroundTransparency = 0.4
 invScroll.ScrollBarThickness = 5
-invScroll.ScrollBarImageColor3 = Color3.fromRGB(55, 65, 90)
 addCorner(invScroll, 8)
 invScroll.Parent = invContent
 
 local invGrid = Instance.new("UIGridLayout")
-invGrid.CellSize = UDim2.new(0, 100, 0, 100)
+invGrid.CellSize = UDim2.new(0, 95, 0, 95)
 invGrid.CellPadding = UDim2.new(0, 8, 0, 8)
 invGrid.Parent = invScroll
 addPadding(invScroll, 8, 8, 8, 8)
 
--- Right: Details Inspector
+-- Right Inspector Panel with VERY CLEAR Equip & Sell Buttons
 local detailPanel = Instance.new("Frame")
-detailPanel.Size = UDim2.new(0, 205, 1, -38)
-detailPanel.Position = UDim2.new(1, -205, 0, 36)
+detailPanel.Size = UDim2.new(0, 215, 1, -38)
+detailPanel.Position = UDim2.new(1, -215, 0, 36)
 detailPanel.BackgroundColor3 = Color3.fromRGB(16, 19, 28)
 addCorner(detailPanel, 8)
 addStroke(detailPanel, Color3.fromRGB(42, 50, 70), 1)
@@ -492,7 +471,7 @@ detailName.BackgroundTransparency = 1
 detailName.Font = Enum.Font.GothamBlack
 detailName.TextSize = 16
 detailName.TextColor3 = Color3.fromRGB(255, 255, 255)
-detailName.Text = "Select an Aura"
+detailName.Text = "Выберите Ауру"
 detailName.Parent = detailPanel
 
 local detailRarity = Instance.new("TextLabel")
@@ -506,7 +485,7 @@ detailRarity.Text = ""
 detailRarity.Parent = detailPanel
 
 local detailDesc = Instance.new("TextLabel")
-detailDesc.Size = UDim2.new(1, 0, 0, 110)
+detailDesc.Size = UDim2.new(1, 0, 0, 100)
 detailDesc.Position = UDim2.new(0, 0, 0, 52)
 detailDesc.BackgroundTransparency = 1
 detailDesc.Font = Enum.Font.Gotham
@@ -514,32 +493,34 @@ detailDesc.TextSize = 12
 detailDesc.TextColor3 = Color3.fromRGB(200, 205, 220)
 detailDesc.TextWrapped = true
 detailDesc.TextYAlignment = Enum.TextYAlignment.Top
-detailDesc.Text = "Click any aura on the left to equip or manage."
+detailDesc.Text = "Нажмите на карточку ауры слева для экипировки или продажи."
 detailDesc.Parent = detailPanel
 
+-- VERY CLEAR: ЭКИПИРОВАТЬ Button
 local equipActionBtn = Instance.new("TextButton")
-equipActionBtn.Size = UDim2.new(1, 0, 0, 40)
-equipActionBtn.Position = UDim2.new(0, 0, 1, -84)
-equipActionBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
-equipActionBtn.Font = Enum.Font.GothamBold
+equipActionBtn.Size = UDim2.new(1, 0, 0, 42)
+equipActionBtn.Position = UDim2.new(0, 0, 1, -94)
+equipActionBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+equipActionBtn.Font = Enum.Font.GothamBlack
 equipActionBtn.TextSize = 14
 equipActionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-equipActionBtn.Text = "Equip"
+equipActionBtn.Text = "⚔️ ЭКИПИРОВАТЬ"
 equipActionBtn.Visible = false
 addCorner(equipActionBtn, 8)
 equipActionBtn.Parent = detailPanel
 
-local deleteActionBtn = Instance.new("TextButton")
-deleteActionBtn.Size = UDim2.new(1, 0, 0, 36)
-deleteActionBtn.Position = UDim2.new(0, 0, 1, -38)
-deleteActionBtn.BackgroundColor3 = Color3.fromRGB(48, 25, 30)
-deleteActionBtn.Font = Enum.Font.GothamMedium
-deleteActionBtn.TextSize = 12
-deleteActionBtn.TextColor3 = Color3.fromRGB(248, 113, 113)
-deleteActionBtn.Text = "Scrap (+Coins)"
-deleteActionBtn.Visible = false
-addCorner(deleteActionBtn, 8)
-deleteActionBtn.Parent = detailPanel
+-- VERY CLEAR: ПРОДАТЬ Button
+local sellActionBtn = Instance.new("TextButton")
+sellActionBtn.Size = UDim2.new(1, 0, 0, 40)
+sellActionBtn.Position = UDim2.new(0, 0, 1, -44)
+sellActionBtn.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
+sellActionBtn.Font = Enum.Font.GothamBlack
+sellActionBtn.TextSize = 13
+sellActionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+sellActionBtn.Text = "💰 ПРОДАТЬ (+50 МОНЕТ)"
+sellActionBtn.Visible = false
+addCorner(sellActionBtn, 8)
+sellActionBtn.Parent = detailPanel
 
 local function refreshInventoryUI()
 	for _, child in ipairs(invScroll:GetChildren()) do
@@ -559,7 +540,7 @@ local function refreshInventoryUI()
 			addStroke(card, auraData.Color, 1.5)
 
 			local name = Instance.new("TextLabel")
-			name.Size = UDim2.new(1, -8, 0, 32)
+			name.Size = UDim2.new(1, -8, 0, 30)
 			name.Position = UDim2.new(0, 4, 0, 4)
 			name.BackgroundTransparency = 1
 			name.Font = Enum.Font.GothamBold
@@ -571,7 +552,7 @@ local function refreshInventoryUI()
 
 			local rarity = Instance.new("TextLabel")
 			rarity.Size = UDim2.new(1, -8, 0, 16)
-			rarity.Position = UDim2.new(0, 4, 0, 38)
+			rarity.Position = UDim2.new(0, 4, 0, 36)
 			rarity.BackgroundTransparency = 1
 			rarity.Font = Enum.Font.GothamMedium
 			rarity.TextSize = 10
@@ -598,7 +579,7 @@ local function refreshInventoryUI()
 				eqTag.Font = Enum.Font.GothamBold
 				eqTag.TextSize = 8
 				eqTag.TextColor3 = Color3.fromRGB(255, 255, 255)
-				eqTag.Text = "EQUIPPED"
+				eqTag.Text = "НАДЕТО"
 				addCorner(eqTag, 4)
 				eqTag.Parent = card
 			end
@@ -613,13 +594,16 @@ local function refreshInventoryUI()
 
 				equipActionBtn.Visible = true
 				if localData.EquippedAura == auraId then
-					equipActionBtn.Text = "Unequip"
+					equipActionBtn.Text = "✕ СНЯТЬ АУРУ"
 					equipActionBtn.BackgroundColor3 = Color3.fromRGB(60, 70, 85)
 				else
-					equipActionBtn.Text = "Equip"
-					equipActionBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
+					equipActionBtn.Text = "⚔️ ЭКИПИРОВАТЬ"
+					equipActionBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 				end
-				deleteActionBtn.Visible = true
+
+				local scrapCoins = AuraConfig.GetScrapValue(auraData.Rarity or 0)
+				sellActionBtn.Text = string.format("💰 ПРОДАТЬ (+%d МОНЕТ)", scrapCoins)
+				sellActionBtn.Visible = true
 			end)
 
 			card.Parent = invScroll
@@ -627,7 +611,7 @@ local function refreshInventoryUI()
 	end
 
 	local maxSlots = localData.MaxStorage or 20
-	storageText.Text = string.format("Storage: %d / %d", totalCount, maxSlots)
+	storageText.Text = string.format("Слоты: %d / %d", totalCount, maxSlots)
 	local ratio = math.clamp(totalCount / maxSlots, 0, 1)
 	storageFill.Size = UDim2.new(ratio, 0, 1, 0)
 	if ratio >= 1.0 then
@@ -651,20 +635,20 @@ equipActionBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
-deleteActionBtn.MouseButton1Click:Connect(function()
+sellActionBtn.MouseButton1Click:Connect(function()
 	if not selectedInventoryAura then return end
-	SoundEffects.Play("Click")
+	SoundEffects.Play("Coin")
 	DeleteAuraEvent:FireServer(selectedInventoryAura)
 	selectedInventoryAura = nil
 	equipActionBtn.Visible = false
-	deleteActionBtn.Visible = false
-	detailName.Text = "Select an Aura"
+	sellActionBtn.Visible = false
+	detailName.Text = "Выберите Ауру"
 	detailRarity.Text = ""
-	detailDesc.Text = "Aura scrapped for coins."
+	detailDesc.Text = "Аура успешно продана за монеты!"
 end)
 
 local thresholds = { 0, 2, 4, 16, 64 }
-local thresholdNames = { [0] = "None", [2] = "Common (1/2)", [4] = "Uncommon (1/4)", [16] = "Rare (1/16)", [64] = "Crystallized (1/64)" }
+local thresholdNames = { [0] = "Нет", [2] = "Common (1/2)", [4] = "Uncommon (1/4)", [16] = "Rare (1/16)", [64] = "Crystallized (1/64)" }
 autoDeleteBtn.MouseButton1Click:Connect(function()
 	SoundEffects.Play("Click")
 	local cur = localData.AutoDeleteThreshold or 0
@@ -679,10 +663,10 @@ autoDeleteBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------------------------------------------------
--- 6. CRAFTING ALCHEMIST FORGE
+-- 7. CRAFTING ALCHEMIST FORGE
 --------------------------------------------------------------------------------
 
-local craftWindow, craftContent = createModal("⚗️ ALCHEMIST CRAFTING FORGE", 720, 500)
+local craftWindow, craftContent = createModal("⚗️ КУЗНИЦА КРАФТА АУР", 720, 500)
 
 local recipeScroll = Instance.new("ScrollingFrame")
 recipeScroll.Size = UDim2.new(0, 240, 1, 0)
@@ -712,7 +696,7 @@ craftTitle.BackgroundTransparency = 1
 craftTitle.Font = Enum.Font.GothamBlack
 craftTitle.TextSize = 18
 craftTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-craftTitle.Text = "Select a Recipe"
+craftTitle.Text = "Выберите Рецепт"
 craftTitle.Parent = craftDetail
 
 local craftDesc = Instance.new("TextLabel")
@@ -723,7 +707,7 @@ craftDesc.Font = Enum.Font.Gotham
 craftDesc.TextSize = 12
 craftDesc.TextColor3 = Color3.fromRGB(180, 185, 200)
 craftDesc.TextWrapped = true
-craftDesc.Text = "Combine auras to synthesize godly auras, luck gauntlets, and elixirs!"
+craftDesc.Text = "Объединяйте ауры для создания богоподобных аур, рукавиц удачи и зелий!"
 craftDesc.Parent = craftDetail
 
 local ingHeader = Instance.new("TextLabel")
@@ -733,7 +717,7 @@ ingHeader.BackgroundTransparency = 1
 ingHeader.Font = Enum.Font.GothamBold
 ingHeader.TextSize = 12
 ingHeader.TextColor3 = Color3.fromRGB(156, 163, 175)
-ingHeader.Text = "REQUIRED INGREDIENTS:"
+ingHeader.Text = "ТРЕБУЕМЫЕ ИНГРЕДИЕНТЫ:"
 ingHeader.TextXAlignment = Enum.TextXAlignment.Left
 ingHeader.Parent = craftDetail
 
@@ -754,7 +738,7 @@ forgeBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
 forgeBtn.Font = Enum.Font.GothamBlack
 forgeBtn.TextSize = 16
 forgeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-forgeBtn.Text = "⚗️ FORGE RECIPE"
+forgeBtn.Text = "⚗️ КОВАТЬ РЕЦЕПТ"
 forgeBtn.Visible = false
 addCorner(forgeBtn, 10)
 forgeBtn.Parent = craftDetail
@@ -791,7 +775,7 @@ local function refreshCraftingUI()
 		sub.TextSize = 11
 		sub.TextColor3 = Color3.fromRGB(156, 163, 175)
 		sub.TextXAlignment = Enum.TextXAlignment.Left
-		sub.Text = string.format("Reward: %s", recipe.ResultType)
+		sub.Text = string.format("Тип: %s", recipe.ResultType)
 		sub.Parent = btn
 
 		btn.MouseButton1Click:Connect(function()
@@ -848,10 +832,10 @@ local function refreshCraftingUI()
 
 			forgeBtn.Visible = true
 			if canCraftAll then
-				forgeBtn.Text = "⚗️ FORGE NOW"
+				forgeBtn.Text = "⚗️ КОВАТЬ СЕЙЧАС"
 				forgeBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 			else
-				forgeBtn.Text = "Missing Ingredients"
+				forgeBtn.Text = "Не хватает аур"
 				forgeBtn.BackgroundColor3 = Color3.fromRGB(50, 60, 75)
 			end
 		end)
@@ -874,10 +858,10 @@ forgeBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------------------------------------------------
--- 7. SHOP & MONETIZATION (WITH FREE DEV TEST TOGGLE)
+-- 8. SHOP & MONETIZATION
 --------------------------------------------------------------------------------
 
-local shopWindow, shopContent = createModal("🛒 SHOP & PASSES (TEST MODE INCLUDED)", 700, 480)
+local shopWindow, shopContent = createModal("🛒 МАГАЗИН И ПАССЫ (ТЕСТ-РЕЖИМ)", 700, 480)
 
 local shopScroll = Instance.new("ScrollingFrame")
 shopScroll.Size = UDim2.new(1, 0, 1, 0)
@@ -897,28 +881,28 @@ local passItems = {
 		Id = "X2Luck",
 		Name = "🎲 x2 Luck Pass",
 		Color = Color3.fromRGB(74, 222, 128),
-		Desc = "Permanently doubles your chance of rolling rare, mythic, and godly auras!",
+		Desc = "Удваивает шанс выпадения всех редких, мифических и богоподобных аур навсегда!",
 		PerkKey = "X2Luck",
 	},
 	{
 		Id = "AutoRoll",
 		Name = "⚡ Auto Roll Pass",
 		Color = Color3.fromRGB(250, 204, 21),
-		Desc = "Automatically rolls in the background while you chat, explore, or AFK!",
+		Desc = "Автоматический ролл в фоне пока вы общаетесь, гуляете или стоите AFK!",
 		PerkKey = "AutoRoll",
 	},
 	{
 		Id = "ExtraStorage",
 		Name = "🎨 Aura Storage (+30)",
 		Color = Color3.fromRGB(56, 189, 248),
-		Desc = "Expands your inventory capacity by +30 slots to store all your treasures!",
+		Desc = "Расширяет ваш инвентарь на +30 дополнительных слотов!",
 		PerkKey = "ExtraStorage",
 	},
 	{
 		Id = "VIP",
 		Name = "⭐ VIP Supporter Pass",
 		Color = Color3.fromRGB(245, 158, 11),
-		Desc = "Exclusive VIP Crown Aura + x1.5 Permanent Luck + Golden Overhead & Chat Tag!",
+		Desc = "Аура VIP Crown + x1.5 Удача + Золотой титул VIP над головой и в чате!",
 		PerkKey = "VIP",
 	},
 }
@@ -971,11 +955,11 @@ local function refreshShopUI()
 		if isOwned then
 			testBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 			testBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-			testBtn.Text = "ACTIVE (TEST ON)"
+			testBtn.Text = "АКТИВЕН (ТЕСТ ВКЛ)"
 		else
 			testBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
 			testBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-			testBtn.Text = "TEST FOR FREE"
+			testBtn.Text = "ТЕСТ БЕСПЛАТНО"
 		end
 
 		testBtn.MouseButton1Click:Connect(function()
@@ -991,10 +975,10 @@ local function refreshShopUI()
 end
 
 --------------------------------------------------------------------------------
--- 8. SETTINGS WINDOW
+-- 9. SETTINGS WINDOW
 --------------------------------------------------------------------------------
 
-local setWindow, setContent = createModal("⚙️ SETTINGS", 440, 240)
+local setWindow, setContent = createModal("⚙️ НАСТРОЙКИ", 440, 240)
 
 local setFastBtn = Instance.new("TextButton")
 setFastBtn.Size = UDim2.new(1, 0, 0, 44)
@@ -1003,7 +987,7 @@ setFastBtn.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
 setFastBtn.Font = Enum.Font.GothamBold
 setFastBtn.TextSize = 14
 setFastBtn.TextColor3 = Color3.fromRGB(220, 225, 240)
-setFastBtn.Text = "⏩ Fast Roll Cutscene: OFF"
+setFastBtn.Text = "⏩ Быстрый Ролл (Без Рулетки): ВЫКЛ"
 addCorner(setFastBtn, 8)
 addStroke(setFastBtn, Color3.fromRGB(45, 55, 75), 1)
 setFastBtn.Parent = setContent
@@ -1015,7 +999,7 @@ setInfo.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
 setInfo.Font = Enum.Font.GothamMedium
 setInfo.TextSize = 13
 setInfo.TextColor3 = Color3.fromRGB(180, 185, 200)
-setInfo.Text = "Auto-Delete threshold can be changed in Inventory."
+setInfo.Text = "Авто-удаление и продажу можно настроить в Инвентаре."
 addCorner(setInfo, 8)
 setInfo.Parent = setContent
 
@@ -1023,42 +1007,109 @@ setFastBtn.MouseButton1Click:Connect(function()
 	SoundEffects.Play("Click")
 	isFastRollOn = not isFastRollOn
 	if isFastRollOn then
-		setFastBtn.Text = "⏩ Fast Roll Cutscene: ON"
+		setFastBtn.Text = "⏩ Быстрый Ролл (Без Рулетки): ВКЛ"
 		fastRollBtn.Text = "⏩ FAST: ON"
 		fastRollBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
 	else
-		setFastBtn.Text = "⏩ Fast Roll Cutscene: OFF"
+		setFastBtn.Text = "⏩ Быстрый Ролл (Без Рулетки): ВЫКЛ"
 		fastRollBtn.Text = "⏩ FAST: OFF"
 		fastRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
 	end
 end)
 
 --------------------------------------------------------------------------------
--- 9. CINEMATIC ROLL REVEAL CUTSCENE OVERLAY
+-- 10. CS2-STYLE DYNAMIC HORIZONTAL CASE OPENING ROULETTE
+--------------------------------------------------------------------------------
+
+local rouletteContainer = Instance.new("Frame")
+rouletteContainer.Name = "CS2RouletteContainer"
+rouletteContainer.AnchorPoint = Vector2.new(0.5, 0.5)
+rouletteContainer.Position = UDim2.new(0.5, 0, 0.45, 0)
+rouletteContainer.Size = UDim2.new(0.9, 0, 0, 170)
+rouletteContainer.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
+rouletteContainer.BackgroundTransparency = 0.05
+rouletteContainer.ClipsDescendants = true
+rouletteContainer.Visible = false
+addCorner(rouletteContainer, 16)
+local rStroke = addStroke(rouletteContainer, Color3.fromRGB(245, 158, 11), 2.5)
+rouletteContainer.Parent = screenGui
+
+local rSizeConstraint = Instance.new("UISizeConstraint")
+rSizeConstraint.MaxSize = Vector2.new(880, 180)
+rSizeConstraint.MinSize = Vector2.new(340, 150)
+rSizeConstraint.Parent = rouletteContainer
+
+-- Moving Tape of Cards
+local rouletteTape = Instance.new("Frame")
+rouletteTape.Name = "Tape"
+rouletteTape.Size = UDim2.new(0, 10000, 1, 0)
+rouletteTape.Position = UDim2.new(0, 0, 0, 0)
+rouletteTape.BackgroundTransparency = 1
+rouletteTape.Parent = rouletteContainer
+
+-- Center Selector Pointer Needle (Vertical Golden Line + Arrows)
+local needleLine = Instance.new("Frame")
+needleLine.Name = "Needle"
+needleLine.AnchorPoint = Vector2.new(0.5, 0)
+needleLine.Position = UDim2.new(0.5, 0, 0, 0)
+needleLine.Size = UDim2.new(0, 4, 1, 0)
+needleLine.BackgroundColor3 = Color3.fromRGB(250, 204, 21)
+needleLine.ZIndex = 10
+needleLine.Parent = rouletteContainer
+
+local needleTop = Instance.new("Frame")
+needleTop.AnchorPoint = Vector2.new(0.5, 0)
+needleTop.Position = UDim2.new(0.5, 0, 0, 0)
+needleTop.Size = UDim2.new(0, 18, 0, 14)
+needleTop.BackgroundColor3 = Color3.fromRGB(250, 204, 21)
+needleTop.ZIndex = 11
+addCorner(needleTop, 4)
+needleTop.Parent = rouletteContainer
+
+local needleBottom = Instance.new("Frame")
+needleBottom.AnchorPoint = Vector2.new(0.5, 1)
+needleBottom.Position = UDim2.new(0.5, 0, 1, 0)
+needleBottom.Size = UDim2.new(0, 18, 0, 14)
+needleBottom.BackgroundColor3 = Color3.fromRGB(250, 204, 21)
+needleBottom.ZIndex = 11
+addCorner(needleBottom, 4)
+needleBottom.Parent = rouletteContainer
+
+--------------------------------------------------------------------------------
+-- 11. REVEAL POPUP WITH EXPLICIT EQUIP & SELL BUTTONS
 --------------------------------------------------------------------------------
 
 local cutsceneOverlay = Instance.new("Frame")
 cutsceneOverlay.Name = "CutsceneOverlay"
 cutsceneOverlay.Size = UDim2.new(1, 0, 1, 0)
 cutsceneOverlay.BackgroundColor3 = Color3.fromRGB(4, 5, 8)
-cutsceneOverlay.BackgroundTransparency = 0.3
+cutsceneOverlay.BackgroundTransparency = 0.25
 cutsceneOverlay.Visible = false
 cutsceneOverlay.Parent = screenGui
 
--- Center Card
 local revealCard = Instance.new("Frame")
 revealCard.Name = "RevealCard"
 revealCard.AnchorPoint = Vector2.new(0.5, 0.5)
 revealCard.Position = UDim2.new(0.5, 0, 0.5, 0)
-revealCard.Size = UDim2.new(0, 360, 0, 420)
-revealCard.BackgroundColor3 = Color3.fromRGB(15, 18, 26)
+revealCard.Size = UDim2.new(0, 420, 0, 460)
+revealCard.BackgroundColor3 = Color3.fromRGB(14, 17, 26)
 addCorner(revealCard, 18)
 local cardStroke = addStroke(revealCard, Color3.fromRGB(255, 255, 255), 3)
-addPadding(revealCard, 20, 20, 20, 20)
+addPadding(revealCard, 20, 20, 24, 24)
 revealCard.Parent = cutsceneOverlay
+
+local cardHeaderTitle = Instance.new("TextLabel")
+cardHeaderTitle.Size = UDim2.new(1, 0, 0, 22)
+cardHeaderTitle.BackgroundTransparency = 1
+cardHeaderTitle.Font = Enum.Font.GothamBlack
+cardHeaderTitle.TextSize = 13
+cardHeaderTitle.TextColor3 = Color3.fromRGB(250, 204, 21)
+cardHeaderTitle.Text = "🎉 ВЫ ВЫБИЛИ НОВУЮ АУРУ!"
+cardHeaderTitle.Parent = revealCard
 
 local cardTierTag = Instance.new("TextLabel")
 cardTierTag.Size = UDim2.new(1, 0, 0, 24)
+cardTierTag.Position = UDim2.new(0, 0, 0, 24)
 cardTierTag.BackgroundTransparency = 1
 cardTierTag.Font = Enum.Font.GothamBlack
 cardTierTag.TextSize = 14
@@ -1067,18 +1118,18 @@ cardTierTag.Text = "[ TIER ]"
 cardTierTag.Parent = revealCard
 
 local cardName = Instance.new("TextLabel")
-cardName.Size = UDim2.new(1, 0, 0, 44)
-cardName.Position = UDim2.new(0, 0, 0, 28)
+cardName.Size = UDim2.new(1, 0, 0, 46)
+cardName.Position = UDim2.new(0, 0, 0, 50)
 cardName.BackgroundTransparency = 1
 cardName.Font = Enum.Font.GothamBlack
-cardName.TextSize = 30
+cardName.TextSize = 32
 cardName.TextColor3 = Color3.fromRGB(255, 255, 255)
 cardName.Text = "Aura Name"
 cardName.Parent = revealCard
 
 local cardRarity = Instance.new("TextLabel")
-cardRarity.Size = UDim2.new(1, 0, 0, 26)
-cardRarity.Position = UDim2.new(0, 0, 0, 78)
+cardRarity.Size = UDim2.new(1, 0, 0, 28)
+cardRarity.Position = UDim2.new(0, 0, 0, 102)
 cardRarity.BackgroundTransparency = 1
 cardRarity.Font = Enum.Font.GothamBold
 cardRarity.TextSize = 18
@@ -1087,8 +1138,8 @@ cardRarity.Text = "1 in 100,000"
 cardRarity.Parent = revealCard
 
 local cardDesc = Instance.new("TextLabel")
-cardDesc.Size = UDim2.new(1, 0, 0, 110)
-cardDesc.Position = UDim2.new(0, 0, 0, 116)
+cardDesc.Size = UDim2.new(1, 0, 0, 90)
+cardDesc.Position = UDim2.new(0, 0, 0, 136)
 cardDesc.BackgroundTransparency = 1
 cardDesc.Font = Enum.Font.Gotham
 cardDesc.TextSize = 13
@@ -1097,31 +1148,45 @@ cardDesc.TextWrapped = true
 cardDesc.Text = "Aura lore description..."
 cardDesc.Parent = revealCard
 
+-- ACTION BUTTON 1: ЭКИПИРОВАТЬ
 local cardEquipBtn = Instance.new("TextButton")
-cardEquipBtn.Size = UDim2.new(0.48, 0, 0, 44)
-cardEquipBtn.Position = UDim2.new(0, 0, 1, -44)
+cardEquipBtn.Size = UDim2.new(1, 0, 0, 44)
+cardEquipBtn.Position = UDim2.new(0, 0, 1, -128)
 cardEquipBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 cardEquipBtn.Font = Enum.Font.GothamBlack
 cardEquipBtn.TextSize = 15
 cardEquipBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-cardEquipBtn.Text = "EQUIP"
+cardEquipBtn.Text = "⚔️ ЭКИПИРОВАТЬ СЕЙЧАС"
 addCorner(cardEquipBtn, 10)
 cardEquipBtn.Parent = revealCard
 
-local cardCloseBtn = Instance.new("TextButton")
-cardCloseBtn.Size = UDim2.new(0.48, 0, 0, 44)
-cardCloseBtn.Position = UDim2.new(0.52, 0, 1, -44)
-cardCloseBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
-cardCloseBtn.Font = Enum.Font.GothamBlack
-cardCloseBtn.TextSize = 15
-cardCloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-cardCloseBtn.Text = "COLLECT"
-addCorner(cardCloseBtn, 10)
-cardCloseBtn.Parent = revealCard
+-- ACTION BUTTON 2: ПРОДАТЬ ЗА МОНЕТЫ
+local cardSellBtn = Instance.new("TextButton")
+cardSellBtn.Size = UDim2.new(0.48, 0, 0, 42)
+cardSellBtn.Position = UDim2.new(0, 0, 1, -74)
+cardSellBtn.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
+cardSellBtn.Font = Enum.Font.GothamBlack
+cardSellBtn.TextSize = 13
+cardSellBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+cardSellBtn.Text = "💰 ПРОДАТЬ (+50)"
+addCorner(cardSellBtn, 10)
+cardSellBtn.Parent = revealCard
+
+-- ACTION BUTTON 3: В ИНВЕНТАРЬ
+local cardCollectBtn = Instance.new("TextButton")
+cardCollectBtn.Size = UDim2.new(0.48, 0, 0, 42)
+cardCollectBtn.Position = UDim2.new(0.52, 0, 1, -74)
+cardCollectBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
+cardCollectBtn.Font = Enum.Font.GothamBlack
+cardCollectBtn.TextSize = 13
+cardCollectBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+cardCollectBtn.Text = "🎒 В ИНВЕНТАРЬ"
+addCorner(cardCollectBtn, 10)
+cardCollectBtn.Parent = revealCard
 
 local currentRolledAura = nil
 
-local function showCutscene(auraData)
+local function showRevealPopup(auraData)
 	currentRolledAura = auraData
 	cardTierTag.Text = string.format("[ ✦ %s ✦ ]", auraData.Tier:upper())
 	cardName.Text = auraData.Name
@@ -1130,24 +1195,14 @@ local function showCutscene(auraData)
 	cardDesc.Text = auraData.Description
 	cardStroke.Color = auraData.Color
 
-	if auraData.Rarity >= 250000 then
-		SoundEffects.Play("RevealGodly")
-	elseif auraData.Rarity >= 10000 then
-		SoundEffects.Play("RevealMythic")
-	elseif auraData.Rarity >= 1000 then
-		SoundEffects.Play("RevealLegendary")
-	elseif auraData.Rarity >= 16 then
-		SoundEffects.Play("RevealRare")
-	else
-		SoundEffects.Play("RevealCommon")
-	end
+	local scrapCoins = AuraConfig.GetScrapValue(auraData.Rarity or 0)
+	cardSellBtn.Text = string.format("💰 ПРОДАТЬ (+%d)", scrapCoins)
 
 	cutsceneOverlay.Visible = true
 
-	-- Dramatic Spring Bounce-in
-	revealCard.Size = UDim2.new(0, 80, 0, 90)
-	TweenService:Create(revealCard, TweenInfo.new(0.38, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-		Size = UDim2.new(0, 360, 0, 420),
+	revealCard.Size = UDim2.new(0, 100, 0, 110)
+	TweenService:Create(revealCard, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+		Size = UDim2.new(0, 420, 0, 460),
 	}):Play()
 end
 
@@ -1159,13 +1214,149 @@ cardEquipBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
-cardCloseBtn.MouseButton1Click:Connect(function()
+cardSellBtn.MouseButton1Click:Connect(function()
+	SoundEffects.Play("Coin")
+	cutsceneOverlay.Visible = false
+	if currentRolledAura then
+		DeleteAuraEvent:FireServer(currentRolledAura.Id)
+	end
+end)
+
+cardCollectBtn.MouseButton1Click:Connect(function()
 	SoundEffects.Play("Click")
 	cutsceneOverlay.Visible = false
 end)
 
 --------------------------------------------------------------------------------
--- 10. GLOBAL SERVER ANNOUNCEMENT BANNER
+-- 12. RUN CS2 CASE ROULETTE ANIMATION
+--------------------------------------------------------------------------------
+
+local function runCS2Roulette(winningAura, onFinished)
+	rouletteContainer.Visible = true
+	rStroke.Color = winningAura.Color
+
+	-- Clear old cards
+	for _, child in ipairs(rouletteTape:GetChildren()) do
+		child:Destroy()
+	end
+
+	local CARD_WIDTH = 120
+	local CARD_GAP = 10
+	local PITCH = CARD_WIDTH + CARD_GAP
+	local WIN_INDEX = 34 -- Winning card position in the strip
+	local TOTAL_CARDS = 44
+
+	local allAuras = AuraConfig.RollableAuras
+	local cardsList = {}
+
+	for i = 1, TOTAL_CARDS do
+		local aura = nil
+		if i == WIN_INDEX then
+			aura = winningAura
+		else
+			aura = allAuras[math.random(1, #allAuras)]
+		end
+
+		local card = Instance.new("Frame")
+		card.Name = "Card_" .. tostring(i)
+		card.Size = UDim2.new(0, CARD_WIDTH, 0, 140)
+		card.Position = UDim2.new(0, (i - 1) * PITCH + 20, 0.5, -70)
+		card.BackgroundColor3 = Color3.fromRGB(18, 22, 32)
+		addCorner(card, 10)
+		addStroke(card, aura.Color, 2)
+
+		local name = Instance.new("TextLabel")
+		name.Size = UDim2.new(1, -8, 0, 32)
+		name.Position = UDim2.new(0, 4, 0, 8)
+		name.BackgroundTransparency = 1
+		name.Font = Enum.Font.GothamBlack
+		name.TextSize = 12
+		name.TextColor3 = aura.Color
+		name.Text = aura.Name
+		name.TextWrapped = true
+		name.Parent = card
+
+		local rarity = Instance.new("TextLabel")
+		rarity.Size = UDim2.new(1, -8, 0, 20)
+		rarity.Position = UDim2.new(0, 4, 0, 42)
+		rarity.BackgroundTransparency = 1
+		rarity.Font = Enum.Font.GothamBold
+		rarity.TextSize = 10
+		rarity.TextColor3 = Color3.fromRGB(156, 163, 175)
+		rarity.Text = AuraConfig.FormatRarity(aura.Rarity or 0)
+		rarity.Parent = card
+
+		local tierPill = Instance.new("TextLabel")
+		tierPill.Size = UDim2.new(1, -16, 0, 22)
+		tierPill.Position = UDim2.new(0, 8, 1, -30)
+		tierPill.BackgroundColor3 = Color3.fromRGB(24, 28, 42)
+		tierPill.Font = Enum.Font.GothamBlack
+		tierPill.TextSize = 9
+		tierPill.TextColor3 = aura.Color
+		tierPill.Text = aura.Tier:upper()
+		addCorner(tierPill, 4)
+		tierPill.Parent = card
+
+		card.Parent = rouletteTape
+		table.insert(cardsList, card)
+	end
+
+	-- Calculate exact landing position so Card WIN_INDEX is centered on needle
+	local containerWidth = rouletteContainer.AbsoluteSize.X
+	local centerOffset = containerWidth / 2
+	local cardCenterInTape = (WIN_INDEX - 1) * PITCH + 20 + (CARD_WIDTH / 2)
+	local randomJitter = math.random(-20, 20) -- realistic CS2 slight needle offset
+	local targetTapeX = -(cardCenterInTape - centerOffset + randomJitter)
+
+	rouletteTape.Position = UDim2.new(0, 0, 0, 0)
+
+	local duration = isFastRollOn and 0.8 or 3.2
+	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+	local tween = TweenService:Create(rouletteTape, tweenInfo, {
+		Position = UDim2.new(0, targetTapeX, 0, 0)
+	})
+
+	-- Play satisfying ticking sound as cards pass the needle
+	local lastCardIndex = -1
+	local conn
+	conn = RunService.RenderStepped:Connect(function()
+		local curX = rouletteTape.Position.X.Offset
+		local passedDist = -curX + centerOffset - 20
+		local currentCard = math.floor(passedDist / PITCH) + 1
+		if currentCard ~= lastCardIndex and currentCard >= 1 and currentCard <= TOTAL_CARDS then
+			lastCardIndex = currentCard
+			SoundEffects.Play("Tick", 0.6, 1.2)
+		end
+	end)
+
+	tween:Play()
+	tween.Completed:Connect(function()
+		if conn then conn:Disconnect() end
+
+		-- Needle flash & sound
+		needleLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		TweenService:Create(needleLine, TweenInfo.new(0.3), { BackgroundColor3 = Color3.fromRGB(250, 204, 21) }):Play()
+
+		if winningAura.Rarity >= 250000 then
+			SoundEffects.Play("RevealGodly")
+		elseif winningAura.Rarity >= 10000 then
+			SoundEffects.Play("RevealMythic")
+		elseif winningAura.Rarity >= 1000 then
+			SoundEffects.Play("RevealLegendary")
+		elseif winningAura.Rarity >= 16 then
+			SoundEffects.Play("RevealRare")
+		else
+			SoundEffects.Play("RevealCommon")
+		end
+
+		task.wait(0.4)
+		rouletteContainer.Visible = false
+		if onFinished then onFinished() end
+	end)
+end
+
+--------------------------------------------------------------------------------
+-- 13. GLOBAL SERVER BANNER
 --------------------------------------------------------------------------------
 
 local banner = Instance.new("Frame")
@@ -1207,7 +1398,7 @@ GlobalAnnouncementEvent.OnClientEvent:Connect(function(info)
 end)
 
 --------------------------------------------------------------------------------
--- 11. ROLL EXECUTION & AUTOMATION
+-- 14. ROLL EXECUTION WITH CS2 ROULETTE
 --------------------------------------------------------------------------------
 
 local function doRoll()
@@ -1228,14 +1419,13 @@ local function doRoll()
 	}):Play()
 
 	if result and result.Success and result.Aura then
-		if not isFastRollOn then
-			showCutscene(result.Aura)
-		else
-			SoundEffects.Play("RevealCommon")
-		end
+		runCS2Roulette(result.Aura, function()
+			showRevealPopup(result.Aura)
+			isRolling = false
+		end)
+	else
+		isRolling = false
 	end
-
-	isRolling = false
 end
 
 rollButton.MouseButton1Click:Connect(function()
@@ -1261,7 +1451,7 @@ end)
 task.spawn(function()
 	while true do
 		task.wait(AuraConfig.Settings.AutoRollInterval)
-		if isAutoRollOn and not isRolling and not cutsceneOverlay.Visible then
+		if isAutoRollOn and not isRolling and not cutsceneOverlay.Visible and not rouletteContainer.Visible then
 			doRoll()
 		end
 	end
@@ -1273,11 +1463,11 @@ fastRollBtn.MouseButton1Click:Connect(function()
 	if isFastRollOn then
 		fastRollBtn.Text = "⏩ FAST: ON"
 		fastRollBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
-		setFastBtn.Text = "⏩ Fast Roll Cutscene: ON"
+		setFastBtn.Text = "⏩ Быстрый Ролл (Без Рулетки): ВКЛ"
 	else
 		fastRollBtn.Text = "⏩ FAST: OFF"
 		fastRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
-		setFastBtn.Text = "⏩ Fast Roll Cutscene: OFF"
+		setFastBtn.Text = "⏩ Быстрый Ролл (Без Рулетки): ВЫКЛ"
 	end
 end)
 
@@ -1313,7 +1503,7 @@ ProximityPromptService.PromptTriggered:Connect(function(prompt, player)
 end)
 
 --------------------------------------------------------------------------------
--- 12. DATA SYNCHRONIZATION
+-- 15. DATA SYNCHRONIZATION
 --------------------------------------------------------------------------------
 
 DataSyncEvent.OnClientEvent:Connect(function(data)
@@ -1349,12 +1539,12 @@ DataSyncEvent.OnClientEvent:Connect(function(data)
 		eqStroke.Color = Color3.fromRGB(45, 55, 78)
 	end
 
-	local autoDelText = thresholdNames[localData.AutoDeleteThreshold or 0] or "None"
-	autoDeleteBtn.Text = "Auto-Delete: " .. autoDelText
+	local autoDelText = thresholdNames[localData.AutoDeleteThreshold or 0] or "Нет"
+	autoDeleteBtn.Text = "Авто-продажа: " .. autoDelText
 
 	if invWindow.Visible then refreshInventoryUI() end
 	if craftWindow.Visible then refreshCraftingUI() end
 	if shopWindow.Visible then refreshShopUI() end
 end)
 
-print("[Sols RNG] Professional AAA Client GUI loaded successfully!")
+print("[Sols RNG] CS2 Roulette Case Opening & Pro GUI initialized!")

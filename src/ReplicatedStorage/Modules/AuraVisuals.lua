@@ -1,13 +1,12 @@
 -- AuraVisuals.lua
--- Professional multi-layered procedural Visual Effects (VFX) engine for Sol's RNG.
--- Creates ground magic rings, ascending body energy, orbiting celestial stars,
--- divine wings, head halos, character highlights, light beams, and modern overhead badges.
+-- Ultra-high density, multi-layered visual effects (VFX) engine for Sol's RNG.
+-- Features dense ground shockwaves, concentric rotating magic rings, high-rate ascending body auras,
+-- orbital celestial particles, radiant divine wings, animated head halos, and sharp character highlights.
 
 local AuraConfig = require(script.Parent.AuraConfig)
 
 local AuraVisuals = {}
 
--- Standard high-definition particle textures built into Roblox engine
 local TEXTURES = {
 	Sparkle = "rbxasset://textures/particles/sparkles_main.dds",
 	Smoke = "rbxasset://textures/particles/smoke_main.dds",
@@ -23,19 +22,14 @@ function AuraVisuals.ClearAura(character)
 	if not character then return end
 
 	local existing = character:FindFirstChild("ActiveAura")
-	if existing then
-		existing:Destroy()
-	end
+	if existing then existing:Destroy() end
 
 	local head = character:FindFirstChild("Head")
 	if head then
 		local oldBb = head:FindFirstChild("AuraBillboardGui")
-		if oldBb then
-			oldBb:Destroy()
-		end
+		if oldBb then oldBb:Destroy() end
 	end
 
-	-- Clean up any stray highlight or attachments
 	for _, child in ipairs(character:GetDescendants()) do
 		if child.Name == "AuraHighlight" or child.Name == "AuraVFXAttachment" then
 			child:Destroy()
@@ -43,7 +37,6 @@ function AuraVisuals.ClearAura(character)
 	end
 end
 
--- Safely get or create character's ActiveAura folder
 local function getActiveFolder(character)
 	local existing = character:FindFirstChild("ActiveAura")
 	if existing and existing:IsA("Folder") then
@@ -58,7 +51,6 @@ local function getActiveFolder(character)
 	return folder
 end
 
--- Helper: Create configured ParticleEmitter
 local function createEmitter(parent, props)
 	local pe = Instance.new("ParticleEmitter")
 	pe.Color = props.Color
@@ -68,167 +60,207 @@ local function createEmitter(parent, props)
 	pe.Rate = props.Rate
 	pe.Speed = props.Speed
 	pe.SpreadAngle = props.SpreadAngle or Vector2.new(15, 15)
-	pe.Acceleration = props.Acceleration or Vector3.new(0, 2, 0)
+	pe.Acceleration = props.Acceleration or Vector3.new(0, 3, 0)
 	pe.Drag = props.Drag or 0.5
 	pe.LightEmission = props.LightEmission or 1.0
 	pe.LightInfluence = props.LightInfluence or 0.0
 	pe.Texture = props.Texture or TEXTURES.Sparkle
-	pe.RotSpeed = props.RotSpeed or NumberRange.new(-60, 60)
+	pe.RotSpeed = props.RotSpeed or NumberRange.new(-90, 90)
 	pe.Orientation = props.Orientation or Enum.ParticleOrientation.FacingCamera
 	pe.EmissionDirection = props.EmissionDirection or Enum.NormalId.Top
 	pe.Parent = parent
 	return pe
 end
 
--- LAYER 1: Ground Magic Circle / Rune Disc
-local function addGroundMagicCircle(parentAtt, color, scaleMultiplier)
+-- LAYER 1: Dual Concentric Ground Magic Circles & Expanding Shockwaves
+local function addDenseGroundEffects(parentAtt, color, scaleMultiplier)
 	local scale = scaleMultiplier or 1.0
 
-	-- Expanding ground energy pulse
+	-- Expanding Ground Shockwave Disc
 	createEmitter(parentAtt, {
 		Color = ColorSequence.new(color),
 		Size = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1.2 * scale),
-			NumberSequenceKeypoint.new(0.6, 3.8 * scale),
-			NumberSequenceKeypoint.new(1, 4.8 * scale),
-		}),
-		Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1.0),
-			NumberSequenceKeypoint.new(0.15, 0.2),
-			NumberSequenceKeypoint.new(0.7, 0.4),
-			NumberSequenceKeypoint.new(1, 1.0),
-		}),
-		Lifetime = NumberRange.new(1.8, 2.5),
-		Rate = 6,
-		Speed = NumberRange.new(0.1, 0.3),
-		SpreadAngle = Vector2.new(0, 0),
-		Acceleration = Vector3.new(0, 0.2, 0),
-		Drag = 1.0,
-		Texture = TEXTURES.Ring,
-		RotSpeed = NumberRange.new(20, 40),
-		Orientation = Enum.ParticleOrientation.VelocityPerpendicular,
-		EmissionDirection = Enum.NormalId.Top,
-	})
-
-	-- Ground ambient spark motes
-	createEmitter(parentAtt, {
-		Color = ColorSequence.new(color),
-		Size = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 0.2),
-			NumberSequenceKeypoint.new(0.5, 0.6 * scale),
-			NumberSequenceKeypoint.new(1, 0.1),
-		}),
-		Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1.0),
-			NumberSequenceKeypoint.new(0.2, 0.1),
-			NumberSequenceKeypoint.new(0.8, 0.3),
-			NumberSequenceKeypoint.new(1, 1.0),
-		}),
-		Lifetime = NumberRange.new(1.5, 2.2),
-		Rate = 18 * scale,
-		Speed = NumberRange.new(1.0, 3.0),
-		SpreadAngle = Vector2.new(45, 45),
-		Acceleration = Vector3.new(0, 3.5, 0),
-		Texture = TEXTURES.Cross,
-	})
-end
-
--- LAYER 2: Body Ascending Energy Wisps (The Core Flame)
-local function addBodyEnergyWisps(parentAtt, color, secondaryColor, rate, speedRange, sizeRange)
-	local secColor = secondaryColor or color
-	createEmitter(parentAtt, {
-		Color = ColorSequence.new({
-			ColorSequenceKeypoint.new(0, color),
-			ColorSequenceKeypoint.new(0.5, secColor),
-			ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
-		}),
-		Size = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, sizeRange[1] or 0.4),
-			NumberSequenceKeypoint.new(0.5, sizeRange[2] or 1.6),
-			NumberSequenceKeypoint.new(1, sizeRange[3] or 0.2),
+			NumberSequenceKeypoint.new(0, 1.5 * scale),
+			NumberSequenceKeypoint.new(0.5, 4.5 * scale),
+			NumberSequenceKeypoint.new(1, 6.0 * scale),
 		}),
 		Transparency = NumberSequence.new({
 			NumberSequenceKeypoint.new(0, 1.0),
 			NumberSequenceKeypoint.new(0.15, 0.1),
-			NumberSequenceKeypoint.new(0.7, 0.3),
+			NumberSequenceKeypoint.new(0.7, 0.35),
 			NumberSequenceKeypoint.new(1, 1.0),
 		}),
-		Lifetime = NumberRange.new(1.2, 2.0),
-		Rate = rate or 35,
-		Speed = speedRange or NumberRange.new(3.0, 6.0),
-		SpreadAngle = Vector2.new(20, 20),
+		Lifetime = NumberRange.new(1.6, 2.2),
+		Rate = 12,
+		Speed = NumberRange.new(0.2, 0.5),
+		SpreadAngle = Vector2.new(0, 0),
+		Acceleration = Vector3.new(0, 0.1, 0),
+		Drag = 1.0,
+		Texture = TEXTURES.Ring,
+		RotSpeed = NumberRange.new(35, 70),
+		Orientation = Enum.ParticleOrientation.VelocityPerpendicular,
+		EmissionDirection = Enum.NormalId.Top,
+	})
+
+	-- Rapid Inner Magic Circle
+	createEmitter(parentAtt, {
+		Color = ColorSequence.new(Color3.fromRGB(255, 255, 255)),
+		Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 2.0 * scale),
+			NumberSequenceKeypoint.new(1, 3.2 * scale),
+		}),
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.8),
+			NumberSequenceKeypoint.new(0.5, 0.2),
+			NumberSequenceKeypoint.new(1, 1.0),
+		}),
+		Lifetime = NumberRange.new(1.0, 1.5),
+		Rate = 8,
+		Speed = NumberRange.new(0.1, 0.2),
+		Texture = TEXTURES.Ring,
+		RotSpeed = NumberRange.new(-90, -45),
+		Orientation = Enum.ParticleOrientation.VelocityPerpendicular,
+	})
+
+	-- Ground Spark Eruption
+	createEmitter(parentAtt, {
+		Color = ColorSequence.new(color),
+		Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.2),
+			NumberSequenceKeypoint.new(0.5, 0.8 * scale),
+			NumberSequenceKeypoint.new(1, 0.1),
+		}),
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1.0),
+			NumberSequenceKeypoint.new(0.15, 0.0),
+			NumberSequenceKeypoint.new(0.8, 0.2),
+			NumberSequenceKeypoint.new(1, 1.0),
+		}),
+		Lifetime = NumberRange.new(1.4, 2.2),
+		Rate = 35 * scale,
+		Speed = NumberRange.new(2.5, 5.5),
+		SpreadAngle = Vector2.new(45, 45),
+		Acceleration = Vector3.new(0, 5, 0),
+		Texture = TEXTURES.Cross,
+	})
+end
+
+-- LAYER 2: Dense Ascending Body Energy Wisps (Volumetric Flame Wrap)
+local function addDenseBodyEnergy(parentAtt, color, secondaryColor, rate, speedRange, sizeRange)
+	local secColor = secondaryColor or color
+	-- Dense Core Flames
+	createEmitter(parentAtt, {
+		Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, color),
+			ColorSequenceKeypoint.new(0.4, secColor),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
+		}),
+		Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, sizeRange[1] or 0.6),
+			NumberSequenceKeypoint.new(0.5, sizeRange[2] or 2.2),
+			NumberSequenceKeypoint.new(1, sizeRange[3] or 0.3),
+		}),
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1.0),
+			NumberSequenceKeypoint.new(0.1, 0.05),
+			NumberSequenceKeypoint.new(0.7, 0.25),
+			NumberSequenceKeypoint.new(1, 1.0),
+		}),
+		Lifetime = NumberRange.new(1.2, 1.8),
+		Rate = rate or 65,
+		Speed = speedRange or NumberRange.new(4.0, 8.0),
+		SpreadAngle = Vector2.new(25, 25),
+		Acceleration = Vector3.new(0, 7, 0),
+		Texture = TEXTURES.Flame,
+	})
+
+	-- Secondary Inner Core Glow
+	createEmitter(parentAtt, {
+		Color = ColorSequence.new(Color3.fromRGB(255, 255, 255)),
+		Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.4),
+			NumberSequenceKeypoint.new(0.5, 1.4),
+			NumberSequenceKeypoint.new(1, 0.2),
+		}),
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.6),
+			NumberSequenceKeypoint.new(0.5, 0.1),
+			NumberSequenceKeypoint.new(1, 1.0),
+		}),
+		Lifetime = NumberRange.new(0.8, 1.4),
+		Rate = (rate or 65) * 0.5,
+		Speed = NumberRange.new(3.0, 6.0),
+		SpreadAngle = Vector2.new(15, 15),
 		Acceleration = Vector3.new(0, 5, 0),
 		Texture = TEXTURES.Flame,
 	})
 end
 
--- LAYER 3: Orbiting Celestial Star Particles
-local function addOrbitingSparks(parentAtt, color, rate)
+-- LAYER 3: Swirling Orbiting Celestial Star Clusters
+local function addDenseOrbitingSparks(parentAtt, color, rate)
 	createEmitter(parentAtt, {
 		Color = ColorSequence.new(color),
 		Size = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 0.2),
-			NumberSequenceKeypoint.new(0.5, 0.8),
-			NumberSequenceKeypoint.new(1, 0.1),
+			NumberSequenceKeypoint.new(0, 0.3),
+			NumberSequenceKeypoint.new(0.5, 1.2),
+			NumberSequenceKeypoint.new(1, 0.2),
 		}),
 		Transparency = NumberSequence.new({
 			NumberSequenceKeypoint.new(0, 1.0),
-			NumberSequenceKeypoint.new(0.2, 0.0),
+			NumberSequenceKeypoint.new(0.15, 0.0),
 			NumberSequenceKeypoint.new(0.8, 0.2),
 			NumberSequenceKeypoint.new(1, 1.0),
 		}),
-		Lifetime = NumberRange.new(1.6, 2.6),
-		Rate = rate or 25,
-		Speed = NumberRange.new(2.5, 5.0),
-		SpreadAngle = Vector2.new(60, 60),
-		Acceleration = Vector3.new(0, 2, 0),
-		RotSpeed = NumberRange.new(-120, 120),
+		Lifetime = NumberRange.new(1.8, 2.8),
+		Rate = rate or 45,
+		Speed = NumberRange.new(3.5, 7.0),
+		SpreadAngle = Vector2.new(80, 80),
+		Acceleration = Vector3.new(0, 3, 0),
+		RotSpeed = NumberRange.new(-180, 180),
 		Texture = TEXTURES.Sparkle,
 	})
 end
 
--- LAYER 4: Divine Angelic Wings (For Archangel, Solar, Godly)
+-- LAYER 4: Radiant Divine Angelic Wings (Large, Multi-Layered)
 local function addAngelicWings(character, folder, color)
 	local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
 	if not torso or not torso:IsA("BasePart") then return end
 
-	-- Left Wing Attachment
 	local attWingL = Instance.new("Attachment")
 	attWingL.Name = "AuraVFXAttachment"
-	attWingL.Position = Vector3.new(-1.2, 0.8, 0.8)
-	attWingL.Orientation = Vector3.new(0, 35, 15)
+	attWingL.Position = Vector3.new(-1.4, 0.9, 0.8)
+	attWingL.Orientation = Vector3.new(0, 35, 20)
 	attWingL.Parent = torso
 
-	-- Right Wing Attachment
 	local attWingR = Instance.new("Attachment")
 	attWingR.Name = "AuraVFXAttachment"
-	attWingR.Position = Vector3.new(1.2, 0.8, 0.8)
-	attWingR.Orientation = Vector3.new(0, -35, -15)
+	attWingR.Position = Vector3.new(1.4, 0.9, 0.8)
+	attWingR.Orientation = Vector3.new(0, -35, -20)
 	attWingR.Parent = torso
 
 	local function makeWingEmitter(parentAtt)
 		createEmitter(parentAtt, {
 			Color = ColorSequence.new({
 				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-				ColorSequenceKeypoint.new(0.6, color),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 240, 180)),
+				ColorSequenceKeypoint.new(0.5, color),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 235, 150)),
 			}),
 			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.5),
-				NumberSequenceKeypoint.new(0.4, 2.2),
-				NumberSequenceKeypoint.new(1, 0.3),
+				NumberSequenceKeypoint.new(0, 0.6),
+				NumberSequenceKeypoint.new(0.4, 2.8),
+				NumberSequenceKeypoint.new(1, 0.4),
 			}),
 			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.8),
-				NumberSequenceKeypoint.new(0.2, 0.05),
-				NumberSequenceKeypoint.new(0.8, 0.2),
+				NumberSequenceKeypoint.new(0, 0.6),
+				NumberSequenceKeypoint.new(0.15, 0.0),
+				NumberSequenceKeypoint.new(0.7, 0.15),
 				NumberSequenceKeypoint.new(1, 1.0),
 			}),
-			Lifetime = NumberRange.new(0.8, 1.4),
-			Rate = 40,
-			Speed = NumberRange.new(3.0, 6.0),
+			Lifetime = NumberRange.new(0.9, 1.6),
+			Rate = 60,
+			Speed = NumberRange.new(4.0, 8.0),
 			SpreadAngle = Vector2.new(20, 20),
-			Acceleration = Vector3.new(0, 3, 0),
+			Acceleration = Vector3.new(0, 4, 0),
 			Texture = TEXTURES.Flame,
 		})
 	end
@@ -237,54 +269,54 @@ local function addAngelicWings(character, folder, color)
 	makeWingEmitter(attWingR)
 end
 
--- LAYER 5: Floating Head Halo / Celestial Crown
+-- LAYER 5: Animated Head Halos & Celestial Crowns
 local function addHeadCrown(character, folder, color, isVIP)
 	local head = character:FindFirstChild("Head")
 	if not head or not head:IsA("BasePart") then return end
 
 	local attCrown = Instance.new("Attachment")
 	attCrown.Name = "AuraVFXAttachment"
-	attCrown.Position = Vector3.new(0, 1.6, 0)
+	attCrown.Position = Vector3.new(0, 1.8, 0)
 	attCrown.Parent = head
 
 	-- Rotating Halo Ring
 	createEmitter(attCrown, {
 		Color = ColorSequence.new(color),
 		Size = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1.5),
-			NumberSequenceKeypoint.new(0.5, 2.2),
-			NumberSequenceKeypoint.new(1, 1.5),
+			NumberSequenceKeypoint.new(0, 1.8),
+			NumberSequenceKeypoint.new(0.5, 2.6),
+			NumberSequenceKeypoint.new(1, 1.8),
 		}),
 		Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 0.6),
-			NumberSequenceKeypoint.new(0.5, 0.1),
-			NumberSequenceKeypoint.new(1, 0.6),
+			NumberSequenceKeypoint.new(0, 0.5),
+			NumberSequenceKeypoint.new(0.5, 0.05),
+			NumberSequenceKeypoint.new(1, 0.5),
 		}),
-		Lifetime = NumberRange.new(1.0, 1.6),
-		Rate = 4,
+		Lifetime = NumberRange.new(1.2, 1.8),
+		Rate = 6,
 		Speed = NumberRange.new(0, 0.1),
 		SpreadAngle = Vector2.new(0, 0),
 		Acceleration = Vector3.new(0, 0, 0),
-		RotSpeed = NumberRange.new(45, 90),
+		RotSpeed = NumberRange.new(60, 120),
 		Texture = TEXTURES.Ring,
 		Orientation = Enum.ParticleOrientation.VelocityPerpendicular,
 		EmissionDirection = Enum.NormalId.Top,
 	})
 
-	-- Halo Star Sparkles
+	-- Halo Star Burst
 	createEmitter(attCrown, {
 		Color = ColorSequence.new(Color3.fromRGB(255, 255, 255)),
-		Size = NumberSequence.new(0.4, 0.1),
-		Transparency = NumberSequence.new(0.1, 1.0),
-		Lifetime = NumberRange.new(0.8, 1.4),
-		Rate = 12,
-		Speed = NumberRange.new(0.5, 1.5),
+		Size = NumberSequence.new(0.5, 0.1),
+		Transparency = NumberSequence.new(0.05, 1.0),
+		Lifetime = NumberRange.new(0.8, 1.5),
+		Rate = 20,
+		Speed = NumberRange.new(0.8, 2.2),
 		SpreadAngle = Vector2.new(180, 180),
 		Texture = TEXTURES.Cross,
 	})
 end
 
--- LAYER 6: Vertical Pillar of Divine Light (For Legendary+)
+-- LAYER 6: Towering Vertical Pillar of Divine Light (For Legendary+)
 local function addLightPillar(rootPart, activeFolder, color)
 	local attBottom = Instance.new("Attachment")
 	attBottom.Name = "AuraVFXAttachment"
@@ -293,7 +325,7 @@ local function addLightPillar(rootPart, activeFolder, color)
 
 	local attTop = Instance.new("Attachment")
 	attTop.Name = "AuraVFXAttachment"
-	attTop.Position = Vector3.new(0, 12, 0)
+	attTop.Position = Vector3.new(0, 15, 0)
 	attTop.Parent = rootPart
 
 	local beam = Instance.new("Beam")
@@ -306,19 +338,19 @@ local function addLightPillar(rootPart, activeFolder, color)
 		ColorSequenceKeypoint.new(1, color),
 	})
 	beam.Transparency = NumberSequence.new({
-		NumberSequenceKeypoint.new(0, 0.5),
-		NumberSequenceKeypoint.new(0.5, 0.1),
+		NumberSequenceKeypoint.new(0, 0.4),
+		NumberSequenceKeypoint.new(0.5, 0.05),
 		NumberSequenceKeypoint.new(1, 0.95),
 	})
-	beam.Width0 = 3.8
-	beam.Width1 = 6.2
+	beam.Width0 = 4.2
+	beam.Width1 = 7.0
 	beam.LightEmission = 1.0
-	beam.TextureSpeed = 1.8
+	beam.TextureSpeed = 2.2
 	beam.Texture = TEXTURES.Flame
 	beam.Parent = activeFolder
 end
 
--- LAYER 7: Modern Glassmorphic Overhead Billboard Title
+-- LAYER 7: Modern Overhead Billboard Title
 local function createOverheadGui(character, auraData, isVIP)
 	local head = character:FindFirstChild("Head")
 	if not head or not head:IsA("BasePart") then return end
@@ -345,7 +377,7 @@ local function createOverheadGui(character, auraData, isVIP)
 	local stroke = Instance.new("UIStroke")
 	stroke.Color = auraData.Color
 	stroke.Thickness = 1.5
-	stroke.Transparency = 0.3
+	stroke.Transparency = 0.2
 	stroke.Parent = pill
 	pill.Parent = billboard
 
@@ -363,7 +395,6 @@ local function createOverheadGui(character, auraData, isVIP)
 	list.Padding = UDim.new(0, 1)
 	list.Parent = pill
 
-	-- VIP Tag (if VIP)
 	if isVIP then
 		local vipLabel = Instance.new("TextLabel")
 		vipLabel.Size = UDim2.new(1, 0, 0, 14)
@@ -375,7 +406,6 @@ local function createOverheadGui(character, auraData, isVIP)
 		vipLabel.Parent = pill
 	end
 
-	-- Aura Name
 	local nameLabel = Instance.new("TextLabel")
 	nameLabel.Size = UDim2.new(1, 0, 0, 24)
 	nameLabel.BackgroundTransparency = 1
@@ -387,7 +417,6 @@ local function createOverheadGui(character, auraData, isVIP)
 	nameLabel.TextStrokeTransparency = 0.1
 	nameLabel.Parent = pill
 
-	-- Tier & Rarity Subtitle
 	local subLabel = Instance.new("TextLabel")
 	subLabel.Size = UDim2.new(1, 0, 0, 15)
 	subLabel.BackgroundTransparency = 1
@@ -404,7 +433,7 @@ local function createOverheadGui(character, auraData, isVIP)
 end
 
 -- =============================================================================
--- MAIN ENTRY POINT: APPLY AURA TO CHARACTER
+-- MAIN ENTRY POINT
 -- =============================================================================
 
 function AuraVisuals.ApplyAura(character, auraId, isVIP)
@@ -428,7 +457,6 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 	local pColor = auraData.ParticleColor or auraColor
 	local rarity = auraData.Rarity or 0
 
-	-- 1. Create Core Attachments
 	local attFoot = Instance.new("Attachment")
 	attFoot.Name = "AuraVFXAttachment"
 	attFoot.Position = Vector3.new(0, -2.7, 0)
@@ -439,130 +467,86 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 	attRoot.Position = Vector3.new(0, 0, 0)
 	attRoot.Parent = rootPart
 
-	-- 2. Character Highlight (Clean, avatar-preserving outline glow)
+	-- Character Highlight (vivid neon glow)
 	local highlight = Instance.new("Highlight")
 	highlight.Name = "AuraHighlight"
 	highlight.Adornee = character
 	highlight.OutlineColor = auraColor
-	highlight.OutlineTransparency = 0.05
+	highlight.OutlineTransparency = 0.02
 	highlight.FillColor = auraColor
-	highlight.FillTransparency = 0.92 -- Translucent so avatar face/clothing stays crisp!
+	highlight.FillTransparency = 0.90
 	highlight.Parent = activeFolder
 
-	-- 3. PointLight with breathing illumination
+	-- Dynamic Light
 	local light = Instance.new("PointLight")
 	light.Name = "AuraLight"
 	light.Color = auraColor
-	light.Range = (rarity >= 10000 or auraData.IsCrafted) and 20 or 14
-	light.Brightness = (rarity >= 10000 or auraData.IsCrafted) and 3.8 or 2.2
+	light.Range = (rarity >= 10000 or auraData.IsCrafted) and 24 or 16
+	light.Brightness = (rarity >= 10000 or auraData.IsCrafted) and 4.2 or 2.8
 	light.Shadows = false
 	light.Parent = attRoot
 
-	-- 4. Overhead Modern Billboard GUI
 	createOverheadGui(character, auraData, isVIP or false)
 
-	-- 5. Always apply Ground Magic Circle & Orbiting Sparks for all auras
-	local groundScale = (rarity >= 10000) and 1.4 or 1.0
-	addGroundMagicCircle(attFoot, pColor, groundScale)
-	addOrbitingSparks(attRoot, pColor, (rarity >= 1000) and 35 or 18)
+	-- Always add dense ground runes & orbital sparkles
+	local groundScale = (rarity >= 10000) and 1.5 or 1.1
+	addDenseGroundEffects(attFoot, pColor, groundScale)
+	addDenseOrbitingSparks(attRoot, pColor, (rarity >= 1000) and 55 or 25)
 
-	-- 6. Tailor Specialized VFX based on Aura Shape & Tier
 	local shape = auraData.ParticleShape or "Sparks"
 
 	if shape == "Dust" or shape == "Sparks" then
-		-- Common / Uncommon
-		addBodyEnergyWisps(attRoot, pColor, auraColor, 20, NumberRange.new(1.5, 3.5), {0.2, 0.8, 0.1})
+		addDenseBodyEnergy(attRoot, pColor, auraColor, 40, NumberRange.new(2.0, 4.5), {0.3, 1.2, 0.2})
 
 	elseif shape == "Leaves" then
-		-- Natural
-		addBodyEnergyWisps(attRoot, pColor, Color3.fromRGB(160, 240, 100), 28, NumberRange.new(2.0, 4.5), {0.3, 1.2, 0.2})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(160, 240, 100), 50, NumberRange.new(2.5, 5.5), {0.4, 1.6, 0.2})
 
 	elseif shape == "Flame" or shape == "Embers" then
-		-- Rare / Topaz
-		addBodyEnergyWisps(attRoot, pColor, Color3.fromRGB(255, 230, 150), 40, NumberRange.new(3.5, 7.0), {0.4, 1.6, 0.2})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 220, 120), 75, NumberRange.new(4.5, 9.0), {0.5, 2.2, 0.3})
 
 	elseif shape == "Sparkles" then
-		-- Divinus: Holy sparkles + Head Halo
-		addBodyEnergyWisps(attRoot, pColor, Color3.fromRGB(255, 255, 200), 35, NumberRange.new(3.0, 6.0), {0.3, 1.4, 0.2})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 255, 200), 65, NumberRange.new(4.0, 8.0), {0.5, 2.0, 0.3})
 		addHeadCrown(character, activeFolder, pColor, false)
 
 	elseif shape == "Shards" or shape == "Frost" then
-		-- Crystallized / Glacier: Crystalline shards & blizzard mist
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(180, 230, 255), 60, NumberRange.new(3.5, 7.5), {0.4, 1.8, 0.3})
 		createEmitter(attRoot, {
 			Color = ColorSequence.new(pColor),
-			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.3),
-				NumberSequenceKeypoint.new(0.5, 1.1),
-				NumberSequenceKeypoint.new(1, 0.2),
-			}),
-			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 1.0),
-				NumberSequenceKeypoint.new(0.2, 0.0),
-				NumberSequenceKeypoint.new(0.8, 0.3),
-				NumberSequenceKeypoint.new(1, 1.0),
-			}),
-			Lifetime = NumberRange.new(1.6, 2.4),
-			Rate = 30,
-			Speed = NumberRange.new(2.5, 5.5),
-			SpreadAngle = Vector2.new(45, 45),
-			Acceleration = Vector3.new(0, 3, 0),
-			RotSpeed = NumberRange.new(-140, 140),
+			Size = NumberSequence.new(0.4, 1.2),
+			Transparency = NumberSequence.new(0.1, 1.0),
+			Lifetime = NumberRange.new(1.5, 2.5),
+			Rate = 45,
+			Speed = NumberRange.new(3.0, 6.5),
+			SpreadAngle = Vector2.new(50, 50),
+			RotSpeed = NumberRange.new(-180, 180),
 			Texture = TEXTURES.Shard,
 		})
 
 	elseif shape == "FireColumn" or shape == "Hellfire" or shape == "LavaTide" then
-		-- Ruby / Hades / Hellforged: Violent blazing fire column + Vertical Pillar
-		addBodyEnergyWisps(attRoot, Color3.fromRGB(255, 40, 20), pColor, 55, NumberRange.new(5.0, 10.0), {0.6, 2.4, 0.3})
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(255, 40, 20), pColor, 100, NumberRange.new(6.0, 12.0), {0.8, 3.0, 0.4})
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "Sunburst" or shape == "EclipseCorona" then
-		-- Solar / Eclipse: Radiant solar corona + Head Halo + Light Pillar
-		addBodyEnergyWisps(attRoot, Color3.fromRGB(255, 180, 40), Color3.fromRGB(255, 255, 255), 60, NumberRange.new(4.5, 9.0), {0.6, 2.5, 0.3})
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(255, 180, 40), Color3.fromRGB(255, 255, 255), 110, NumberRange.new(5.5, 11.0), {0.8, 3.2, 0.4})
 		addHeadCrown(character, activeFolder, pColor, false)
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "MoonStars" or shape == "NebulaSpiral" or shape == "Singularity" then
-		-- Lunar / Galaxy / Abyssal Hunter: Deep cosmic nebula + starlight beam
-		createEmitter(attRoot, {
-			Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, pColor),
-				ColorSequenceKeypoint.new(0.5, Color3.fromRGB(240, 180, 255)),
-				ColorSequenceKeypoint.new(1, pColor),
-			}),
-			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.8),
-				NumberSequenceKeypoint.new(0.5, 2.2),
-				NumberSequenceKeypoint.new(1, 0.4),
-			}),
-			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 1.0),
-				NumberSequenceKeypoint.new(0.2, 0.1),
-				NumberSequenceKeypoint.new(0.7, 0.25),
-				NumberSequenceKeypoint.new(1, 1.0),
-			}),
-			Lifetime = NumberRange.new(1.8, 2.8),
-			Rate = 45,
-			Speed = NumberRange.new(2.5, 5.5),
-			SpreadAngle = Vector2.new(60, 60),
-			Acceleration = Vector3.new(0, 2.5, 0),
-			Texture = TEXTURES.Cross,
-		})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(240, 180, 255), 90, NumberRange.new(4.0, 8.5), {0.7, 2.8, 0.4})
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "DivineHalo" or shape == "TimeClock" or shape == "PrismaticGlitch" then
-		-- Archangel / Chronos / Exotic Apex: Divine wings + Halo + Pillar
-		addBodyEnergyWisps(attRoot, pColor, Color3.fromRGB(255, 255, 255), 55, NumberRange.new(4.0, 8.5), {0.5, 2.2, 0.3})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 255, 255), 110, NumberRange.new(5.0, 10.0), {0.8, 3.0, 0.4})
 		addAngelicWings(character, activeFolder, pColor)
 		addHeadCrown(character, activeFolder, pColor, false)
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "CrownGlow" then
-		-- VIP Crown: Regal floating crown above head + Golden sparkles
 		addHeadCrown(character, activeFolder, Color3.fromRGB(255, 215, 0), true)
-		addBodyEnergyWisps(attRoot, Color3.fromRGB(251, 191, 36), Color3.fromRGB(255, 255, 255), 30, NumberRange.new(2.5, 5.0), {0.3, 1.2, 0.2})
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(251, 191, 36), Color3.fromRGB(255, 255, 255), 60, NumberRange.new(3.5, 7.0), {0.4, 1.8, 0.3})
 
 	else
-		addBodyEnergyWisps(attRoot, pColor, auraColor, 35, NumberRange.new(3.0, 6.0), {0.4, 1.5, 0.2})
+		addDenseBodyEnergy(attRoot, pColor, auraColor, 55, NumberRange.new(4.0, 8.0), {0.5, 2.0, 0.3})
 		if rarity >= 1000 then
 			addLightPillar(rootPart, activeFolder, pColor)
 		end

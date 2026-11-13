@@ -5,14 +5,16 @@ local SoundEffects = {}
 
 local SOUND_IDS = {
 	Click = "rbxasset://sounds/electronicpingshort.wav",
-	Spin = "rbxasset://sounds/action_footstep_plastic.mp3",
+	Tick = "rbxasset://sounds/action_footstep_plastic.mp3",  -- CS2 Roulette card tick
+	Spin = "rbxasset://sounds/action_swim.mp3",              -- Whoosh sound
 	RevealCommon = "rbxasset://sounds/snap.mp3",
-	RevealRare = "rbxassetid://9114221192",      -- Magical high bell chime
-	RevealLegendary = "rbxassetid://9114220524", -- Dramatic fanfare
-	RevealMythic = "rbxassetid://9114222384",    -- Celestial blast / angelic chord
-	RevealGodly = "rbxassetid://9114223175",     -- Deep cosmic thunder resonance
-	Craft = "rbxassetid://9114221580",           -- Anvil clang & magical burst
+	RevealRare = "rbxassetid://9114221192",                 -- Magical high bell chime
+	RevealLegendary = "rbxassetid://9114220524",            -- Dramatic fanfare
+	RevealMythic = "rbxassetid://9114222384",               -- Celestial blast / angelic chord
+	RevealGodly = "rbxassetid://9114223175",                -- Deep cosmic thunder resonance
+	Craft = "rbxassetid://9114221580",                      -- Anvil clang & magical burst
 	Equip = "rbxasset://sounds/uianimation.mp3",
+	Coin = "rbxasset://sounds/electronicpingshort.wav",
 }
 
 local soundFolder = nil

@@ -587,6 +587,26 @@ function AuraConfig.FormatRarity(rarity)
 	return &quot;1 in &quot; .. AuraConfig.FormatNumber(rarity)
 end
 
+-- Helper to get scrap coin value for selling an aura
+function AuraConfig.GetScrapValue(rarity)
+	if not rarity or rarity &lt;= 0 then
+		return 500
+	end
+	if rarity &lt;= 2 then return 5 end
+	if rarity &lt;= 4 then return 10 end
+	if rarity &lt;= 8 then return 20 end
+	if rarity &lt;= 16 then return 40 end
+	if rarity &lt;= 32 then return 80 end
+	if rarity &lt;= 64 then return 150 end
+	if rarity &lt;= 150 then return 300 end
+	if rarity &lt;= 300 then return 600 end
+	if rarity &lt;= 1000 then return 2000 end
+	if rarity &lt;= 5000 then return 8000 end
+	if rarity &lt;= 10000 then return 20000 end
+	if rarity &lt;= 50000 then return 50000 end
+	return 100000
+end
+
 -- Helper to get tier color
 function AuraConfig.GetTierColor(tier)
 	if tier == &quot;Common&quot; then
@@ -623,15 +643,14 @@ return AuraConfig
 					<Properties>
 						<string name="Name">AuraVisuals</string>
 						<ProtectedString name="Source">-- AuraVisuals.lua
--- Professional multi-layered procedural Visual Effects (VFX) engine for Sol's RNG.
--- Creates ground magic rings, ascending body energy, orbiting celestial stars,
--- divine wings, head halos, character highlights, light beams, and modern overhead badges.
+-- Ultra-high density, multi-layered visual effects (VFX) engine for Sol's RNG.
+-- Features dense ground shockwaves, concentric rotating magic rings, high-rate ascending body auras,
+-- orbital celestial particles, radiant divine wings, animated head halos, and sharp character highlights.
 
 local AuraConfig = require(script.Parent.AuraConfig)
 
 local AuraVisuals = {}
 
--- Standard high-definition particle textures built into Roblox engine
 local TEXTURES = {
 	Sparkle = &quot;rbxasset://textures/particles/sparkles_main.dds&quot;,
 	Smoke = &quot;rbxasset://textures/particles/smoke_main.dds&quot;,
@@ -647,19 +666,14 @@ function AuraVisuals.ClearAura(character)
 	if not character then return end
 
 	local existing = character:FindFirstChild(&quot;ActiveAura&quot;)
-	if existing then
-		existing:Destroy()
-	end
+	if existing then existing:Destroy() end
 
 	local head = character:FindFirstChild(&quot;Head&quot;)
 	if head then
 		local oldBb = head:FindFirstChild(&quot;AuraBillboardGui&quot;)
-		if oldBb then
-			oldBb:Destroy()
-		end
+		if oldBb then oldBb:Destroy() end
 	end
 
-	-- Clean up any stray highlight or attachments
 	for _, child in ipairs(character:GetDescendants()) do
 		if child.Name == &quot;AuraHighlight&quot; or child.Name == &quot;AuraVFXAttachment&quot; then
 			child:Destroy()
@@ -667,7 +681,6 @@ function AuraVisuals.ClearAura(character)
 	end
 end
 
--- Safely get or create character's ActiveAura folder
 local function getActiveFolder(character)
 	local existing = character:FindFirstChild(&quot;ActiveAura&quot;)
 	if existing and existing:IsA(&quot;Folder&quot;) then
@@ -682,7 +695,6 @@ local function getActiveFolder(character)
 	return folder
 end
 
--- Helper: Create configured ParticleEmitter
 local function createEmitter(parent, props)
 	local pe = Instance.new(&quot;ParticleEmitter&quot;)
 	pe.Color = props.Color
@@ -692,167 +704,207 @@ local function createEmitter(parent, props)
 	pe.Rate = props.Rate
 	pe.Speed = props.Speed
 	pe.SpreadAngle = props.SpreadAngle or Vector2.new(15, 15)
-	pe.Acceleration = props.Acceleration or Vector3.new(0, 2, 0)
+	pe.Acceleration = props.Acceleration or Vector3.new(0, 3, 0)
 	pe.Drag = props.Drag or 0.5
 	pe.LightEmission = props.LightEmission or 1.0
 	pe.LightInfluence = props.LightInfluence or 0.0
 	pe.Texture = props.Texture or TEXTURES.Sparkle
-	pe.RotSpeed = props.RotSpeed or NumberRange.new(-60, 60)
+	pe.RotSpeed = props.RotSpeed or NumberRange.new(-90, 90)
 	pe.Orientation = props.Orientation or Enum.ParticleOrientation.FacingCamera
 	pe.EmissionDirection = props.EmissionDirection or Enum.NormalId.Top
 	pe.Parent = parent
 	return pe
 end
 
--- LAYER 1: Ground Magic Circle / Rune Disc
-local function addGroundMagicCircle(parentAtt, color, scaleMultiplier)
+-- LAYER 1: Dual Concentric Ground Magic Circles &amp; Expanding Shockwaves
+local function addDenseGroundEffects(parentAtt, color, scaleMultiplier)
 	local scale = scaleMultiplier or 1.0
 
-	-- Expanding ground energy pulse
+	-- Expanding Ground Shockwave Disc
 	createEmitter(parentAtt, {
 		Color = ColorSequence.new(color),
 		Size = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1.2 * scale),
-			NumberSequenceKeypoint.new(0.6, 3.8 * scale),
-			NumberSequenceKeypoint.new(1, 4.8 * scale),
-		}),
-		Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1.0),
-			NumberSequenceKeypoint.new(0.15, 0.2),
-			NumberSequenceKeypoint.new(0.7, 0.4),
-			NumberSequenceKeypoint.new(1, 1.0),
-		}),
-		Lifetime = NumberRange.new(1.8, 2.5),
-		Rate = 6,
-		Speed = NumberRange.new(0.1, 0.3),
-		SpreadAngle = Vector2.new(0, 0),
-		Acceleration = Vector3.new(0, 0.2, 0),
-		Drag = 1.0,
-		Texture = TEXTURES.Ring,
-		RotSpeed = NumberRange.new(20, 40),
-		Orientation = Enum.ParticleOrientation.VelocityPerpendicular,
-		EmissionDirection = Enum.NormalId.Top,
-	})
-
-	-- Ground ambient spark motes
-	createEmitter(parentAtt, {
-		Color = ColorSequence.new(color),
-		Size = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 0.2),
-			NumberSequenceKeypoint.new(0.5, 0.6 * scale),
-			NumberSequenceKeypoint.new(1, 0.1),
-		}),
-		Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1.0),
-			NumberSequenceKeypoint.new(0.2, 0.1),
-			NumberSequenceKeypoint.new(0.8, 0.3),
-			NumberSequenceKeypoint.new(1, 1.0),
-		}),
-		Lifetime = NumberRange.new(1.5, 2.2),
-		Rate = 18 * scale,
-		Speed = NumberRange.new(1.0, 3.0),
-		SpreadAngle = Vector2.new(45, 45),
-		Acceleration = Vector3.new(0, 3.5, 0),
-		Texture = TEXTURES.Cross,
-	})
-end
-
--- LAYER 2: Body Ascending Energy Wisps (The Core Flame)
-local function addBodyEnergyWisps(parentAtt, color, secondaryColor, rate, speedRange, sizeRange)
-	local secColor = secondaryColor or color
-	createEmitter(parentAtt, {
-		Color = ColorSequence.new({
-			ColorSequenceKeypoint.new(0, color),
-			ColorSequenceKeypoint.new(0.5, secColor),
-			ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
-		}),
-		Size = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, sizeRange[1] or 0.4),
-			NumberSequenceKeypoint.new(0.5, sizeRange[2] or 1.6),
-			NumberSequenceKeypoint.new(1, sizeRange[3] or 0.2),
+			NumberSequenceKeypoint.new(0, 1.5 * scale),
+			NumberSequenceKeypoint.new(0.5, 4.5 * scale),
+			NumberSequenceKeypoint.new(1, 6.0 * scale),
 		}),
 		Transparency = NumberSequence.new({
 			NumberSequenceKeypoint.new(0, 1.0),
 			NumberSequenceKeypoint.new(0.15, 0.1),
-			NumberSequenceKeypoint.new(0.7, 0.3),
+			NumberSequenceKeypoint.new(0.7, 0.35),
 			NumberSequenceKeypoint.new(1, 1.0),
 		}),
-		Lifetime = NumberRange.new(1.2, 2.0),
-		Rate = rate or 35,
-		Speed = speedRange or NumberRange.new(3.0, 6.0),
-		SpreadAngle = Vector2.new(20, 20),
+		Lifetime = NumberRange.new(1.6, 2.2),
+		Rate = 12,
+		Speed = NumberRange.new(0.2, 0.5),
+		SpreadAngle = Vector2.new(0, 0),
+		Acceleration = Vector3.new(0, 0.1, 0),
+		Drag = 1.0,
+		Texture = TEXTURES.Ring,
+		RotSpeed = NumberRange.new(35, 70),
+		Orientation = Enum.ParticleOrientation.VelocityPerpendicular,
+		EmissionDirection = Enum.NormalId.Top,
+	})
+
+	-- Rapid Inner Magic Circle
+	createEmitter(parentAtt, {
+		Color = ColorSequence.new(Color3.fromRGB(255, 255, 255)),
+		Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 2.0 * scale),
+			NumberSequenceKeypoint.new(1, 3.2 * scale),
+		}),
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.8),
+			NumberSequenceKeypoint.new(0.5, 0.2),
+			NumberSequenceKeypoint.new(1, 1.0),
+		}),
+		Lifetime = NumberRange.new(1.0, 1.5),
+		Rate = 8,
+		Speed = NumberRange.new(0.1, 0.2),
+		Texture = TEXTURES.Ring,
+		RotSpeed = NumberRange.new(-90, -45),
+		Orientation = Enum.ParticleOrientation.VelocityPerpendicular,
+	})
+
+	-- Ground Spark Eruption
+	createEmitter(parentAtt, {
+		Color = ColorSequence.new(color),
+		Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.2),
+			NumberSequenceKeypoint.new(0.5, 0.8 * scale),
+			NumberSequenceKeypoint.new(1, 0.1),
+		}),
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1.0),
+			NumberSequenceKeypoint.new(0.15, 0.0),
+			NumberSequenceKeypoint.new(0.8, 0.2),
+			NumberSequenceKeypoint.new(1, 1.0),
+		}),
+		Lifetime = NumberRange.new(1.4, 2.2),
+		Rate = 35 * scale,
+		Speed = NumberRange.new(2.5, 5.5),
+		SpreadAngle = Vector2.new(45, 45),
+		Acceleration = Vector3.new(0, 5, 0),
+		Texture = TEXTURES.Cross,
+	})
+end
+
+-- LAYER 2: Dense Ascending Body Energy Wisps (Volumetric Flame Wrap)
+local function addDenseBodyEnergy(parentAtt, color, secondaryColor, rate, speedRange, sizeRange)
+	local secColor = secondaryColor or color
+	-- Dense Core Flames
+	createEmitter(parentAtt, {
+		Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, color),
+			ColorSequenceKeypoint.new(0.4, secColor),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
+		}),
+		Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, sizeRange[1] or 0.6),
+			NumberSequenceKeypoint.new(0.5, sizeRange[2] or 2.2),
+			NumberSequenceKeypoint.new(1, sizeRange[3] or 0.3),
+		}),
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1.0),
+			NumberSequenceKeypoint.new(0.1, 0.05),
+			NumberSequenceKeypoint.new(0.7, 0.25),
+			NumberSequenceKeypoint.new(1, 1.0),
+		}),
+		Lifetime = NumberRange.new(1.2, 1.8),
+		Rate = rate or 65,
+		Speed = speedRange or NumberRange.new(4.0, 8.0),
+		SpreadAngle = Vector2.new(25, 25),
+		Acceleration = Vector3.new(0, 7, 0),
+		Texture = TEXTURES.Flame,
+	})
+
+	-- Secondary Inner Core Glow
+	createEmitter(parentAtt, {
+		Color = ColorSequence.new(Color3.fromRGB(255, 255, 255)),
+		Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.4),
+			NumberSequenceKeypoint.new(0.5, 1.4),
+			NumberSequenceKeypoint.new(1, 0.2),
+		}),
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.6),
+			NumberSequenceKeypoint.new(0.5, 0.1),
+			NumberSequenceKeypoint.new(1, 1.0),
+		}),
+		Lifetime = NumberRange.new(0.8, 1.4),
+		Rate = (rate or 65) * 0.5,
+		Speed = NumberRange.new(3.0, 6.0),
+		SpreadAngle = Vector2.new(15, 15),
 		Acceleration = Vector3.new(0, 5, 0),
 		Texture = TEXTURES.Flame,
 	})
 end
 
--- LAYER 3: Orbiting Celestial Star Particles
-local function addOrbitingSparks(parentAtt, color, rate)
+-- LAYER 3: Swirling Orbiting Celestial Star Clusters
+local function addDenseOrbitingSparks(parentAtt, color, rate)
 	createEmitter(parentAtt, {
 		Color = ColorSequence.new(color),
 		Size = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 0.2),
-			NumberSequenceKeypoint.new(0.5, 0.8),
-			NumberSequenceKeypoint.new(1, 0.1),
+			NumberSequenceKeypoint.new(0, 0.3),
+			NumberSequenceKeypoint.new(0.5, 1.2),
+			NumberSequenceKeypoint.new(1, 0.2),
 		}),
 		Transparency = NumberSequence.new({
 			NumberSequenceKeypoint.new(0, 1.0),
-			NumberSequenceKeypoint.new(0.2, 0.0),
+			NumberSequenceKeypoint.new(0.15, 0.0),
 			NumberSequenceKeypoint.new(0.8, 0.2),
 			NumberSequenceKeypoint.new(1, 1.0),
 		}),
-		Lifetime = NumberRange.new(1.6, 2.6),
-		Rate = rate or 25,
-		Speed = NumberRange.new(2.5, 5.0),
-		SpreadAngle = Vector2.new(60, 60),
-		Acceleration = Vector3.new(0, 2, 0),
-		RotSpeed = NumberRange.new(-120, 120),
+		Lifetime = NumberRange.new(1.8, 2.8),
+		Rate = rate or 45,
+		Speed = NumberRange.new(3.5, 7.0),
+		SpreadAngle = Vector2.new(80, 80),
+		Acceleration = Vector3.new(0, 3, 0),
+		RotSpeed = NumberRange.new(-180, 180),
 		Texture = TEXTURES.Sparkle,
 	})
 end
 
--- LAYER 4: Divine Angelic Wings (For Archangel, Solar, Godly)
+-- LAYER 4: Radiant Divine Angelic Wings (Large, Multi-Layered)
 local function addAngelicWings(character, folder, color)
 	local torso = character:FindFirstChild(&quot;UpperTorso&quot;) or character:FindFirstChild(&quot;Torso&quot;)
 	if not torso or not torso:IsA(&quot;BasePart&quot;) then return end
 
-	-- Left Wing Attachment
 	local attWingL = Instance.new(&quot;Attachment&quot;)
 	attWingL.Name = &quot;AuraVFXAttachment&quot;
-	attWingL.Position = Vector3.new(-1.2, 0.8, 0.8)
-	attWingL.Orientation = Vector3.new(0, 35, 15)
+	attWingL.Position = Vector3.new(-1.4, 0.9, 0.8)
+	attWingL.Orientation = Vector3.new(0, 35, 20)
 	attWingL.Parent = torso
 
-	-- Right Wing Attachment
 	local attWingR = Instance.new(&quot;Attachment&quot;)
 	attWingR.Name = &quot;AuraVFXAttachment&quot;
-	attWingR.Position = Vector3.new(1.2, 0.8, 0.8)
-	attWingR.Orientation = Vector3.new(0, -35, -15)
+	attWingR.Position = Vector3.new(1.4, 0.9, 0.8)
+	attWingR.Orientation = Vector3.new(0, -35, -20)
 	attWingR.Parent = torso
 
 	local function makeWingEmitter(parentAtt)
 		createEmitter(parentAtt, {
 			Color = ColorSequence.new({
 				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-				ColorSequenceKeypoint.new(0.6, color),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 240, 180)),
+				ColorSequenceKeypoint.new(0.5, color),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 235, 150)),
 			}),
 			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.5),
-				NumberSequenceKeypoint.new(0.4, 2.2),
-				NumberSequenceKeypoint.new(1, 0.3),
+				NumberSequenceKeypoint.new(0, 0.6),
+				NumberSequenceKeypoint.new(0.4, 2.8),
+				NumberSequenceKeypoint.new(1, 0.4),
 			}),
 			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.8),
-				NumberSequenceKeypoint.new(0.2, 0.05),
-				NumberSequenceKeypoint.new(0.8, 0.2),
+				NumberSequenceKeypoint.new(0, 0.6),
+				NumberSequenceKeypoint.new(0.15, 0.0),
+				NumberSequenceKeypoint.new(0.7, 0.15),
 				NumberSequenceKeypoint.new(1, 1.0),
 			}),
-			Lifetime = NumberRange.new(0.8, 1.4),
-			Rate = 40,
-			Speed = NumberRange.new(3.0, 6.0),
+			Lifetime = NumberRange.new(0.9, 1.6),
+			Rate = 60,
+			Speed = NumberRange.new(4.0, 8.0),
 			SpreadAngle = Vector2.new(20, 20),
-			Acceleration = Vector3.new(0, 3, 0),
+			Acceleration = Vector3.new(0, 4, 0),
 			Texture = TEXTURES.Flame,
 		})
 	end
@@ -861,54 +913,54 @@ local function addAngelicWings(character, folder, color)
 	makeWingEmitter(attWingR)
 end
 
--- LAYER 5: Floating Head Halo / Celestial Crown
+-- LAYER 5: Animated Head Halos &amp; Celestial Crowns
 local function addHeadCrown(character, folder, color, isVIP)
 	local head = character:FindFirstChild(&quot;Head&quot;)
 	if not head or not head:IsA(&quot;BasePart&quot;) then return end
 
 	local attCrown = Instance.new(&quot;Attachment&quot;)
 	attCrown.Name = &quot;AuraVFXAttachment&quot;
-	attCrown.Position = Vector3.new(0, 1.6, 0)
+	attCrown.Position = Vector3.new(0, 1.8, 0)
 	attCrown.Parent = head
 
 	-- Rotating Halo Ring
 	createEmitter(attCrown, {
 		Color = ColorSequence.new(color),
 		Size = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1.5),
-			NumberSequenceKeypoint.new(0.5, 2.2),
-			NumberSequenceKeypoint.new(1, 1.5),
+			NumberSequenceKeypoint.new(0, 1.8),
+			NumberSequenceKeypoint.new(0.5, 2.6),
+			NumberSequenceKeypoint.new(1, 1.8),
 		}),
 		Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 0.6),
-			NumberSequenceKeypoint.new(0.5, 0.1),
-			NumberSequenceKeypoint.new(1, 0.6),
+			NumberSequenceKeypoint.new(0, 0.5),
+			NumberSequenceKeypoint.new(0.5, 0.05),
+			NumberSequenceKeypoint.new(1, 0.5),
 		}),
-		Lifetime = NumberRange.new(1.0, 1.6),
-		Rate = 4,
+		Lifetime = NumberRange.new(1.2, 1.8),
+		Rate = 6,
 		Speed = NumberRange.new(0, 0.1),
 		SpreadAngle = Vector2.new(0, 0),
 		Acceleration = Vector3.new(0, 0, 0),
-		RotSpeed = NumberRange.new(45, 90),
+		RotSpeed = NumberRange.new(60, 120),
 		Texture = TEXTURES.Ring,
 		Orientation = Enum.ParticleOrientation.VelocityPerpendicular,
 		EmissionDirection = Enum.NormalId.Top,
 	})
 
-	-- Halo Star Sparkles
+	-- Halo Star Burst
 	createEmitter(attCrown, {
 		Color = ColorSequence.new(Color3.fromRGB(255, 255, 255)),
-		Size = NumberSequence.new(0.4, 0.1),
-		Transparency = NumberSequence.new(0.1, 1.0),
-		Lifetime = NumberRange.new(0.8, 1.4),
-		Rate = 12,
-		Speed = NumberRange.new(0.5, 1.5),
+		Size = NumberSequence.new(0.5, 0.1),
+		Transparency = NumberSequence.new(0.05, 1.0),
+		Lifetime = NumberRange.new(0.8, 1.5),
+		Rate = 20,
+		Speed = NumberRange.new(0.8, 2.2),
 		SpreadAngle = Vector2.new(180, 180),
 		Texture = TEXTURES.Cross,
 	})
 end
 
--- LAYER 6: Vertical Pillar of Divine Light (For Legendary+)
+-- LAYER 6: Towering Vertical Pillar of Divine Light (For Legendary+)
 local function addLightPillar(rootPart, activeFolder, color)
 	local attBottom = Instance.new(&quot;Attachment&quot;)
 	attBottom.Name = &quot;AuraVFXAttachment&quot;
@@ -917,7 +969,7 @@ local function addLightPillar(rootPart, activeFolder, color)
 
 	local attTop = Instance.new(&quot;Attachment&quot;)
 	attTop.Name = &quot;AuraVFXAttachment&quot;
-	attTop.Position = Vector3.new(0, 12, 0)
+	attTop.Position = Vector3.new(0, 15, 0)
 	attTop.Parent = rootPart
 
 	local beam = Instance.new(&quot;Beam&quot;)
@@ -930,19 +982,19 @@ local function addLightPillar(rootPart, activeFolder, color)
 		ColorSequenceKeypoint.new(1, color),
 	})
 	beam.Transparency = NumberSequence.new({
-		NumberSequenceKeypoint.new(0, 0.5),
-		NumberSequenceKeypoint.new(0.5, 0.1),
+		NumberSequenceKeypoint.new(0, 0.4),
+		NumberSequenceKeypoint.new(0.5, 0.05),
 		NumberSequenceKeypoint.new(1, 0.95),
 	})
-	beam.Width0 = 3.8
-	beam.Width1 = 6.2
+	beam.Width0 = 4.2
+	beam.Width1 = 7.0
 	beam.LightEmission = 1.0
-	beam.TextureSpeed = 1.8
+	beam.TextureSpeed = 2.2
 	beam.Texture = TEXTURES.Flame
 	beam.Parent = activeFolder
 end
 
--- LAYER 7: Modern Glassmorphic Overhead Billboard Title
+-- LAYER 7: Modern Overhead Billboard Title
 local function createOverheadGui(character, auraData, isVIP)
 	local head = character:FindFirstChild(&quot;Head&quot;)
 	if not head or not head:IsA(&quot;BasePart&quot;) then return end
@@ -969,7 +1021,7 @@ local function createOverheadGui(character, auraData, isVIP)
 	local stroke = Instance.new(&quot;UIStroke&quot;)
 	stroke.Color = auraData.Color
 	stroke.Thickness = 1.5
-	stroke.Transparency = 0.3
+	stroke.Transparency = 0.2
 	stroke.Parent = pill
 	pill.Parent = billboard
 
@@ -987,7 +1039,6 @@ local function createOverheadGui(character, auraData, isVIP)
 	list.Padding = UDim.new(0, 1)
 	list.Parent = pill
 
-	-- VIP Tag (if VIP)
 	if isVIP then
 		local vipLabel = Instance.new(&quot;TextLabel&quot;)
 		vipLabel.Size = UDim2.new(1, 0, 0, 14)
@@ -999,7 +1050,6 @@ local function createOverheadGui(character, auraData, isVIP)
 		vipLabel.Parent = pill
 	end
 
-	-- Aura Name
 	local nameLabel = Instance.new(&quot;TextLabel&quot;)
 	nameLabel.Size = UDim2.new(1, 0, 0, 24)
 	nameLabel.BackgroundTransparency = 1
@@ -1011,7 +1061,6 @@ local function createOverheadGui(character, auraData, isVIP)
 	nameLabel.TextStrokeTransparency = 0.1
 	nameLabel.Parent = pill
 
-	-- Tier &amp; Rarity Subtitle
 	local subLabel = Instance.new(&quot;TextLabel&quot;)
 	subLabel.Size = UDim2.new(1, 0, 0, 15)
 	subLabel.BackgroundTransparency = 1
@@ -1028,7 +1077,7 @@ local function createOverheadGui(character, auraData, isVIP)
 end
 
 -- =============================================================================
--- MAIN ENTRY POINT: APPLY AURA TO CHARACTER
+-- MAIN ENTRY POINT
 -- =============================================================================
 
 function AuraVisuals.ApplyAura(character, auraId, isVIP)
@@ -1052,7 +1101,6 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 	local pColor = auraData.ParticleColor or auraColor
 	local rarity = auraData.Rarity or 0
 
-	-- 1. Create Core Attachments
 	local attFoot = Instance.new(&quot;Attachment&quot;)
 	attFoot.Name = &quot;AuraVFXAttachment&quot;
 	attFoot.Position = Vector3.new(0, -2.7, 0)
@@ -1063,130 +1111,86 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 	attRoot.Position = Vector3.new(0, 0, 0)
 	attRoot.Parent = rootPart
 
-	-- 2. Character Highlight (Clean, avatar-preserving outline glow)
+	-- Character Highlight (vivid neon glow)
 	local highlight = Instance.new(&quot;Highlight&quot;)
 	highlight.Name = &quot;AuraHighlight&quot;
 	highlight.Adornee = character
 	highlight.OutlineColor = auraColor
-	highlight.OutlineTransparency = 0.05
+	highlight.OutlineTransparency = 0.02
 	highlight.FillColor = auraColor
-	highlight.FillTransparency = 0.92 -- Translucent so avatar face/clothing stays crisp!
+	highlight.FillTransparency = 0.90
 	highlight.Parent = activeFolder
 
-	-- 3. PointLight with breathing illumination
+	-- Dynamic Light
 	local light = Instance.new(&quot;PointLight&quot;)
 	light.Name = &quot;AuraLight&quot;
 	light.Color = auraColor
-	light.Range = (rarity &gt;= 10000 or auraData.IsCrafted) and 20 or 14
-	light.Brightness = (rarity &gt;= 10000 or auraData.IsCrafted) and 3.8 or 2.2
+	light.Range = (rarity &gt;= 10000 or auraData.IsCrafted) and 24 or 16
+	light.Brightness = (rarity &gt;= 10000 or auraData.IsCrafted) and 4.2 or 2.8
 	light.Shadows = false
 	light.Parent = attRoot
 
-	-- 4. Overhead Modern Billboard GUI
 	createOverheadGui(character, auraData, isVIP or false)
 
-	-- 5. Always apply Ground Magic Circle &amp; Orbiting Sparks for all auras
-	local groundScale = (rarity &gt;= 10000) and 1.4 or 1.0
-	addGroundMagicCircle(attFoot, pColor, groundScale)
-	addOrbitingSparks(attRoot, pColor, (rarity &gt;= 1000) and 35 or 18)
+	-- Always add dense ground runes &amp; orbital sparkles
+	local groundScale = (rarity &gt;= 10000) and 1.5 or 1.1
+	addDenseGroundEffects(attFoot, pColor, groundScale)
+	addDenseOrbitingSparks(attRoot, pColor, (rarity &gt;= 1000) and 55 or 25)
 
-	-- 6. Tailor Specialized VFX based on Aura Shape &amp; Tier
 	local shape = auraData.ParticleShape or &quot;Sparks&quot;
 
 	if shape == &quot;Dust&quot; or shape == &quot;Sparks&quot; then
-		-- Common / Uncommon
-		addBodyEnergyWisps(attRoot, pColor, auraColor, 20, NumberRange.new(1.5, 3.5), {0.2, 0.8, 0.1})
+		addDenseBodyEnergy(attRoot, pColor, auraColor, 40, NumberRange.new(2.0, 4.5), {0.3, 1.2, 0.2})
 
 	elseif shape == &quot;Leaves&quot; then
-		-- Natural
-		addBodyEnergyWisps(attRoot, pColor, Color3.fromRGB(160, 240, 100), 28, NumberRange.new(2.0, 4.5), {0.3, 1.2, 0.2})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(160, 240, 100), 50, NumberRange.new(2.5, 5.5), {0.4, 1.6, 0.2})
 
 	elseif shape == &quot;Flame&quot; or shape == &quot;Embers&quot; then
-		-- Rare / Topaz
-		addBodyEnergyWisps(attRoot, pColor, Color3.fromRGB(255, 230, 150), 40, NumberRange.new(3.5, 7.0), {0.4, 1.6, 0.2})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 220, 120), 75, NumberRange.new(4.5, 9.0), {0.5, 2.2, 0.3})
 
 	elseif shape == &quot;Sparkles&quot; then
-		-- Divinus: Holy sparkles + Head Halo
-		addBodyEnergyWisps(attRoot, pColor, Color3.fromRGB(255, 255, 200), 35, NumberRange.new(3.0, 6.0), {0.3, 1.4, 0.2})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 255, 200), 65, NumberRange.new(4.0, 8.0), {0.5, 2.0, 0.3})
 		addHeadCrown(character, activeFolder, pColor, false)
 
 	elseif shape == &quot;Shards&quot; or shape == &quot;Frost&quot; then
-		-- Crystallized / Glacier: Crystalline shards &amp; blizzard mist
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(180, 230, 255), 60, NumberRange.new(3.5, 7.5), {0.4, 1.8, 0.3})
 		createEmitter(attRoot, {
 			Color = ColorSequence.new(pColor),
-			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.3),
-				NumberSequenceKeypoint.new(0.5, 1.1),
-				NumberSequenceKeypoint.new(1, 0.2),
-			}),
-			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 1.0),
-				NumberSequenceKeypoint.new(0.2, 0.0),
-				NumberSequenceKeypoint.new(0.8, 0.3),
-				NumberSequenceKeypoint.new(1, 1.0),
-			}),
-			Lifetime = NumberRange.new(1.6, 2.4),
-			Rate = 30,
-			Speed = NumberRange.new(2.5, 5.5),
-			SpreadAngle = Vector2.new(45, 45),
-			Acceleration = Vector3.new(0, 3, 0),
-			RotSpeed = NumberRange.new(-140, 140),
+			Size = NumberSequence.new(0.4, 1.2),
+			Transparency = NumberSequence.new(0.1, 1.0),
+			Lifetime = NumberRange.new(1.5, 2.5),
+			Rate = 45,
+			Speed = NumberRange.new(3.0, 6.5),
+			SpreadAngle = Vector2.new(50, 50),
+			RotSpeed = NumberRange.new(-180, 180),
 			Texture = TEXTURES.Shard,
 		})
 
 	elseif shape == &quot;FireColumn&quot; or shape == &quot;Hellfire&quot; or shape == &quot;LavaTide&quot; then
-		-- Ruby / Hades / Hellforged: Violent blazing fire column + Vertical Pillar
-		addBodyEnergyWisps(attRoot, Color3.fromRGB(255, 40, 20), pColor, 55, NumberRange.new(5.0, 10.0), {0.6, 2.4, 0.3})
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(255, 40, 20), pColor, 100, NumberRange.new(6.0, 12.0), {0.8, 3.0, 0.4})
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == &quot;Sunburst&quot; or shape == &quot;EclipseCorona&quot; then
-		-- Solar / Eclipse: Radiant solar corona + Head Halo + Light Pillar
-		addBodyEnergyWisps(attRoot, Color3.fromRGB(255, 180, 40), Color3.fromRGB(255, 255, 255), 60, NumberRange.new(4.5, 9.0), {0.6, 2.5, 0.3})
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(255, 180, 40), Color3.fromRGB(255, 255, 255), 110, NumberRange.new(5.5, 11.0), {0.8, 3.2, 0.4})
 		addHeadCrown(character, activeFolder, pColor, false)
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == &quot;MoonStars&quot; or shape == &quot;NebulaSpiral&quot; or shape == &quot;Singularity&quot; then
-		-- Lunar / Galaxy / Abyssal Hunter: Deep cosmic nebula + starlight beam
-		createEmitter(attRoot, {
-			Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, pColor),
-				ColorSequenceKeypoint.new(0.5, Color3.fromRGB(240, 180, 255)),
-				ColorSequenceKeypoint.new(1, pColor),
-			}),
-			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.8),
-				NumberSequenceKeypoint.new(0.5, 2.2),
-				NumberSequenceKeypoint.new(1, 0.4),
-			}),
-			Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 1.0),
-				NumberSequenceKeypoint.new(0.2, 0.1),
-				NumberSequenceKeypoint.new(0.7, 0.25),
-				NumberSequenceKeypoint.new(1, 1.0),
-			}),
-			Lifetime = NumberRange.new(1.8, 2.8),
-			Rate = 45,
-			Speed = NumberRange.new(2.5, 5.5),
-			SpreadAngle = Vector2.new(60, 60),
-			Acceleration = Vector3.new(0, 2.5, 0),
-			Texture = TEXTURES.Cross,
-		})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(240, 180, 255), 90, NumberRange.new(4.0, 8.5), {0.7, 2.8, 0.4})
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == &quot;DivineHalo&quot; or shape == &quot;TimeClock&quot; or shape == &quot;PrismaticGlitch&quot; then
-		-- Archangel / Chronos / Exotic Apex: Divine wings + Halo + Pillar
-		addBodyEnergyWisps(attRoot, pColor, Color3.fromRGB(255, 255, 255), 55, NumberRange.new(4.0, 8.5), {0.5, 2.2, 0.3})
+		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(255, 255, 255), 110, NumberRange.new(5.0, 10.0), {0.8, 3.0, 0.4})
 		addAngelicWings(character, activeFolder, pColor)
 		addHeadCrown(character, activeFolder, pColor, false)
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == &quot;CrownGlow&quot; then
-		-- VIP Crown: Regal floating crown above head + Golden sparkles
 		addHeadCrown(character, activeFolder, Color3.fromRGB(255, 215, 0), true)
-		addBodyEnergyWisps(attRoot, Color3.fromRGB(251, 191, 36), Color3.fromRGB(255, 255, 255), 30, NumberRange.new(2.5, 5.0), {0.3, 1.2, 0.2})
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(251, 191, 36), Color3.fromRGB(255, 255, 255), 60, NumberRange.new(3.5, 7.0), {0.4, 1.8, 0.3})
 
 	else
-		addBodyEnergyWisps(attRoot, pColor, auraColor, 35, NumberRange.new(3.0, 6.0), {0.4, 1.5, 0.2})
+		addDenseBodyEnergy(attRoot, pColor, auraColor, 55, NumberRange.new(4.0, 8.0), {0.5, 2.0, 0.3})
 		if rarity &gt;= 1000 then
 			addLightPillar(rootPart, activeFolder, pColor)
 		end
@@ -1207,14 +1211,16 @@ local SoundEffects = {}
 
 local SOUND_IDS = {
 	Click = &quot;rbxasset://sounds/electronicpingshort.wav&quot;,
-	Spin = &quot;rbxasset://sounds/action_footstep_plastic.mp3&quot;,
+	Tick = &quot;rbxasset://sounds/action_footstep_plastic.mp3&quot;,  -- CS2 Roulette card tick
+	Spin = &quot;rbxasset://sounds/action_swim.mp3&quot;,              -- Whoosh sound
 	RevealCommon = &quot;rbxasset://sounds/snap.mp3&quot;,
-	RevealRare = &quot;rbxassetid://9114221192&quot;,      -- Magical high bell chime
-	RevealLegendary = &quot;rbxassetid://9114220524&quot;, -- Dramatic fanfare
-	RevealMythic = &quot;rbxassetid://9114222384&quot;,    -- Celestial blast / angelic chord
-	RevealGodly = &quot;rbxassetid://9114223175&quot;,     -- Deep cosmic thunder resonance
-	Craft = &quot;rbxassetid://9114221580&quot;,           -- Anvil clang &amp; magical burst
+	RevealRare = &quot;rbxassetid://9114221192&quot;,                 -- Magical high bell chime
+	RevealLegendary = &quot;rbxassetid://9114220524&quot;,            -- Dramatic fanfare
+	RevealMythic = &quot;rbxassetid://9114222384&quot;,               -- Celestial blast / angelic chord
+	RevealGodly = &quot;rbxassetid://9114223175&quot;,                -- Deep cosmic thunder resonance
+	Craft = &quot;rbxassetid://9114221580&quot;,                      -- Anvil clang &amp; magical burst
 	Equip = &quot;rbxasset://sounds/uianimation.mp3&quot;,
+	Coin = &quot;rbxasset://sounds/electronicpingshort.wav&quot;,
 }
 
 local soundFolder = nil
@@ -1268,10 +1274,9 @@ return SoundEffects
 				<Item class="ModuleScript" referent="RBX19">
 					<Properties>
 						<string name="Name">CraftingStationSetup</string>
-						<ProtectedString name="Source">--!strict
--- CraftingStationSetup.lua
--- Creates the sleek cyber-mystic floating platform, interactive Crafting Altar with ProximityPrompt,
--- and atmospheric lighting for Sol's RNG game.
+						<ProtectedString name="Source">-- CraftingStationSetup.lua
+-- Creates the vibrant morning cyber-mystic floating platform, interactive Crafting Altar with ProximityPrompt,
+-- and crisp sunny morning lighting for Sol's RNG game.
 
 local Lighting = game:GetService(&quot;Lighting&quot;)
 local Workspace = game:GetService(&quot;Workspace&quot;)
@@ -1279,31 +1284,60 @@ local Workspace = game:GetService(&quot;Workspace&quot;)
 local CraftingStationSetup = {}
 
 function CraftingStationSetup.BuildMap()
-	-- 1. Setup Atmospheric Lighting
-	Lighting.TimeOfDay = &quot;21:30:00&quot;
-	Lighting.Brightness = 1.8
-	Lighting.ClockTime = 21.5
-	Lighting.Ambient = Color3.fromRGB(40, 45, 60)
-	Lighting.OutdoorAmbient = Color3.fromRGB(30, 35, 50)
+	-- 1. Setup Crisp Sunny Morning Lighting
+	Lighting.TimeOfDay = &quot;08:00:00&quot;
+	Lighting.ClockTime = 8.0
+	Lighting.Brightness = 2.4
+	Lighting.Ambient = Color3.fromRGB(110, 120, 140)
+	Lighting.OutdoorAmbient = Color3.fromRGB(130, 145, 170)
 	Lighting.GlobalShadows = true
+	Lighting.GeographicLatitude = 45
 
-	if not Lighting:FindFirstChild(&quot;RNGBloom&quot;) then
-		local bloom = Instance.new(&quot;BloomEffect&quot;)
+	-- Morning Sun Rays
+	local sunRays = Lighting:FindFirstChild(&quot;RNGSunRays&quot;)
+	if not sunRays then
+		sunRays = Instance.new(&quot;SunRaysEffect&quot;)
+		sunRays.Name = &quot;RNGSunRays&quot;
+		sunRays.Intensity = 0.28
+		sunRays.Spread = 0.85
+		sunRays.Parent = Lighting
+	end
+
+	-- Vibrant Bloom
+	local bloom = Lighting:FindFirstChild(&quot;RNGBloom&quot;)
+	if not bloom then
+		bloom = Instance.new(&quot;BloomEffect&quot;)
 		bloom.Name = &quot;RNGBloom&quot;
-		bloom.Intensity = 1.2
-		bloom.Size = 24
-		bloom.Threshold = 0.85
 		bloom.Parent = Lighting
 	end
+	bloom.Intensity = 1.1
+	bloom.Size = 22
+	bloom.Threshold = 0.82
 
-	if not Lighting:FindFirstChild(&quot;RNGColorCorrection&quot;) then
-		local cc = Instance.new(&quot;ColorCorrectionEffect&quot;)
+	-- Saturated Color Correction
+	local cc = Lighting:FindFirstChild(&quot;RNGColorCorrection&quot;)
+	if not cc then
+		cc = Instance.new(&quot;ColorCorrectionEffect&quot;)
 		cc.Name = &quot;RNGColorCorrection&quot;
-		cc.Brightness = 0.04
-		cc.Contrast = 0.15
-		cc.Saturation = 0.2
 		cc.Parent = Lighting
 	end
+	cc.Brightness = 0.04
+	cc.Contrast = 0.12
+	cc.Saturation = 0.22
+
+	-- Atmosphere for clear blue sky
+	local atmo = Lighting:FindFirstChild(&quot;RNGAtmosphere&quot;)
+	if not atmo then
+		atmo = Instance.new(&quot;Atmosphere&quot;)
+		atmo.Name = &quot;RNGAtmosphere&quot;
+		atmo.Parent = Lighting
+	end
+	atmo.Density = 0.22
+	atmo.Offset = 0.1
+	atmo.Color = Color3.fromRGB(180, 205, 235)
+	atmo.Decay = Color3.fromRGB(120, 140, 180)
+	atmo.Glare = 0.25
+	atmo.Haze = 0.4
 
 	-- 2. Build Base Platform
 	local existingPlatform = Workspace:FindFirstChild(&quot;RNG_Platform&quot;)
@@ -1315,19 +1349,19 @@ function CraftingStationSetup.BuildMap()
 	platformFolder.Name = &quot;RNG_Platform&quot;
 	platformFolder.Parent = Workspace
 
-	-- Main Deck
+	-- Main Deck (Sleek Marble/Quartz Finish)
 	local mainFloor = Instance.new(&quot;Part&quot;)
 	mainFloor.Name = &quot;MainFloor&quot;
 	mainFloor.Size = Vector3.new(120, 4, 120)
 	mainFloor.Position = Vector3.new(0, 0, 0)
 	mainFloor.Anchored = true
-	mainFloor.Material = Enum.Material.Slate
-	mainFloor.Color = Color3.fromRGB(22, 25, 34)
+	mainFloor.Material = Enum.Material.SmoothPlastic
+	mainFloor.Color = Color3.fromRGB(28, 32, 44)
 	mainFloor.TopSurface = Enum.SurfaceType.Smooth
 	mainFloor.BottomSurface = Enum.SurfaceType.Smooth
 	mainFloor.Parent = platformFolder
 
-	-- Glowing Neon Border Ring
+	-- Glowing Cyan Neon Border
 	local border = Instance.new(&quot;Part&quot;)
 	border.Name = &quot;BorderGlow&quot;
 	border.Size = Vector3.new(122, 1, 122)
@@ -1336,7 +1370,7 @@ function CraftingStationSetup.BuildMap()
 	border.CanCollide = false
 	border.Material = Enum.Material.Neon
 	border.Color = Color3.fromRGB(56, 189, 248)
-	border.Transparency = 0.4
+	border.Transparency = 0.3
 	border.Parent = platformFolder
 
 	-- Center Spawn Location
@@ -1356,7 +1390,7 @@ function CraftingStationSetup.BuildMap()
 	-- Center Ambient Light
 	local spawnLight = Instance.new(&quot;PointLight&quot;)
 	spawnLight.Color = Color3.fromRGB(96, 165, 250)
-	spawnLight.Brightness = 2.0
+	spawnLight.Brightness = 2.5
 	spawnLight.Range = 25
 	spawnLight.Parent = spawn
 
@@ -1372,7 +1406,7 @@ function CraftingStationSetup.BuildMap()
 	altarBase.Position = Vector3.new(35, 2.5, 0)
 	altarBase.Anchored = true
 	altarBase.Material = Enum.Material.SmoothPlastic
-	altarBase.Color = Color3.fromRGB(30, 35, 48)
+	altarBase.Color = Color3.fromRGB(35, 40, 56)
 	altarBase.Parent = altarModel
 
 	-- Glowing Rune Disc
@@ -1397,7 +1431,7 @@ function CraftingStationSetup.BuildMap()
 	anvil.Orientation = Vector3.new(45, 45, 0)
 	anvil.Parent = altarModel
 
-	-- Anvil Light &amp; Particle Emitter
+	-- Anvil Light &amp; Sparkle Emitter
 	local anvilLight = Instance.new(&quot;PointLight&quot;)
 	anvilLight.Color = Color3.fromRGB(250, 204, 21)
 	anvilLight.Brightness = 3.5
@@ -1406,11 +1440,11 @@ function CraftingStationSetup.BuildMap()
 
 	local anvilEmitter = Instance.new(&quot;ParticleEmitter&quot;)
 	anvilEmitter.Color = ColorSequence.new(Color3.fromRGB(255, 215, 0))
-	anvilEmitter.Size = NumberSequence.new(0.4, 0.1)
+	anvilEmitter.Size = NumberSequence.new(0.5, 0.1)
 	anvilEmitter.Transparency = NumberSequence.new(0.1, 1.0)
 	anvilEmitter.Lifetime = NumberRange.new(1.2, 2.0)
-	anvilEmitter.Rate = 25
-	anvilEmitter.Speed = NumberRange.new(2.0, 4.0)
+	anvilEmitter.Rate = 35
+	anvilEmitter.Speed = NumberRange.new(2.0, 5.0)
 	anvilEmitter.SpreadAngle = Vector2.new(180, 180)
 	anvilEmitter.Texture = &quot;rbxasset://textures/particles/sparkles_main.dds&quot;
 	anvilEmitter.Parent = anvil
@@ -1418,8 +1452,8 @@ function CraftingStationSetup.BuildMap()
 	-- Proximity Prompt on Altar
 	local prompt = Instance.new(&quot;ProximityPrompt&quot;)
 	prompt.Name = &quot;CraftingPrompt&quot;
-	prompt.ObjectText = &quot;Alchemist Altar&quot;
-	prompt.ActionText = &quot;Open Crafting Forge&quot;
+	prompt.ObjectText = &quot;Кузница Алхимика&quot;
+	prompt.ActionText = &quot;Открыть Крафт&quot;
 	prompt.KeyboardKeyCode = Enum.KeyCode.E
 	prompt.HoldDuration = 0
 	prompt.MaxActivationDistance = 14
@@ -1430,7 +1464,7 @@ function CraftingStationSetup.BuildMap()
 	bb.Size = UDim2.new(0, 200, 0, 40)
 	bb.StudsOffset = Vector3.new(0, 3.5, 0)
 	bb.AlwaysOnTop = true
-	bb.MaxDistance = 50
+	bb.MaxDistance = 60
 	bb.Parent = anvil
 
 	local bbLabel = Instance.new(&quot;TextLabel&quot;)
@@ -1439,12 +1473,12 @@ function CraftingStationSetup.BuildMap()
 	bbLabel.Font = Enum.Font.GothamBlack
 	bbLabel.TextSize = 16
 	bbLabel.TextColor3 = Color3.fromRGB(251, 191, 36)
-	bbLabel.Text = &quot;⚗️ CRAFTING FORGE&quot;
+	bbLabel.Text = &quot;⚗️ КУЗНИЦА КРАФТА&quot;
 	bbLabel.TextStrokeColor3 = Color3.fromRGB(20, 20, 30)
 	bbLabel.TextStrokeTransparency = 0.2
 	bbLabel.Parent = bb
 
-	print(&quot;[Sols RNG] Platform, Crafting Altar, and Atmospheric Lighting successfully built!&quot;)
+	print(&quot;[Sols RNG] Morning Platform, Crafting Altar, and Sunny Lighting successfully built!&quot;)
 end
 
 return CraftingStationSetup
@@ -1916,7 +1950,7 @@ DeleteAuraEvent.OnServerEvent:Connect(function(player, auraId)
 	end
 
 	local auraData = AuraConfig.Auras[auraId]
-	local scrapValue = auraData and math.max(2, math.floor(auraData.Rarity * 0.4)) or 2
+	local scrapValue = auraData and AuraConfig.GetScrapValue(auraData.Rarity) or 5
 	data.Coins = (data.Coins or 0) + scrapValue
 
 	syncClient(player)
@@ -2058,15 +2092,14 @@ print(&quot;[Sols RNG] Server initialized successfully! All systems running.&quo
 				<Properties>
 					<string name="Name">RNGClient</string>
 					<ProtectedString name="Source">-- RNGClient.client.lua
--- Professional, high-end User Interface (UI) controller for Sol's RNG.
--- Features Glassmorphic Dark Design, Responsive Scaling (Mobile/PC/Tablet),
--- Spring Tweens, Addictive Cutscenes, Full Inventory, Alchemist Crafting Forge, and Monetization.
+-- Dynamic CS2-style Case Opening Roulette, Glassmorphic UI, Clear Sell &amp; Equip Controls,
+-- and High-Performance Client Controller for Sol's RNG.
 
 local Players = game:GetService(&quot;Players&quot;)
 local ReplicatedStorage = game:GetService(&quot;ReplicatedStorage&quot;)
 local TweenService = game:GetService(&quot;TweenService&quot;)
+local RunService = game:GetService(&quot;RunService&quot;)
 local ProximityPromptService = game:GetService(&quot;ProximityPromptService&quot;)
-local SoundService = game:GetService(&quot;SoundService&quot;)
 
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild(&quot;PlayerGui&quot;)
@@ -2220,7 +2253,6 @@ bottomControls.Size = UDim2.new(0, 460, 0, 110)
 bottomControls.BackgroundTransparency = 1
 bottomControls.Parent = screenGui
 
--- Main ROLL Button (Pulsing Centerpiece)
 local rollButton = Instance.new(&quot;TextButton&quot;)
 rollButton.Name = &quot;RollButton&quot;
 rollButton.AnchorPoint = Vector2.new(0.5, 0)
@@ -2243,7 +2275,6 @@ rollGrad.Rotation = 45
 rollGrad.Parent = rollButton
 rollButton.Parent = bottomControls
 
--- Secondary Controls (Auto Roll &amp; Fast Roll Pills)
 local secondaryBar = Instance.new(&quot;Frame&quot;)
 secondaryBar.Size = UDim2.new(0, 320, 0, 34)
 secondaryBar.AnchorPoint = Vector2.new(0.5, 1)
@@ -2280,20 +2311,6 @@ fastRollBtn.Text = &quot;⏩ FAST: OFF&quot;
 addCorner(fastRollBtn, 8)
 local fastStroke = addStroke(fastRollBtn, Color3.fromRGB(45, 52, 70), 1.2)
 fastRollBtn.Parent = secondaryBar
-
--- Subtle breathing animation on Roll Button
-task.spawn(function()
-	while true do
-		TweenService:Create(rollStroke, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-			Color = Color3.fromRGB(147, 197, 253),
-		}):Play()
-		task.wait(1.2)
-		TweenService:Create(rollStroke, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-			Color = Color3.fromRGB(59, 130, 246),
-		}):Play()
-		task.wait(1.2)
-	end
-end)
 
 --------------------------------------------------------------------------------
 -- 3. LEFT DOCK NAVIGATION BAR
@@ -2342,10 +2359,10 @@ local function createDockButton(name, icon, tooltipText)
 	return btn
 end
 
-local navInventoryBtn = createDockButton(&quot;Inventory&quot;, &quot;🎒&quot;, &quot;Inventory&quot;)
-local navCraftingBtn = createDockButton(&quot;Crafting&quot;, &quot;⚗️&quot;, &quot;Crafting Forge&quot;)
-local navShopBtn = createDockButton(&quot;Shop&quot;, &quot;🛒&quot;, &quot;Shop &amp; Passes&quot;)
-local navSettingsBtn = createDockButton(&quot;Settings&quot;, &quot;⚙️&quot;, &quot;Settings&quot;)
+local navInventoryBtn = createDockButton(&quot;Inventory&quot;, &quot;🎒&quot;, &quot;Инвентарь&quot;)
+local navCraftingBtn = createDockButton(&quot;Crafting&quot;, &quot;⚗️&quot;, &quot;Кузница Крафта&quot;)
+local navShopBtn = createDockButton(&quot;Shop&quot;, &quot;🛒&quot;, &quot;Магазин и Пассы&quot;)
+local navSettingsBtn = createDockButton(&quot;Settings&quot;, &quot;⚙️&quot;, &quot;Настройки&quot;)
 
 --------------------------------------------------------------------------------
 -- 4. BOTTOM-LEFT EQUIPPED AURA SHOWCASE CARD
@@ -2397,7 +2414,7 @@ addCorner(unequipBtn, 6)
 unequipBtn.Parent = equippedCard
 
 --------------------------------------------------------------------------------
--- MODAL WINDOW FACTORY
+-- 5. MODAL WINDOW CREATOR
 --------------------------------------------------------------------------------
 
 local function createModal(titleText, width, height)
@@ -2412,7 +2429,6 @@ local function createModal(titleText, width, height)
 	addStroke(window, Color3.fromRGB(55, 65, 90), 2)
 	window.Parent = screenGui
 
-	-- Header
 	local header = Instance.new(&quot;Frame&quot;)
 	header.Size = UDim2.new(1, 0, 0, 48)
 	header.BackgroundColor3 = Color3.fromRGB(20, 24, 36)
@@ -2474,12 +2490,11 @@ local function toggleModal(modal)
 end
 
 --------------------------------------------------------------------------------
--- 5. INVENTORY WINDOW (MODERN GRID + DETAIL PANEL)
+-- 6. INVENTORY WINDOW (CLEAR EQUIP &amp; SELL CONTROLS)
 --------------------------------------------------------------------------------
 
-local invWindow, invContent = createModal(&quot;🎒 AURA INVENTORY&quot;, 680, 480)
+local invWindow, invContent = createModal(&quot;🎒 ИНВЕНТАРЬ АУР&quot;, 680, 480)
 
--- Top Info Bar: Slots + Auto Delete Threshold
 local topInvBar = Instance.new(&quot;Frame&quot;)
 topInvBar.Size = UDim2.new(1, 0, 0, 28)
 topInvBar.BackgroundTransparency = 1
@@ -2503,7 +2518,7 @@ storageText.BackgroundTransparency = 1
 storageText.Font = Enum.Font.GothamBold
 storageText.TextSize = 12
 storageText.TextColor3 = Color3.fromRGB(255, 255, 255)
-storageText.Text = &quot;Storage: 0 / 20&quot;
+storageText.Text = &quot;Слоты: 0 / 20&quot;
 storageText.Parent = storageBarBg
 
 local autoDeleteBtn = Instance.new(&quot;TextButton&quot;)
@@ -2513,32 +2528,30 @@ autoDeleteBtn.BackgroundColor3 = Color3.fromRGB(28, 33, 48)
 autoDeleteBtn.Font = Enum.Font.GothamMedium
 autoDeleteBtn.TextSize = 12
 autoDeleteBtn.TextColor3 = Color3.fromRGB(220, 225, 240)
-autoDeleteBtn.Text = &quot;Auto-Delete: None&quot;
+autoDeleteBtn.Text = &quot;Авто-продажа: Нет&quot;
 addCorner(autoDeleteBtn, 6)
 addStroke(autoDeleteBtn, Color3.fromRGB(50, 60, 82), 1)
 autoDeleteBtn.Parent = topInvBar
 
--- Left: Scrollable Inventory Grid
 local invScroll = Instance.new(&quot;ScrollingFrame&quot;)
-invScroll.Size = UDim2.new(1, -220, 1, -38)
+invScroll.Size = UDim2.new(1, -230, 1, -38)
 invScroll.Position = UDim2.new(0, 0, 0, 36)
 invScroll.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
 invScroll.BackgroundTransparency = 0.4
 invScroll.ScrollBarThickness = 5
-invScroll.ScrollBarImageColor3 = Color3.fromRGB(55, 65, 90)
 addCorner(invScroll, 8)
 invScroll.Parent = invContent
 
 local invGrid = Instance.new(&quot;UIGridLayout&quot;)
-invGrid.CellSize = UDim2.new(0, 100, 0, 100)
+invGrid.CellSize = UDim2.new(0, 95, 0, 95)
 invGrid.CellPadding = UDim2.new(0, 8, 0, 8)
 invGrid.Parent = invScroll
 addPadding(invScroll, 8, 8, 8, 8)
 
--- Right: Details Inspector
+-- Right Inspector Panel with VERY CLEAR Equip &amp; Sell Buttons
 local detailPanel = Instance.new(&quot;Frame&quot;)
-detailPanel.Size = UDim2.new(0, 205, 1, -38)
-detailPanel.Position = UDim2.new(1, -205, 0, 36)
+detailPanel.Size = UDim2.new(0, 215, 1, -38)
+detailPanel.Position = UDim2.new(1, -215, 0, 36)
 detailPanel.BackgroundColor3 = Color3.fromRGB(16, 19, 28)
 addCorner(detailPanel, 8)
 addStroke(detailPanel, Color3.fromRGB(42, 50, 70), 1)
@@ -2551,7 +2564,7 @@ detailName.BackgroundTransparency = 1
 detailName.Font = Enum.Font.GothamBlack
 detailName.TextSize = 16
 detailName.TextColor3 = Color3.fromRGB(255, 255, 255)
-detailName.Text = &quot;Select an Aura&quot;
+detailName.Text = &quot;Выберите Ауру&quot;
 detailName.Parent = detailPanel
 
 local detailRarity = Instance.new(&quot;TextLabel&quot;)
@@ -2565,7 +2578,7 @@ detailRarity.Text = &quot;&quot;
 detailRarity.Parent = detailPanel
 
 local detailDesc = Instance.new(&quot;TextLabel&quot;)
-detailDesc.Size = UDim2.new(1, 0, 0, 110)
+detailDesc.Size = UDim2.new(1, 0, 0, 100)
 detailDesc.Position = UDim2.new(0, 0, 0, 52)
 detailDesc.BackgroundTransparency = 1
 detailDesc.Font = Enum.Font.Gotham
@@ -2573,32 +2586,34 @@ detailDesc.TextSize = 12
 detailDesc.TextColor3 = Color3.fromRGB(200, 205, 220)
 detailDesc.TextWrapped = true
 detailDesc.TextYAlignment = Enum.TextYAlignment.Top
-detailDesc.Text = &quot;Click any aura on the left to equip or manage.&quot;
+detailDesc.Text = &quot;Нажмите на карточку ауры слева для экипировки или продажи.&quot;
 detailDesc.Parent = detailPanel
 
+-- VERY CLEAR: ЭКИПИРОВАТЬ Button
 local equipActionBtn = Instance.new(&quot;TextButton&quot;)
-equipActionBtn.Size = UDim2.new(1, 0, 0, 40)
-equipActionBtn.Position = UDim2.new(0, 0, 1, -84)
-equipActionBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
-equipActionBtn.Font = Enum.Font.GothamBold
+equipActionBtn.Size = UDim2.new(1, 0, 0, 42)
+equipActionBtn.Position = UDim2.new(0, 0, 1, -94)
+equipActionBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+equipActionBtn.Font = Enum.Font.GothamBlack
 equipActionBtn.TextSize = 14
 equipActionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-equipActionBtn.Text = &quot;Equip&quot;
+equipActionBtn.Text = &quot;⚔️ ЭКИПИРОВАТЬ&quot;
 equipActionBtn.Visible = false
 addCorner(equipActionBtn, 8)
 equipActionBtn.Parent = detailPanel
 
-local deleteActionBtn = Instance.new(&quot;TextButton&quot;)
-deleteActionBtn.Size = UDim2.new(1, 0, 0, 36)
-deleteActionBtn.Position = UDim2.new(0, 0, 1, -38)
-deleteActionBtn.BackgroundColor3 = Color3.fromRGB(48, 25, 30)
-deleteActionBtn.Font = Enum.Font.GothamMedium
-deleteActionBtn.TextSize = 12
-deleteActionBtn.TextColor3 = Color3.fromRGB(248, 113, 113)
-deleteActionBtn.Text = &quot;Scrap (+Coins)&quot;
-deleteActionBtn.Visible = false
-addCorner(deleteActionBtn, 8)
-deleteActionBtn.Parent = detailPanel
+-- VERY CLEAR: ПРОДАТЬ Button
+local sellActionBtn = Instance.new(&quot;TextButton&quot;)
+sellActionBtn.Size = UDim2.new(1, 0, 0, 40)
+sellActionBtn.Position = UDim2.new(0, 0, 1, -44)
+sellActionBtn.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
+sellActionBtn.Font = Enum.Font.GothamBlack
+sellActionBtn.TextSize = 13
+sellActionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+sellActionBtn.Text = &quot;💰 ПРОДАТЬ (+50 МОНЕТ)&quot;
+sellActionBtn.Visible = false
+addCorner(sellActionBtn, 8)
+sellActionBtn.Parent = detailPanel
 
 local function refreshInventoryUI()
 	for _, child in ipairs(invScroll:GetChildren()) do
@@ -2618,7 +2633,7 @@ local function refreshInventoryUI()
 			addStroke(card, auraData.Color, 1.5)
 
 			local name = Instance.new(&quot;TextLabel&quot;)
-			name.Size = UDim2.new(1, -8, 0, 32)
+			name.Size = UDim2.new(1, -8, 0, 30)
 			name.Position = UDim2.new(0, 4, 0, 4)
 			name.BackgroundTransparency = 1
 			name.Font = Enum.Font.GothamBold
@@ -2630,7 +2645,7 @@ local function refreshInventoryUI()
 
 			local rarity = Instance.new(&quot;TextLabel&quot;)
 			rarity.Size = UDim2.new(1, -8, 0, 16)
-			rarity.Position = UDim2.new(0, 4, 0, 38)
+			rarity.Position = UDim2.new(0, 4, 0, 36)
 			rarity.BackgroundTransparency = 1
 			rarity.Font = Enum.Font.GothamMedium
 			rarity.TextSize = 10
@@ -2657,7 +2672,7 @@ local function refreshInventoryUI()
 				eqTag.Font = Enum.Font.GothamBold
 				eqTag.TextSize = 8
 				eqTag.TextColor3 = Color3.fromRGB(255, 255, 255)
-				eqTag.Text = &quot;EQUIPPED&quot;
+				eqTag.Text = &quot;НАДЕТО&quot;
 				addCorner(eqTag, 4)
 				eqTag.Parent = card
 			end
@@ -2672,13 +2687,16 @@ local function refreshInventoryUI()
 
 				equipActionBtn.Visible = true
 				if localData.EquippedAura == auraId then
-					equipActionBtn.Text = &quot;Unequip&quot;
+					equipActionBtn.Text = &quot;✕ СНЯТЬ АУРУ&quot;
 					equipActionBtn.BackgroundColor3 = Color3.fromRGB(60, 70, 85)
 				else
-					equipActionBtn.Text = &quot;Equip&quot;
-					equipActionBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
+					equipActionBtn.Text = &quot;⚔️ ЭКИПИРОВАТЬ&quot;
+					equipActionBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 				end
-				deleteActionBtn.Visible = true
+
+				local scrapCoins = AuraConfig.GetScrapValue(auraData.Rarity or 0)
+				sellActionBtn.Text = string.format(&quot;💰 ПРОДАТЬ (+%d МОНЕТ)&quot;, scrapCoins)
+				sellActionBtn.Visible = true
 			end)
 
 			card.Parent = invScroll
@@ -2686,7 +2704,7 @@ local function refreshInventoryUI()
 	end
 
 	local maxSlots = localData.MaxStorage or 20
-	storageText.Text = string.format(&quot;Storage: %d / %d&quot;, totalCount, maxSlots)
+	storageText.Text = string.format(&quot;Слоты: %d / %d&quot;, totalCount, maxSlots)
 	local ratio = math.clamp(totalCount / maxSlots, 0, 1)
 	storageFill.Size = UDim2.new(ratio, 0, 1, 0)
 	if ratio &gt;= 1.0 then
@@ -2710,20 +2728,20 @@ equipActionBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
-deleteActionBtn.MouseButton1Click:Connect(function()
+sellActionBtn.MouseButton1Click:Connect(function()
 	if not selectedInventoryAura then return end
-	SoundEffects.Play(&quot;Click&quot;)
+	SoundEffects.Play(&quot;Coin&quot;)
 	DeleteAuraEvent:FireServer(selectedInventoryAura)
 	selectedInventoryAura = nil
 	equipActionBtn.Visible = false
-	deleteActionBtn.Visible = false
-	detailName.Text = &quot;Select an Aura&quot;
+	sellActionBtn.Visible = false
+	detailName.Text = &quot;Выберите Ауру&quot;
 	detailRarity.Text = &quot;&quot;
-	detailDesc.Text = &quot;Aura scrapped for coins.&quot;
+	detailDesc.Text = &quot;Аура успешно продана за монеты!&quot;
 end)
 
 local thresholds = { 0, 2, 4, 16, 64 }
-local thresholdNames = { [0] = &quot;None&quot;, [2] = &quot;Common (1/2)&quot;, [4] = &quot;Uncommon (1/4)&quot;, [16] = &quot;Rare (1/16)&quot;, [64] = &quot;Crystallized (1/64)&quot; }
+local thresholdNames = { [0] = &quot;Нет&quot;, [2] = &quot;Common (1/2)&quot;, [4] = &quot;Uncommon (1/4)&quot;, [16] = &quot;Rare (1/16)&quot;, [64] = &quot;Crystallized (1/64)&quot; }
 autoDeleteBtn.MouseButton1Click:Connect(function()
 	SoundEffects.Play(&quot;Click&quot;)
 	local cur = localData.AutoDeleteThreshold or 0
@@ -2738,10 +2756,10 @@ autoDeleteBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------------------------------------------------
--- 6. CRAFTING ALCHEMIST FORGE
+-- 7. CRAFTING ALCHEMIST FORGE
 --------------------------------------------------------------------------------
 
-local craftWindow, craftContent = createModal(&quot;⚗️ ALCHEMIST CRAFTING FORGE&quot;, 720, 500)
+local craftWindow, craftContent = createModal(&quot;⚗️ КУЗНИЦА КРАФТА АУР&quot;, 720, 500)
 
 local recipeScroll = Instance.new(&quot;ScrollingFrame&quot;)
 recipeScroll.Size = UDim2.new(0, 240, 1, 0)
@@ -2771,7 +2789,7 @@ craftTitle.BackgroundTransparency = 1
 craftTitle.Font = Enum.Font.GothamBlack
 craftTitle.TextSize = 18
 craftTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-craftTitle.Text = &quot;Select a Recipe&quot;
+craftTitle.Text = &quot;Выберите Рецепт&quot;
 craftTitle.Parent = craftDetail
 
 local craftDesc = Instance.new(&quot;TextLabel&quot;)
@@ -2782,7 +2800,7 @@ craftDesc.Font = Enum.Font.Gotham
 craftDesc.TextSize = 12
 craftDesc.TextColor3 = Color3.fromRGB(180, 185, 200)
 craftDesc.TextWrapped = true
-craftDesc.Text = &quot;Combine auras to synthesize godly auras, luck gauntlets, and elixirs!&quot;
+craftDesc.Text = &quot;Объединяйте ауры для создания богоподобных аур, рукавиц удачи и зелий!&quot;
 craftDesc.Parent = craftDetail
 
 local ingHeader = Instance.new(&quot;TextLabel&quot;)
@@ -2792,7 +2810,7 @@ ingHeader.BackgroundTransparency = 1
 ingHeader.Font = Enum.Font.GothamBold
 ingHeader.TextSize = 12
 ingHeader.TextColor3 = Color3.fromRGB(156, 163, 175)
-ingHeader.Text = &quot;REQUIRED INGREDIENTS:&quot;
+ingHeader.Text = &quot;ТРЕБУЕМЫЕ ИНГРЕДИЕНТЫ:&quot;
 ingHeader.TextXAlignment = Enum.TextXAlignment.Left
 ingHeader.Parent = craftDetail
 
@@ -2813,7 +2831,7 @@ forgeBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
 forgeBtn.Font = Enum.Font.GothamBlack
 forgeBtn.TextSize = 16
 forgeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-forgeBtn.Text = &quot;⚗️ FORGE RECIPE&quot;
+forgeBtn.Text = &quot;⚗️ КОВАТЬ РЕЦЕПТ&quot;
 forgeBtn.Visible = false
 addCorner(forgeBtn, 10)
 forgeBtn.Parent = craftDetail
@@ -2850,7 +2868,7 @@ local function refreshCraftingUI()
 		sub.TextSize = 11
 		sub.TextColor3 = Color3.fromRGB(156, 163, 175)
 		sub.TextXAlignment = Enum.TextXAlignment.Left
-		sub.Text = string.format(&quot;Reward: %s&quot;, recipe.ResultType)
+		sub.Text = string.format(&quot;Тип: %s&quot;, recipe.ResultType)
 		sub.Parent = btn
 
 		btn.MouseButton1Click:Connect(function()
@@ -2907,10 +2925,10 @@ local function refreshCraftingUI()
 
 			forgeBtn.Visible = true
 			if canCraftAll then
-				forgeBtn.Text = &quot;⚗️ FORGE NOW&quot;
+				forgeBtn.Text = &quot;⚗️ КОВАТЬ СЕЙЧАС&quot;
 				forgeBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 			else
-				forgeBtn.Text = &quot;Missing Ingredients&quot;
+				forgeBtn.Text = &quot;Не хватает аур&quot;
 				forgeBtn.BackgroundColor3 = Color3.fromRGB(50, 60, 75)
 			end
 		end)
@@ -2933,10 +2951,10 @@ forgeBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------------------------------------------------
--- 7. SHOP &amp; MONETIZATION (WITH FREE DEV TEST TOGGLE)
+-- 8. SHOP &amp; MONETIZATION
 --------------------------------------------------------------------------------
 
-local shopWindow, shopContent = createModal(&quot;🛒 SHOP &amp; PASSES (TEST MODE INCLUDED)&quot;, 700, 480)
+local shopWindow, shopContent = createModal(&quot;🛒 МАГАЗИН И ПАССЫ (ТЕСТ-РЕЖИМ)&quot;, 700, 480)
 
 local shopScroll = Instance.new(&quot;ScrollingFrame&quot;)
 shopScroll.Size = UDim2.new(1, 0, 1, 0)
@@ -2956,28 +2974,28 @@ local passItems = {
 		Id = &quot;X2Luck&quot;,
 		Name = &quot;🎲 x2 Luck Pass&quot;,
 		Color = Color3.fromRGB(74, 222, 128),
-		Desc = &quot;Permanently doubles your chance of rolling rare, mythic, and godly auras!&quot;,
+		Desc = &quot;Удваивает шанс выпадения всех редких, мифических и богоподобных аур навсегда!&quot;,
 		PerkKey = &quot;X2Luck&quot;,
 	},
 	{
 		Id = &quot;AutoRoll&quot;,
 		Name = &quot;⚡ Auto Roll Pass&quot;,
 		Color = Color3.fromRGB(250, 204, 21),
-		Desc = &quot;Automatically rolls in the background while you chat, explore, or AFK!&quot;,
+		Desc = &quot;Автоматический ролл в фоне пока вы общаетесь, гуляете или стоите AFK!&quot;,
 		PerkKey = &quot;AutoRoll&quot;,
 	},
 	{
 		Id = &quot;ExtraStorage&quot;,
 		Name = &quot;🎨 Aura Storage (+30)&quot;,
 		Color = Color3.fromRGB(56, 189, 248),
-		Desc = &quot;Expands your inventory capacity by +30 slots to store all your treasures!&quot;,
+		Desc = &quot;Расширяет ваш инвентарь на +30 дополнительных слотов!&quot;,
 		PerkKey = &quot;ExtraStorage&quot;,
 	},
 	{
 		Id = &quot;VIP&quot;,
 		Name = &quot;⭐ VIP Supporter Pass&quot;,
 		Color = Color3.fromRGB(245, 158, 11),
-		Desc = &quot;Exclusive VIP Crown Aura + x1.5 Permanent Luck + Golden Overhead &amp; Chat Tag!&quot;,
+		Desc = &quot;Аура VIP Crown + x1.5 Удача + Золотой титул VIP над головой и в чате!&quot;,
 		PerkKey = &quot;VIP&quot;,
 	},
 }
@@ -3030,11 +3048,11 @@ local function refreshShopUI()
 		if isOwned then
 			testBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 			testBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-			testBtn.Text = &quot;ACTIVE (TEST ON)&quot;
+			testBtn.Text = &quot;АКТИВЕН (ТЕСТ ВКЛ)&quot;
 		else
 			testBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
 			testBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-			testBtn.Text = &quot;TEST FOR FREE&quot;
+			testBtn.Text = &quot;ТЕСТ БЕСПЛАТНО&quot;
 		end
 
 		testBtn.MouseButton1Click:Connect(function()
@@ -3050,10 +3068,10 @@ local function refreshShopUI()
 end
 
 --------------------------------------------------------------------------------
--- 8. SETTINGS WINDOW
+-- 9. SETTINGS WINDOW
 --------------------------------------------------------------------------------
 
-local setWindow, setContent = createModal(&quot;⚙️ SETTINGS&quot;, 440, 240)
+local setWindow, setContent = createModal(&quot;⚙️ НАСТРОЙКИ&quot;, 440, 240)
 
 local setFastBtn = Instance.new(&quot;TextButton&quot;)
 setFastBtn.Size = UDim2.new(1, 0, 0, 44)
@@ -3062,7 +3080,7 @@ setFastBtn.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
 setFastBtn.Font = Enum.Font.GothamBold
 setFastBtn.TextSize = 14
 setFastBtn.TextColor3 = Color3.fromRGB(220, 225, 240)
-setFastBtn.Text = &quot;⏩ Fast Roll Cutscene: OFF&quot;
+setFastBtn.Text = &quot;⏩ Быстрый Ролл (Без Рулетки): ВЫКЛ&quot;
 addCorner(setFastBtn, 8)
 addStroke(setFastBtn, Color3.fromRGB(45, 55, 75), 1)
 setFastBtn.Parent = setContent
@@ -3074,7 +3092,7 @@ setInfo.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
 setInfo.Font = Enum.Font.GothamMedium
 setInfo.TextSize = 13
 setInfo.TextColor3 = Color3.fromRGB(180, 185, 200)
-setInfo.Text = &quot;Auto-Delete threshold can be changed in Inventory.&quot;
+setInfo.Text = &quot;Авто-удаление и продажу можно настроить в Инвентаре.&quot;
 addCorner(setInfo, 8)
 setInfo.Parent = setContent
 
@@ -3082,42 +3100,109 @@ setFastBtn.MouseButton1Click:Connect(function()
 	SoundEffects.Play(&quot;Click&quot;)
 	isFastRollOn = not isFastRollOn
 	if isFastRollOn then
-		setFastBtn.Text = &quot;⏩ Fast Roll Cutscene: ON&quot;
+		setFastBtn.Text = &quot;⏩ Быстрый Ролл (Без Рулетки): ВКЛ&quot;
 		fastRollBtn.Text = &quot;⏩ FAST: ON&quot;
 		fastRollBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
 	else
-		setFastBtn.Text = &quot;⏩ Fast Roll Cutscene: OFF&quot;
+		setFastBtn.Text = &quot;⏩ Быстрый Ролл (Без Рулетки): ВЫКЛ&quot;
 		fastRollBtn.Text = &quot;⏩ FAST: OFF&quot;
 		fastRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
 	end
 end)
 
 --------------------------------------------------------------------------------
--- 9. CINEMATIC ROLL REVEAL CUTSCENE OVERLAY
+-- 10. CS2-STYLE DYNAMIC HORIZONTAL CASE OPENING ROULETTE
+--------------------------------------------------------------------------------
+
+local rouletteContainer = Instance.new(&quot;Frame&quot;)
+rouletteContainer.Name = &quot;CS2RouletteContainer&quot;
+rouletteContainer.AnchorPoint = Vector2.new(0.5, 0.5)
+rouletteContainer.Position = UDim2.new(0.5, 0, 0.45, 0)
+rouletteContainer.Size = UDim2.new(0.9, 0, 0, 170)
+rouletteContainer.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
+rouletteContainer.BackgroundTransparency = 0.05
+rouletteContainer.ClipsDescendants = true
+rouletteContainer.Visible = false
+addCorner(rouletteContainer, 16)
+local rStroke = addStroke(rouletteContainer, Color3.fromRGB(245, 158, 11), 2.5)
+rouletteContainer.Parent = screenGui
+
+local rSizeConstraint = Instance.new(&quot;UISizeConstraint&quot;)
+rSizeConstraint.MaxSize = Vector2.new(880, 180)
+rSizeConstraint.MinSize = Vector2.new(340, 150)
+rSizeConstraint.Parent = rouletteContainer
+
+-- Moving Tape of Cards
+local rouletteTape = Instance.new(&quot;Frame&quot;)
+rouletteTape.Name = &quot;Tape&quot;
+rouletteTape.Size = UDim2.new(0, 10000, 1, 0)
+rouletteTape.Position = UDim2.new(0, 0, 0, 0)
+rouletteTape.BackgroundTransparency = 1
+rouletteTape.Parent = rouletteContainer
+
+-- Center Selector Pointer Needle (Vertical Golden Line + Arrows)
+local needleLine = Instance.new(&quot;Frame&quot;)
+needleLine.Name = &quot;Needle&quot;
+needleLine.AnchorPoint = Vector2.new(0.5, 0)
+needleLine.Position = UDim2.new(0.5, 0, 0, 0)
+needleLine.Size = UDim2.new(0, 4, 1, 0)
+needleLine.BackgroundColor3 = Color3.fromRGB(250, 204, 21)
+needleLine.ZIndex = 10
+needleLine.Parent = rouletteContainer
+
+local needleTop = Instance.new(&quot;Frame&quot;)
+needleTop.AnchorPoint = Vector2.new(0.5, 0)
+needleTop.Position = UDim2.new(0.5, 0, 0, 0)
+needleTop.Size = UDim2.new(0, 18, 0, 14)
+needleTop.BackgroundColor3 = Color3.fromRGB(250, 204, 21)
+needleTop.ZIndex = 11
+addCorner(needleTop, 4)
+needleTop.Parent = rouletteContainer
+
+local needleBottom = Instance.new(&quot;Frame&quot;)
+needleBottom.AnchorPoint = Vector2.new(0.5, 1)
+needleBottom.Position = UDim2.new(0.5, 0, 1, 0)
+needleBottom.Size = UDim2.new(0, 18, 0, 14)
+needleBottom.BackgroundColor3 = Color3.fromRGB(250, 204, 21)
+needleBottom.ZIndex = 11
+addCorner(needleBottom, 4)
+needleBottom.Parent = rouletteContainer
+
+--------------------------------------------------------------------------------
+-- 11. REVEAL POPUP WITH EXPLICIT EQUIP &amp; SELL BUTTONS
 --------------------------------------------------------------------------------
 
 local cutsceneOverlay = Instance.new(&quot;Frame&quot;)
 cutsceneOverlay.Name = &quot;CutsceneOverlay&quot;
 cutsceneOverlay.Size = UDim2.new(1, 0, 1, 0)
 cutsceneOverlay.BackgroundColor3 = Color3.fromRGB(4, 5, 8)
-cutsceneOverlay.BackgroundTransparency = 0.3
+cutsceneOverlay.BackgroundTransparency = 0.25
 cutsceneOverlay.Visible = false
 cutsceneOverlay.Parent = screenGui
 
--- Center Card
 local revealCard = Instance.new(&quot;Frame&quot;)
 revealCard.Name = &quot;RevealCard&quot;
 revealCard.AnchorPoint = Vector2.new(0.5, 0.5)
 revealCard.Position = UDim2.new(0.5, 0, 0.5, 0)
-revealCard.Size = UDim2.new(0, 360, 0, 420)
-revealCard.BackgroundColor3 = Color3.fromRGB(15, 18, 26)
+revealCard.Size = UDim2.new(0, 420, 0, 460)
+revealCard.BackgroundColor3 = Color3.fromRGB(14, 17, 26)
 addCorner(revealCard, 18)
 local cardStroke = addStroke(revealCard, Color3.fromRGB(255, 255, 255), 3)
-addPadding(revealCard, 20, 20, 20, 20)
+addPadding(revealCard, 20, 20, 24, 24)
 revealCard.Parent = cutsceneOverlay
+
+local cardHeaderTitle = Instance.new(&quot;TextLabel&quot;)
+cardHeaderTitle.Size = UDim2.new(1, 0, 0, 22)
+cardHeaderTitle.BackgroundTransparency = 1
+cardHeaderTitle.Font = Enum.Font.GothamBlack
+cardHeaderTitle.TextSize = 13
+cardHeaderTitle.TextColor3 = Color3.fromRGB(250, 204, 21)
+cardHeaderTitle.Text = &quot;🎉 ВЫ ВЫБИЛИ НОВУЮ АУРУ!&quot;
+cardHeaderTitle.Parent = revealCard
 
 local cardTierTag = Instance.new(&quot;TextLabel&quot;)
 cardTierTag.Size = UDim2.new(1, 0, 0, 24)
+cardTierTag.Position = UDim2.new(0, 0, 0, 24)
 cardTierTag.BackgroundTransparency = 1
 cardTierTag.Font = Enum.Font.GothamBlack
 cardTierTag.TextSize = 14
@@ -3126,18 +3211,18 @@ cardTierTag.Text = &quot;[ TIER ]&quot;
 cardTierTag.Parent = revealCard
 
 local cardName = Instance.new(&quot;TextLabel&quot;)
-cardName.Size = UDim2.new(1, 0, 0, 44)
-cardName.Position = UDim2.new(0, 0, 0, 28)
+cardName.Size = UDim2.new(1, 0, 0, 46)
+cardName.Position = UDim2.new(0, 0, 0, 50)
 cardName.BackgroundTransparency = 1
 cardName.Font = Enum.Font.GothamBlack
-cardName.TextSize = 30
+cardName.TextSize = 32
 cardName.TextColor3 = Color3.fromRGB(255, 255, 255)
 cardName.Text = &quot;Aura Name&quot;
 cardName.Parent = revealCard
 
 local cardRarity = Instance.new(&quot;TextLabel&quot;)
-cardRarity.Size = UDim2.new(1, 0, 0, 26)
-cardRarity.Position = UDim2.new(0, 0, 0, 78)
+cardRarity.Size = UDim2.new(1, 0, 0, 28)
+cardRarity.Position = UDim2.new(0, 0, 0, 102)
 cardRarity.BackgroundTransparency = 1
 cardRarity.Font = Enum.Font.GothamBold
 cardRarity.TextSize = 18
@@ -3146,8 +3231,8 @@ cardRarity.Text = &quot;1 in 100,000&quot;
 cardRarity.Parent = revealCard
 
 local cardDesc = Instance.new(&quot;TextLabel&quot;)
-cardDesc.Size = UDim2.new(1, 0, 0, 110)
-cardDesc.Position = UDim2.new(0, 0, 0, 116)
+cardDesc.Size = UDim2.new(1, 0, 0, 90)
+cardDesc.Position = UDim2.new(0, 0, 0, 136)
 cardDesc.BackgroundTransparency = 1
 cardDesc.Font = Enum.Font.Gotham
 cardDesc.TextSize = 13
@@ -3156,31 +3241,45 @@ cardDesc.TextWrapped = true
 cardDesc.Text = &quot;Aura lore description...&quot;
 cardDesc.Parent = revealCard
 
+-- ACTION BUTTON 1: ЭКИПИРОВАТЬ
 local cardEquipBtn = Instance.new(&quot;TextButton&quot;)
-cardEquipBtn.Size = UDim2.new(0.48, 0, 0, 44)
-cardEquipBtn.Position = UDim2.new(0, 0, 1, -44)
+cardEquipBtn.Size = UDim2.new(1, 0, 0, 44)
+cardEquipBtn.Position = UDim2.new(0, 0, 1, -128)
 cardEquipBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 cardEquipBtn.Font = Enum.Font.GothamBlack
 cardEquipBtn.TextSize = 15
 cardEquipBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-cardEquipBtn.Text = &quot;EQUIP&quot;
+cardEquipBtn.Text = &quot;⚔️ ЭКИПИРОВАТЬ СЕЙЧАС&quot;
 addCorner(cardEquipBtn, 10)
 cardEquipBtn.Parent = revealCard
 
-local cardCloseBtn = Instance.new(&quot;TextButton&quot;)
-cardCloseBtn.Size = UDim2.new(0.48, 0, 0, 44)
-cardCloseBtn.Position = UDim2.new(0.52, 0, 1, -44)
-cardCloseBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
-cardCloseBtn.Font = Enum.Font.GothamBlack
-cardCloseBtn.TextSize = 15
-cardCloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-cardCloseBtn.Text = &quot;COLLECT&quot;
-addCorner(cardCloseBtn, 10)
-cardCloseBtn.Parent = revealCard
+-- ACTION BUTTON 2: ПРОДАТЬ ЗА МОНЕТЫ
+local cardSellBtn = Instance.new(&quot;TextButton&quot;)
+cardSellBtn.Size = UDim2.new(0.48, 0, 0, 42)
+cardSellBtn.Position = UDim2.new(0, 0, 1, -74)
+cardSellBtn.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
+cardSellBtn.Font = Enum.Font.GothamBlack
+cardSellBtn.TextSize = 13
+cardSellBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+cardSellBtn.Text = &quot;💰 ПРОДАТЬ (+50)&quot;
+addCorner(cardSellBtn, 10)
+cardSellBtn.Parent = revealCard
+
+-- ACTION BUTTON 3: В ИНВЕНТАРЬ
+local cardCollectBtn = Instance.new(&quot;TextButton&quot;)
+cardCollectBtn.Size = UDim2.new(0.48, 0, 0, 42)
+cardCollectBtn.Position = UDim2.new(0.52, 0, 1, -74)
+cardCollectBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
+cardCollectBtn.Font = Enum.Font.GothamBlack
+cardCollectBtn.TextSize = 13
+cardCollectBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+cardCollectBtn.Text = &quot;🎒 В ИНВЕНТАРЬ&quot;
+addCorner(cardCollectBtn, 10)
+cardCollectBtn.Parent = revealCard
 
 local currentRolledAura = nil
 
-local function showCutscene(auraData)
+local function showRevealPopup(auraData)
 	currentRolledAura = auraData
 	cardTierTag.Text = string.format(&quot;[ ✦ %s ✦ ]&quot;, auraData.Tier:upper())
 	cardName.Text = auraData.Name
@@ -3189,24 +3288,14 @@ local function showCutscene(auraData)
 	cardDesc.Text = auraData.Description
 	cardStroke.Color = auraData.Color
 
-	if auraData.Rarity &gt;= 250000 then
-		SoundEffects.Play(&quot;RevealGodly&quot;)
-	elseif auraData.Rarity &gt;= 10000 then
-		SoundEffects.Play(&quot;RevealMythic&quot;)
-	elseif auraData.Rarity &gt;= 1000 then
-		SoundEffects.Play(&quot;RevealLegendary&quot;)
-	elseif auraData.Rarity &gt;= 16 then
-		SoundEffects.Play(&quot;RevealRare&quot;)
-	else
-		SoundEffects.Play(&quot;RevealCommon&quot;)
-	end
+	local scrapCoins = AuraConfig.GetScrapValue(auraData.Rarity or 0)
+	cardSellBtn.Text = string.format(&quot;💰 ПРОДАТЬ (+%d)&quot;, scrapCoins)
 
 	cutsceneOverlay.Visible = true
 
-	-- Dramatic Spring Bounce-in
-	revealCard.Size = UDim2.new(0, 80, 0, 90)
-	TweenService:Create(revealCard, TweenInfo.new(0.38, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-		Size = UDim2.new(0, 360, 0, 420),
+	revealCard.Size = UDim2.new(0, 100, 0, 110)
+	TweenService:Create(revealCard, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+		Size = UDim2.new(0, 420, 0, 460),
 	}):Play()
 end
 
@@ -3218,13 +3307,149 @@ cardEquipBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
-cardCloseBtn.MouseButton1Click:Connect(function()
+cardSellBtn.MouseButton1Click:Connect(function()
+	SoundEffects.Play(&quot;Coin&quot;)
+	cutsceneOverlay.Visible = false
+	if currentRolledAura then
+		DeleteAuraEvent:FireServer(currentRolledAura.Id)
+	end
+end)
+
+cardCollectBtn.MouseButton1Click:Connect(function()
 	SoundEffects.Play(&quot;Click&quot;)
 	cutsceneOverlay.Visible = false
 end)
 
 --------------------------------------------------------------------------------
--- 10. GLOBAL SERVER ANNOUNCEMENT BANNER
+-- 12. RUN CS2 CASE ROULETTE ANIMATION
+--------------------------------------------------------------------------------
+
+local function runCS2Roulette(winningAura, onFinished)
+	rouletteContainer.Visible = true
+	rStroke.Color = winningAura.Color
+
+	-- Clear old cards
+	for _, child in ipairs(rouletteTape:GetChildren()) do
+		child:Destroy()
+	end
+
+	local CARD_WIDTH = 120
+	local CARD_GAP = 10
+	local PITCH = CARD_WIDTH + CARD_GAP
+	local WIN_INDEX = 34 -- Winning card position in the strip
+	local TOTAL_CARDS = 44
+
+	local allAuras = AuraConfig.RollableAuras
+	local cardsList = {}
+
+	for i = 1, TOTAL_CARDS do
+		local aura = nil
+		if i == WIN_INDEX then
+			aura = winningAura
+		else
+			aura = allAuras[math.random(1, #allAuras)]
+		end
+
+		local card = Instance.new(&quot;Frame&quot;)
+		card.Name = &quot;Card_&quot; .. tostring(i)
+		card.Size = UDim2.new(0, CARD_WIDTH, 0, 140)
+		card.Position = UDim2.new(0, (i - 1) * PITCH + 20, 0.5, -70)
+		card.BackgroundColor3 = Color3.fromRGB(18, 22, 32)
+		addCorner(card, 10)
+		addStroke(card, aura.Color, 2)
+
+		local name = Instance.new(&quot;TextLabel&quot;)
+		name.Size = UDim2.new(1, -8, 0, 32)
+		name.Position = UDim2.new(0, 4, 0, 8)
+		name.BackgroundTransparency = 1
+		name.Font = Enum.Font.GothamBlack
+		name.TextSize = 12
+		name.TextColor3 = aura.Color
+		name.Text = aura.Name
+		name.TextWrapped = true
+		name.Parent = card
+
+		local rarity = Instance.new(&quot;TextLabel&quot;)
+		rarity.Size = UDim2.new(1, -8, 0, 20)
+		rarity.Position = UDim2.new(0, 4, 0, 42)
+		rarity.BackgroundTransparency = 1
+		rarity.Font = Enum.Font.GothamBold
+		rarity.TextSize = 10
+		rarity.TextColor3 = Color3.fromRGB(156, 163, 175)
+		rarity.Text = AuraConfig.FormatRarity(aura.Rarity or 0)
+		rarity.Parent = card
+
+		local tierPill = Instance.new(&quot;TextLabel&quot;)
+		tierPill.Size = UDim2.new(1, -16, 0, 22)
+		tierPill.Position = UDim2.new(0, 8, 1, -30)
+		tierPill.BackgroundColor3 = Color3.fromRGB(24, 28, 42)
+		tierPill.Font = Enum.Font.GothamBlack
+		tierPill.TextSize = 9
+		tierPill.TextColor3 = aura.Color
+		tierPill.Text = aura.Tier:upper()
+		addCorner(tierPill, 4)
+		tierPill.Parent = card
+
+		card.Parent = rouletteTape
+		table.insert(cardsList, card)
+	end
+
+	-- Calculate exact landing position so Card WIN_INDEX is centered on needle
+	local containerWidth = rouletteContainer.AbsoluteSize.X
+	local centerOffset = containerWidth / 2
+	local cardCenterInTape = (WIN_INDEX - 1) * PITCH + 20 + (CARD_WIDTH / 2)
+	local randomJitter = math.random(-20, 20) -- realistic CS2 slight needle offset
+	local targetTapeX = -(cardCenterInTape - centerOffset + randomJitter)
+
+	rouletteTape.Position = UDim2.new(0, 0, 0, 0)
+
+	local duration = isFastRollOn and 0.8 or 3.2
+	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+	local tween = TweenService:Create(rouletteTape, tweenInfo, {
+		Position = UDim2.new(0, targetTapeX, 0, 0)
+	})
+
+	-- Play satisfying ticking sound as cards pass the needle
+	local lastCardIndex = -1
+	local conn
+	conn = RunService.RenderStepped:Connect(function()
+		local curX = rouletteTape.Position.X.Offset
+		local passedDist = -curX + centerOffset - 20
+		local currentCard = math.floor(passedDist / PITCH) + 1
+		if currentCard ~= lastCardIndex and currentCard &gt;= 1 and currentCard &lt;= TOTAL_CARDS then
+			lastCardIndex = currentCard
+			SoundEffects.Play(&quot;Tick&quot;, 0.6, 1.2)
+		end
+	end)
+
+	tween:Play()
+	tween.Completed:Connect(function()
+		if conn then conn:Disconnect() end
+
+		-- Needle flash &amp; sound
+		needleLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		TweenService:Create(needleLine, TweenInfo.new(0.3), { BackgroundColor3 = Color3.fromRGB(250, 204, 21) }):Play()
+
+		if winningAura.Rarity &gt;= 250000 then
+			SoundEffects.Play(&quot;RevealGodly&quot;)
+		elseif winningAura.Rarity &gt;= 10000 then
+			SoundEffects.Play(&quot;RevealMythic&quot;)
+		elseif winningAura.Rarity &gt;= 1000 then
+			SoundEffects.Play(&quot;RevealLegendary&quot;)
+		elseif winningAura.Rarity &gt;= 16 then
+			SoundEffects.Play(&quot;RevealRare&quot;)
+		else
+			SoundEffects.Play(&quot;RevealCommon&quot;)
+		end
+
+		task.wait(0.4)
+		rouletteContainer.Visible = false
+		if onFinished then onFinished() end
+	end)
+end
+
+--------------------------------------------------------------------------------
+-- 13. GLOBAL SERVER BANNER
 --------------------------------------------------------------------------------
 
 local banner = Instance.new(&quot;Frame&quot;)
@@ -3266,7 +3491,7 @@ GlobalAnnouncementEvent.OnClientEvent:Connect(function(info)
 end)
 
 --------------------------------------------------------------------------------
--- 11. ROLL EXECUTION &amp; AUTOMATION
+-- 14. ROLL EXECUTION WITH CS2 ROULETTE
 --------------------------------------------------------------------------------
 
 local function doRoll()
@@ -3287,14 +3512,13 @@ local function doRoll()
 	}):Play()
 
 	if result and result.Success and result.Aura then
-		if not isFastRollOn then
-			showCutscene(result.Aura)
-		else
-			SoundEffects.Play(&quot;RevealCommon&quot;)
-		end
+		runCS2Roulette(result.Aura, function()
+			showRevealPopup(result.Aura)
+			isRolling = false
+		end)
+	else
+		isRolling = false
 	end
-
-	isRolling = false
 end
 
 rollButton.MouseButton1Click:Connect(function()
@@ -3320,7 +3544,7 @@ end)
 task.spawn(function()
 	while true do
 		task.wait(AuraConfig.Settings.AutoRollInterval)
-		if isAutoRollOn and not isRolling and not cutsceneOverlay.Visible then
+		if isAutoRollOn and not isRolling and not cutsceneOverlay.Visible and not rouletteContainer.Visible then
 			doRoll()
 		end
 	end
@@ -3332,11 +3556,11 @@ fastRollBtn.MouseButton1Click:Connect(function()
 	if isFastRollOn then
 		fastRollBtn.Text = &quot;⏩ FAST: ON&quot;
 		fastRollBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
-		setFastBtn.Text = &quot;⏩ Fast Roll Cutscene: ON&quot;
+		setFastBtn.Text = &quot;⏩ Быстрый Ролл (Без Рулетки): ВКЛ&quot;
 	else
 		fastRollBtn.Text = &quot;⏩ FAST: OFF&quot;
 		fastRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
-		setFastBtn.Text = &quot;⏩ Fast Roll Cutscene: OFF&quot;
+		setFastBtn.Text = &quot;⏩ Быстрый Ролл (Без Рулетки): ВЫКЛ&quot;
 	end
 end)
 
@@ -3372,7 +3596,7 @@ ProximityPromptService.PromptTriggered:Connect(function(prompt, player)
 end)
 
 --------------------------------------------------------------------------------
--- 12. DATA SYNCHRONIZATION
+-- 15. DATA SYNCHRONIZATION
 --------------------------------------------------------------------------------
 
 DataSyncEvent.OnClientEvent:Connect(function(data)
@@ -3408,15 +3632,15 @@ DataSyncEvent.OnClientEvent:Connect(function(data)
 		eqStroke.Color = Color3.fromRGB(45, 55, 78)
 	end
 
-	local autoDelText = thresholdNames[localData.AutoDeleteThreshold or 0] or &quot;None&quot;
-	autoDeleteBtn.Text = &quot;Auto-Delete: &quot; .. autoDelText
+	local autoDelText = thresholdNames[localData.AutoDeleteThreshold or 0] or &quot;Нет&quot;
+	autoDeleteBtn.Text = &quot;Авто-продажа: &quot; .. autoDelText
 
 	if invWindow.Visible then refreshInventoryUI() end
 	if craftWindow.Visible then refreshCraftingUI() end
 	if shopWindow.Visible then refreshShopUI() end
 end)
 
-print(&quot;[Sols RNG] Professional AAA Client GUI loaded successfully!&quot;)
+print(&quot;[Sols RNG] CS2 Roulette Case Opening &amp; Pro GUI initialized!&quot;)
 </ProtectedString>
 				</Properties>
 			</Item>

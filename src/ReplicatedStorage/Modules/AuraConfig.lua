@@ -436,6 +436,26 @@ function AuraConfig.FormatRarity(rarity)
 	return "1 in " .. AuraConfig.FormatNumber(rarity)
 end
 
+-- Helper to get scrap coin value for selling an aura
+function AuraConfig.GetScrapValue(rarity)
+	if not rarity or rarity <= 0 then
+		return 500
+	end
+	if rarity <= 2 then return 5 end
+	if rarity <= 4 then return 10 end
+	if rarity <= 8 then return 20 end
+	if rarity <= 16 then return 40 end
+	if rarity <= 32 then return 80 end
+	if rarity <= 64 then return 150 end
+	if rarity <= 150 then return 300 end
+	if rarity <= 300 then return 600 end
+	if rarity <= 1000 then return 2000 end
+	if rarity <= 5000 then return 8000 end
+	if rarity <= 10000 then return 20000 end
+	if rarity <= 50000 then return 50000 end
+	return 100000
+end
+
 -- Helper to get tier color
 function AuraConfig.GetTierColor(tier)
 	if tier == "Common" then

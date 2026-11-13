@@ -453,7 +453,7 @@ DeleteAuraEvent.OnServerEvent:Connect(function(player, auraId)
 	end
 
 	local auraData = AuraConfig.Auras[auraId]
-	local scrapValue = auraData and math.max(2, math.floor(auraData.Rarity * 0.4)) or 2
+	local scrapValue = auraData and AuraConfig.GetScrapValue(auraData.Rarity) or 5
 	data.Coins = (data.Coins or 0) + scrapValue
 
 	syncClient(player)
