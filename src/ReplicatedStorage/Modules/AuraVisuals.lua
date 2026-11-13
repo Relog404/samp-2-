@@ -221,6 +221,57 @@ local function addDenseOrbitingSparks(parentAtt, color, rate)
 	})
 end
 
+-- PROCEDURAL 3D ORBITING RIG SYSTEM
+-- Dynamically orbits glowing Neon 3D parts with 60 FPS RenderStepped interpolation
+local function addOrbiting3DRig(rootPart, activeFolder, config)
+	if not rootPart or not activeFolder then return end
+
+	local parts = {}
+	for i = 1, config.Count do
+		local p = Instance.new("Part")
+		p.Name = "AuraOrbitPart_" .. tostring(i)
+		p.Size = config.Size or Vector3.new(1, 1, 1)
+		p.Shape = config.Shape or Enum.PartType.Block
+		p.Color = (config.Colors and config.Colors[i]) or config.Color or Color3.fromRGB(255, 255, 255)
+		p.Material = config.Material or Enum.Material.Neon
+		p.CanCollide = false
+		p.CastShadow = false
+		p.Anchored = true
+		p.Massless = true
+		p.Parent = activeFolder
+
+		if config.AttachEmitter then
+			config.AttachEmitter(p, i)
+		end
+
+		table.insert(parts, p)
+	end
+
+	local RunService = game:GetService("RunService")
+	local startTime = os.clock()
+	local conn
+	conn = RunService.RenderStepped:Connect(function()
+		if not activeFolder or not activeFolder.Parent or not rootPart or not rootPart.Parent then
+			if conn then conn:Disconnect() end
+			return
+		end
+
+		local t = os.clock() - startTime
+		for i, p in ipairs(parts) do
+			local offsetAngle = ((i - 1) / #parts) * math.pi * 2
+			local curAngle = t * (config.Speed or 2.0) + offsetAngle
+			local r = config.Radius or 3.5
+			local h = (config.BaseHeight or 0) + math.sin(t * 3.0 + offsetAngle) * (config.BobHeight or 0.4)
+			local localPos = Vector3.new(math.cos(curAngle) * r, h, math.sin(curAngle) * r)
+			p.CFrame = rootPart.CFrame * CFrame.new(localPos) * CFrame.Angles(t * 1.5, curAngle, 0)
+		end
+	end)
+
+	activeFolder.Destroying:Connect(function()
+		if conn then conn:Disconnect() end
+	end)
+end
+
 -- LAYER 4: Radiant Divine Angelic Wings (Large, Multi-Layered)
 local function addAngelicWings(character, folder, color)
 	local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
@@ -320,47 +371,37 @@ local function addDragonSerpent(character, folder, color)
 	local rootPart = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
 	if not rootPart or not rootPart:IsA("BasePart") then return end
 
-	local angles = { 0, 60, 120, 180, 240, 300 }
-	for idx, deg in ipairs(angles) do
-		local rad = math.rad(deg)
-		local radius = 3.2
-		local height = -1.2 + (idx * 0.5)
-
-		local att = Instance.new("Attachment")
-		att.Name = "AuraVFXAttachment"
-		att.Position = Vector3.new(math.cos(rad) * radius, height, math.sin(rad) * radius)
-		att.Parent = rootPart
-
-		createEmitter(att, {
-			Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 220, 100)),
-				ColorSequenceKeypoint.new(0.5, color),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 20, 10)),
-			}),
-			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.6),
-				NumberSequenceKeypoint.new(0.5, 1.8),
-				NumberSequenceKeypoint.new(1, 0.2),
-			}),
-			Transparency = NumberSequence.new(0.1, 1.0),
-			Lifetime = NumberRange.new(0.8, 1.4),
-			Rate = 22,
-			Speed = NumberRange.new(1.0, 2.5),
-			SpreadAngle = Vector2.new(20, 20),
-			Texture = TEXTURES.Flame,
-		})
-
-		createEmitter(att, {
-			Color = ColorSequence.new(Color3.fromRGB(255, 180, 40)),
-			Size = NumberSequence.new(0.3, 0.05),
-			Transparency = NumberSequence.new(0.0, 1.0),
-			Lifetime = NumberRange.new(1.0, 1.8),
-			Rate = 12,
-			Speed = NumberRange.new(1.5, 3.5),
-			SpreadAngle = Vector2.new(180, 180),
-			Texture = TEXTURES.Sparkle,
-		})
-	end
+	-- 3D Procedural Serpentine Dragon Orbiting Rig
+	addOrbiting3DRig(rootPart, folder, {
+		Count = 6,
+		Size = Vector3.new(0.9, 0.9, 1.4),
+		Shape = Enum.PartType.Ball,
+		Colors = {
+			Color3.fromRGB(255, 220, 50), -- Dragon Head
+			Color3.fromRGB(244, 63, 94),
+			Color3.fromRGB(239, 68, 68),
+			Color3.fromRGB(220, 38, 38),
+			Color3.fromRGB(185, 28, 28),
+			Color3.fromRGB(150, 20, 10),  -- Dragon Tail
+		},
+		Radius = 3.6,
+		Speed = 2.4,
+		BaseHeight = 0.2,
+		BobHeight = 0.7,
+		AttachEmitter = function(part, idx)
+			local att = Instance.new("Attachment")
+			att.Parent = part
+			createEmitter(att, {
+				Color = ColorSequence.new(Color3.fromRGB(255, 100, 30)),
+				Size = NumberSequence.new(0.6, 0.1),
+				Transparency = NumberSequence.new(0.1, 1.0),
+				Lifetime = NumberRange.new(0.6, 1.0),
+				Rate = 20,
+				Speed = NumberRange.new(1.0, 2.5),
+				Texture = TEXTURES.Flame,
+			})
+		end,
+	})
 end
 
 -- LAYER 4C: Ancient Celestial Turtle Shell & Orbiting Runic Jade Shields
@@ -402,43 +443,30 @@ local function addOrbitingTurtleShields(character, folder, color)
 	local rootPart = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
 	if not rootPart or not rootPart:IsA("BasePart") then return end
 
-	local angles = { 0, 90, 180, 270 }
-	for _, deg in ipairs(angles) do
-		local rad = math.rad(deg)
-		local radius = 3.6
-
-		local att = Instance.new("Attachment")
-		att.Name = "AuraVFXAttachment"
-		att.Position = Vector3.new(math.cos(rad) * radius, -0.2, math.sin(rad) * radius)
-		att.Parent = rootPart
-
-		createEmitter(att, {
-			Color = ColorSequence.new(color),
-			Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 1.0),
-				NumberSequenceKeypoint.new(0.5, 1.6),
-				NumberSequenceKeypoint.new(1, 1.0),
-			}),
-			Transparency = NumberSequence.new(0.2, 0.8),
-			Lifetime = NumberRange.new(1.0, 1.5),
-			Rate = 6,
-			Speed = NumberRange.new(0.1, 0.2),
-			Texture = TEXTURES.Ring,
-			RotSpeed = NumberRange.new(45, 90),
-		})
-
-		createEmitter(att, {
-			Color = ColorSequence.new(Color3.fromRGB(160, 255, 210)),
-			Size = NumberSequence.new(0.4, 0.1),
-			Transparency = NumberSequence.new(0.1, 1.0),
-			Lifetime = NumberRange.new(1.2, 1.8),
-			Rate = 14,
-			Speed = NumberRange.new(1.2, 2.8),
-			SpreadAngle = Vector2.new(15, 15),
-			Acceleration = Vector3.new(0, 2.5, 0),
-			Texture = TEXTURES.Cross,
-		})
-	end
+	-- 4 3D Floating Jade Runic Tablets
+	addOrbiting3DRig(rootPart, folder, {
+		Count = 4,
+		Size = Vector3.new(1.1, 1.6, 0.22),
+		Shape = Enum.PartType.Block,
+		Color = Color3.fromRGB(16, 185, 129),
+		Radius = 3.8,
+		Speed = 1.6,
+		BaseHeight = -0.2,
+		BobHeight = 0.3,
+		AttachEmitter = function(part, idx)
+			local att = Instance.new("Attachment")
+			att.Parent = part
+			createEmitter(att, {
+				Color = ColorSequence.new(Color3.fromRGB(52, 211, 153)),
+				Size = NumberSequence.new(0.5, 0.1),
+				Transparency = NumberSequence.new(0.1, 1.0),
+				Lifetime = NumberRange.new(0.8, 1.4),
+				Rate = 12,
+				Speed = NumberRange.new(0.8, 2.0),
+				Texture = TEXTURES.Sparkle,
+			})
+		end,
+	})
 end
 
 -- LAYER 5: Animated Head Halos & Celestial Crowns
@@ -682,16 +710,15 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 
 	elseif shape == "Shards" or shape == "Frost" then
 		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(180, 230, 255), 60, NumberRange.new(3.5, 7.5), {0.4, 1.8, 0.3})
-		createEmitter(attRoot, {
-			Color = ColorSequence.new(pColor),
-			Size = NumberSequence.new(0.4, 1.2),
-			Transparency = NumberSequence.new(0.1, 1.0),
-			Lifetime = NumberRange.new(1.5, 2.5),
-			Rate = 45,
-			Speed = NumberRange.new(3.0, 6.5),
-			SpreadAngle = Vector2.new(50, 50),
-			RotSpeed = NumberRange.new(-180, 180),
-			Texture = TEXTURES.Shard,
+		addOrbiting3DRig(rootPart, activeFolder, {
+			Count = 5,
+			Size = Vector3.new(0.6, 1.4, 0.6),
+			Shape = Enum.PartType.Block,
+			Color = Color3.fromRGB(147, 197, 253),
+			Radius = 3.4,
+			Speed = 1.8,
+			BaseHeight = 0.2,
+			BobHeight = 0.5,
 		})
 
 	elseif shape == "FireColumn" or shape == "Hellfire" or shape == "LavaTide" then
@@ -700,11 +727,31 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 
 	elseif shape == "Sunburst" or shape == "EclipseCorona" then
 		addDenseBodyEnergy(attRoot, Color3.fromRGB(255, 180, 40), Color3.fromRGB(255, 255, 255), 110, NumberRange.new(5.5, 11.0), {0.8, 3.2, 0.4})
+		addOrbiting3DRig(rootPart, activeFolder, {
+			Count = 3,
+			Size = Vector3.new(1.1, 1.1, 1.1),
+			Shape = Enum.PartType.Ball,
+			Color = Color3.fromRGB(251, 191, 36),
+			Radius = 3.6,
+			Speed = 2.0,
+			BaseHeight = 0.5,
+			BobHeight = 0.3,
+		})
 		addHeadCrown(character, activeFolder, pColor, false)
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "MoonStars" or shape == "NebulaSpiral" or shape == "Singularity" then
 		addDenseBodyEnergy(attRoot, pColor, Color3.fromRGB(240, 180, 255), 90, NumberRange.new(4.0, 8.5), {0.7, 2.8, 0.4})
+		addOrbiting3DRig(rootPart, activeFolder, {
+			Count = 3,
+			Size = Vector3.new(1.0, 1.0, 1.0),
+			Shape = Enum.PartType.Ball,
+			Color = Color3.fromRGB(139, 92, 246),
+			Radius = 3.5,
+			Speed = 2.2,
+			BaseHeight = -0.2,
+			BobHeight = 0.6,
+		})
 		addLightPillar(rootPart, activeFolder, pColor)
 
 	elseif shape == "DivineHalo" or shape == "TimeClock" or shape == "PrismaticGlitch" then

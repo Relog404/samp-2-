@@ -732,12 +732,11 @@ addPadding(detailPanel, 12, 12, 12, 12)
 detailPanel.Parent = invContent
 
 -- Item Icon in details panel
-local detailIcon = Instance.new("ImageLabel")
-detailIcon.Size = UDim2.new(0, 48, 0, 48)
-detailIcon.Position = UDim2.new(0.5, -24, 0, 4)
-detailIcon.BackgroundTransparency = 1
-detailIcon.Image = "rbxasset://textures/particles/sparkles_main.dds"
-detailIcon.Parent = detailPanel
+local detailEmblemHolder = Instance.new("Frame")
+detailEmblemHolder.Size = UDim2.new(0, 48, 0, 48)
+detailEmblemHolder.Position = UDim2.new(0.5, -24, 0, 4)
+detailEmblemHolder.BackgroundTransparency = 1
+detailEmblemHolder.Parent = detailPanel
 
 local detailName = Instance.new("TextLabel")
 detailName.Size = UDim2.new(1, 0, 0, 22)
@@ -812,14 +811,8 @@ local function refreshInventoryUI()
 			addCorner(card, 8)
 			addStroke(card, auraData.Color, 1.5)
 
-			-- Item Icon in Card!
-			local iconImg = Instance.new("ImageLabel")
-			iconImg.Size = UDim2.new(0, 36, 0, 36)
-			iconImg.Position = UDim2.new(0.5, -18, 0, 6)
-			iconImg.BackgroundTransparency = 1
-			iconImg.Image = auraData.Icon or "rbxasset://textures/particles/sparkles_main.dds"
-			iconImg.ImageColor3 = Color3.fromRGB(255, 255, 255)
-			iconImg.Parent = card
+			-- Procedural Guaranteed Aura Emblem
+			createAuraEmblem(card, auraData, 34, UDim2.new(0.5, -17, 0, 6))
 
 			local symBadge = Instance.new("TextLabel")
 			symBadge.Size = UDim2.new(0, 26, 0, 14)
@@ -884,8 +877,8 @@ local function refreshInventoryUI()
 				detailName.TextColor3 = auraData.Color
 				detailRarity.Text = AuraConfig.FormatRarity(auraData.Rarity or 0)
 				detailDesc.Text = auraData.Description
-				detailIcon.Image = auraData.Icon or "rbxasset://textures/particles/sparkles_main.dds"
-				detailIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+				detailEmblemHolder:ClearAllChildren()
+				createAuraEmblem(detailEmblemHolder, auraData, 48, UDim2.new(0, 0, 0, 0))
 
 				equipActionBtn.Visible = true
 				if localData.EquippedAura == auraId then
@@ -958,7 +951,7 @@ autoDeleteBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------------------------------------------------
--- 9. AURA UPGRADER WINDOW (WHEEL ANIMATION, 2 BLOCKS & CUSTOM CHANCE)
+-- 9. AURA UPGRADER WINDOW (DYNAMIC GREEN WIN SECTOR & 2 BLOCKS & CUSTOM CHANCE)
 --------------------------------------------------------------------------------
 
 local upgWindow, upgContent = createModal("АПГРЕЙДЕР АУР [ РИСК-КОЛЕСО ]", 880, 540)
@@ -1031,16 +1024,15 @@ addCorner(sourcePreviewFrame, 8)
 local srcStroke = addStroke(sourcePreviewFrame, Color3.fromRGB(56, 189, 248), 1.2)
 sourcePreviewFrame.Parent = upgColLeft
 
-local srcIcon = Instance.new("ImageLabel")
-srcIcon.Size = UDim2.new(0, 38, 0, 38)
-srcIcon.Position = UDim2.new(0, 8, 0.5, -19)
-srcIcon.BackgroundTransparency = 1
-srcIcon.Image = "rbxasset://textures/particles/sparkles_main.dds"
-srcIcon.Parent = sourcePreviewFrame
+local srcEmblemHolder = Instance.new("Frame")
+srcEmblemHolder.Size = UDim2.new(0, 42, 0, 42)
+srcEmblemHolder.Position = UDim2.new(0, 8, 0.5, -21)
+srcEmblemHolder.BackgroundTransparency = 1
+srcEmblemHolder.Parent = sourcePreviewFrame
 
 local srcNameLbl = Instance.new("TextLabel")
-srcNameLbl.Size = UDim2.new(1, -54, 0, 18)
-srcNameLbl.Position = UDim2.new(0, 50, 0, 8)
+srcNameLbl.Size = UDim2.new(1, -56, 0, 18)
+srcNameLbl.Position = UDim2.new(0, 52, 0, 8)
 srcNameLbl.BackgroundTransparency = 1
 srcNameLbl.Font = Enum.Font.GothamBlack
 srcNameLbl.TextSize = 12
@@ -1050,8 +1042,8 @@ srcNameLbl.TextXAlignment = Enum.TextXAlignment.Left
 srcNameLbl.Parent = sourcePreviewFrame
 
 local srcSubLbl = Instance.new("TextLabel")
-srcSubLbl.Size = UDim2.new(1, -54, 0, 16)
-srcSubLbl.Position = UDim2.new(0, 50, 0, 28)
+srcSubLbl.Size = UDim2.new(1, -56, 0, 16)
+srcSubLbl.Position = UDim2.new(0, 52, 0, 28)
 srcSubLbl.BackgroundTransparency = 1
 srcSubLbl.Font = Enum.Font.GothamMedium
 srcSubLbl.TextSize = 9
@@ -1061,8 +1053,8 @@ srcSubLbl.TextXAlignment = Enum.TextXAlignment.Left
 srcSubLbl.Parent = sourcePreviewFrame
 
 local srcScrapLbl = Instance.new("TextLabel")
-srcScrapLbl.Size = UDim2.new(1, -54, 0, 14)
-srcScrapLbl.Position = UDim2.new(0, 50, 0, 46)
+srcScrapLbl.Size = UDim2.new(1, -56, 0, 14)
+srcScrapLbl.Position = UDim2.new(0, 52, 0, 46)
 srcScrapLbl.BackgroundTransparency = 1
 srcScrapLbl.Font = Enum.Font.GothamBold
 srcScrapLbl.TextSize = 9
@@ -1086,7 +1078,7 @@ srcLayout.CellSize = UDim2.new(0, 68, 0, 80)
 srcLayout.CellPadding = UDim2.new(0, 6, 0, 6)
 srcLayout.Parent = srcScroll
 
--- Column 2: CENTER - UPGRADER WHEEL & CONTROLS
+-- Column 2: CENTER - UPGRADER WHEEL & DYNAMIC WIN SECTOR GAUGE
 local upgColCenter = Instance.new("Frame")
 upgColCenter.Size = UDim2.new(1, -500, 1, -38)
 upgColCenter.Position = UDim2.new(0, 250, 0, 38)
@@ -1098,13 +1090,39 @@ upgColCenter.Parent = upgContent
 
 -- Upgrader Wheel Circular Container
 local wheelFrame = Instance.new("Frame")
-wheelFrame.Size = UDim2.new(0, 180, 0, 180)
+wheelFrame.Size = UDim2.new(0, 184, 0, 184)
 wheelFrame.AnchorPoint = Vector2.new(0.5, 0)
 wheelFrame.Position = UDim2.new(0.5, 0, 0, 4)
 wheelFrame.BackgroundColor3 = Color3.fromRGB(18, 22, 34)
-addCorner(wheelFrame, 90)
-local wheelStroke = addStroke(wheelFrame, Color3.fromRGB(56, 189, 248), 2.8)
+addCorner(wheelFrame, 92)
+local wheelStroke = addStroke(wheelFrame, Color3.fromRGB(34, 197, 94), 2.5)
 wheelFrame.Parent = upgColCenter
+
+-- DYNAMIC WIN SECTOR GAUGE BARS (36 radial sector bars covering 360 degrees)
+local sectorRing = Instance.new("Frame")
+sectorRing.Size = UDim2.new(1, 0, 1, 0)
+sectorRing.BackgroundTransparency = 1
+sectorRing.Parent = wheelFrame
+
+local sectorBars = {}
+local TOTAL_SECTORS = 36
+
+for i = 1, TOTAL_SECTORS do
+	local deg = (i - 1) * 10
+	local rad = math.rad(deg - 90)
+	local r = 68
+
+	local bar = Instance.new("Frame")
+	bar.Size = UDim2.new(0, 8, 0, 22)
+	bar.AnchorPoint = Vector2.new(0.5, 0.5)
+	bar.Position = UDim2.new(0.5, math.cos(rad) * r, 0.5, math.sin(rad) * r)
+	bar.Rotation = deg
+	bar.BackgroundColor3 = Color3.fromRGB(34, 197, 94)
+	addCorner(bar, 3)
+	bar.Parent = sectorRing
+
+	table.insert(sectorBars, { Bar = bar, Angle = deg })
+end
 
 -- Needle Pointer Container (Rotates around center)
 local needleContainer = Instance.new("Frame")
@@ -1112,6 +1130,7 @@ needleContainer.Size = UDim2.new(1, 0, 1, 0)
 needleContainer.AnchorPoint = Vector2.new(0.5, 0.5)
 needleContainer.Position = UDim2.new(0.5, 0, 0.5, 0)
 needleContainer.BackgroundTransparency = 1
+needleContainer.ZIndex = 10
 needleContainer.Parent = wheelFrame
 
 local needle = Instance.new("Frame")
@@ -1119,55 +1138,61 @@ needle.Size = UDim2.new(0, 4, 0, 78)
 needle.AnchorPoint = Vector2.new(0.5, 1)
 needle.Position = UDim2.new(0.5, 0, 0.5, 0)
 needle.BackgroundColor3 = Color3.fromRGB(250, 204, 21)
+needle.ZIndex = 10
 addCorner(needle, 2)
 needle.Parent = needleContainer
 
 local needleArrow = Instance.new("Frame")
-needleArrow.Size = UDim2.new(0, 12, 0, 12)
+needleArrow.Size = UDim2.new(0, 14, 0, 14)
 needleArrow.AnchorPoint = Vector2.new(0.5, 0.5)
-needleArrow.Position = UDim2.new(0.5, 0, 0, 4)
+needleArrow.Position = UDim2.new(0.5, 0, 0, 6)
 needleArrow.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
 needleArrow.Rotation = 45
+needleArrow.ZIndex = 10
 needleArrow.Parent = needleContainer
 
 -- Center Hub inside Wheel
 local centerHub = Instance.new("Frame")
-centerHub.Size = UDim2.new(0, 98, 0, 98)
+centerHub.Size = UDim2.new(0, 96, 0, 96)
 centerHub.AnchorPoint = Vector2.new(0.5, 0.5)
 centerHub.Position = UDim2.new(0.5, 0, 0.5, 0)
 centerHub.BackgroundColor3 = Color3.fromRGB(12, 15, 24)
-addCorner(centerHub, 49)
+centerHub.ZIndex = 12
+addCorner(centerHub, 48)
 local hubStroke = addStroke(centerHub, Color3.fromRGB(74, 222, 128), 2.0)
 centerHub.Parent = wheelFrame
 
 local chanceDisplay = Instance.new("TextLabel")
 chanceDisplay.Size = UDim2.new(1, 0, 0, 24)
-chanceDisplay.Position = UDim2.new(0, 0, 0, 18)
+chanceDisplay.Position = UDim2.new(0, 0, 0, 16)
 chanceDisplay.BackgroundTransparency = 1
 chanceDisplay.Font = Enum.Font.GothamBlack
 chanceDisplay.TextSize = 17
 chanceDisplay.TextColor3 = Color3.fromRGB(74, 222, 128)
 chanceDisplay.Text = "50.0%"
+chanceDisplay.ZIndex = 13
 chanceDisplay.Parent = centerHub
 
 local multDisplay = Instance.new("TextLabel")
 multDisplay.Size = UDim2.new(1, 0, 0, 16)
-multDisplay.Position = UDim2.new(0, 0, 0, 44)
+multDisplay.Position = UDim2.new(0, 0, 0, 42)
 multDisplay.BackgroundTransparency = 1
 multDisplay.Font = Enum.Font.GothamBold
 multDisplay.TextSize = 11
 multDisplay.TextColor3 = Color3.fromRGB(250, 204, 21)
 multDisplay.Text = "2.00x МНОЖИТЕЛЬ"
+multDisplay.ZIndex = 13
 multDisplay.Parent = centerHub
 
 local sectorDisplay = Instance.new("TextLabel")
 sectorDisplay.Size = UDim2.new(1, 0, 0, 14)
-sectorDisplay.Position = UDim2.new(0, 0, 0, 64)
+sectorDisplay.Position = UDim2.new(0, 0, 0, 62)
 sectorDisplay.BackgroundTransparency = 1
 sectorDisplay.Font = Enum.Font.GothamMedium
 sectorDisplay.TextSize = 8
 sectorDisplay.TextColor3 = Color3.fromRGB(147, 197, 253)
-sectorDisplay.Text = "СЕКТОР: 0 град. - 180 град."
+sectorDisplay.Text = "ЗОНА ПОБЕДЫ: 0 - 180 град."
+sectorDisplay.ZIndex = 13
 sectorDisplay.Parent = centerHub
 
 -- Presets Row
@@ -1242,7 +1267,7 @@ upgResultMsg.BackgroundTransparency = 1
 upgResultMsg.Font = Enum.Font.GothamBold
 upgResultMsg.TextSize = 11
 upgResultMsg.TextColor3 = Color3.fromRGB(180, 185, 200)
-upgResultMsg.Text = "Выберите исходную и целевую ауру, затем крутите!"
+upgResultMsg.Text = "Зеленый сектор - ПОБЕДА! Красный сектор - СГОРАНИЕ."
 upgResultMsg.TextWrapped = true
 upgResultMsg.Parent = upgColCenter
 
@@ -1287,16 +1312,15 @@ addCorner(targetPreviewFrame, 8)
 local tgtStroke = addStroke(targetPreviewFrame, Color3.fromRGB(245, 158, 11), 1.2)
 targetPreviewFrame.Parent = upgColRight
 
-local tgtIcon = Instance.new("ImageLabel")
-tgtIcon.Size = UDim2.new(0, 38, 0, 38)
-tgtIcon.Position = UDim2.new(0, 8, 0.5, -19)
-tgtIcon.BackgroundTransparency = 1
-tgtIcon.Image = "rbxasset://textures/particles/sparkles_main.dds"
-tgtIcon.Parent = targetPreviewFrame
+local tgtEmblemHolder = Instance.new("Frame")
+tgtEmblemHolder.Size = UDim2.new(0, 42, 0, 42)
+tgtEmblemHolder.Position = UDim2.new(0, 8, 0.5, -21)
+tgtEmblemHolder.BackgroundTransparency = 1
+tgtEmblemHolder.Parent = targetPreviewFrame
 
 local tgtNameLbl = Instance.new("TextLabel")
-tgtNameLbl.Size = UDim2.new(1, -54, 0, 18)
-tgtNameLbl.Position = UDim2.new(0, 50, 0, 8)
+tgtNameLbl.Size = UDim2.new(1, -56, 0, 18)
+tgtNameLbl.Position = UDim2.new(0, 52, 0, 8)
 tgtNameLbl.BackgroundTransparency = 1
 tgtNameLbl.Font = Enum.Font.GothamBlack
 tgtNameLbl.TextSize = 12
@@ -1306,8 +1330,8 @@ tgtNameLbl.TextXAlignment = Enum.TextXAlignment.Left
 tgtNameLbl.Parent = targetPreviewFrame
 
 local tgtSubLbl = Instance.new("TextLabel")
-tgtSubLbl.Size = UDim2.new(1, -54, 0, 16)
-tgtSubLbl.Position = UDim2.new(0, 50, 0, 28)
+tgtSubLbl.Size = UDim2.new(1, -56, 0, 16)
+tgtSubLbl.Position = UDim2.new(0, 52, 0, 28)
 tgtSubLbl.BackgroundTransparency = 1
 tgtSubLbl.Font = Enum.Font.GothamMedium
 tgtSubLbl.TextSize = 9
@@ -1317,8 +1341,8 @@ tgtSubLbl.TextXAlignment = Enum.TextXAlignment.Left
 tgtSubLbl.Parent = targetPreviewFrame
 
 local tgtRarityLbl = Instance.new("TextLabel")
-tgtRarityLbl.Size = UDim2.new(1, -54, 0, 14)
-tgtRarityLbl.Position = UDim2.new(0, 50, 0, 46)
+tgtRarityLbl.Size = UDim2.new(1, -56, 0, 14)
+tgtRarityLbl.Position = UDim2.new(0, 52, 0, 46)
 tgtRarityLbl.BackgroundTransparency = 1
 tgtRarityLbl.Font = Enum.Font.GothamBold
 tgtRarityLbl.TextSize = 9
@@ -1348,8 +1372,19 @@ local function updateWheelDisplay()
 	chanceDisplay.Text = string.format("%.1f%%", upgraderChance)
 	local mult = 100.0 / upgraderChance
 	multDisplay.Text = string.format("%.2fx МНОЖИТЕЛЬ", mult)
-	local maxDeg = math.floor((upgraderChance / 100.0) * 360)
-	sectorDisplay.Text = string.format("СЕКТОР: 0 град. - %d град.", maxDeg)
+	local winAngle = (upgraderChance / 100.0) * 360.0
+	sectorDisplay.Text = string.format("ЗОНА ПОБЕДЫ: 0 - %d град.", math.floor(winAngle))
+
+	-- Visually paint each sector bar on the wheel: GREEN for win zone, RED for loss zone!
+	for _, item in ipairs(sectorBars) do
+		if item.Angle < winAngle then
+			item.Bar.BackgroundColor3 = Color3.fromRGB(34, 197, 94) -- Vibrant Green WIN ZONE!
+			item.Bar.BackgroundTransparency = 0.05
+		else
+			item.Bar.BackgroundColor3 = Color3.fromRGB(220, 38, 38) -- Crimson Red LOSE ZONE!
+			item.Bar.BackgroundTransparency = 0.65
+		end
+	end
 end
 
 local function addUpgPreset(name, chanceVal)
@@ -1419,13 +1454,8 @@ local function refreshUpgraderUI()
 				addCorner(card, 6)
 				addStroke(card, aura.Color, 1.2)
 
-				local icon = Instance.new("ImageLabel")
-				icon.Size = UDim2.new(0, 32, 0, 32)
-				icon.Position = UDim2.new(0.5, -16, 0, 4)
-				icon.BackgroundTransparency = 1
-				icon.Image = aura.Icon or "rbxasset://textures/particles/sparkles_main.dds"
-				icon.ImageColor3 = Color3.fromRGB(255, 255, 255)
-				icon.Parent = card
+				-- Procedural Guaranteed Aura Emblem
+				createAuraEmblem(card, aura, 30, UDim2.new(0.5, -15, 0, 4))
 
 				local sym = Instance.new("TextLabel")
 				sym.Size = UDim2.new(0, 22, 0, 12)
@@ -1463,7 +1493,8 @@ local function refreshUpgraderUI()
 				card.MouseButton1Click:Connect(function()
 					SoundEffects.Play("Click")
 					selectedSourceAuraId = auraId
-					srcIcon.Image = aura.Icon or "rbxasset://textures/particles/sparkles_main.dds"
+					srcEmblemHolder:ClearAllChildren()
+					createAuraEmblem(srcEmblemHolder, aura, 38, UDim2.new(0, 2, 0, 2))
 					srcNameLbl.Text = aura.Name
 					srcNameLbl.TextColor3 = aura.Color
 					srcSubLbl.Text = AuraConfig.FormatRarity(aura.Rarity or 0)
@@ -1504,13 +1535,7 @@ local function refreshUpgraderUI()
 		addCorner(card, 6)
 		addStroke(card, aura.Color, 1.2)
 
-		local icon = Instance.new("ImageLabel")
-		icon.Size = UDim2.new(0, 32, 0, 32)
-		icon.Position = UDim2.new(0.5, -16, 0, 4)
-		icon.BackgroundTransparency = 1
-		icon.Image = aura.Icon or "rbxasset://textures/particles/sparkles_main.dds"
-		icon.ImageColor3 = Color3.fromRGB(255, 255, 255)
-		icon.Parent = card
+		createAuraEmblem(card, aura, 30, UDim2.new(0.5, -15, 0, 4))
 
 		local sym = Instance.new("TextLabel")
 		sym.Size = UDim2.new(0, 22, 0, 12)
@@ -1547,7 +1572,8 @@ local function refreshUpgraderUI()
 		card.MouseButton1Click:Connect(function()
 			SoundEffects.Play("Click")
 			selectedTargetAuraId = aura.Id
-			tgtIcon.Image = aura.Icon or "rbxasset://textures/particles/sparkles_main.dds"
+			tgtEmblemHolder:ClearAllChildren()
+			createAuraEmblem(tgtEmblemHolder, aura, 38, UDim2.new(0, 2, 0, 2))
 			tgtNameLbl.Text = aura.Name
 			tgtNameLbl.TextColor3 = aura.Color
 			tgtSubLbl.Text = AuraConfig.FormatRarity(aura.Rarity or 0)
@@ -1571,6 +1597,8 @@ local function refreshUpgraderUI()
 
 		card.Parent = tgtScroll
 	end
+
+	updateWheelDisplay()
 end
 
 doUpgradeBtn.MouseButton1Click:Connect(function()
@@ -2544,12 +2572,11 @@ cardHeaderTitle.Text = " ВЫ ВЫБИЛИ НОВУЮ АУРУ!"
 cardHeaderTitle.Parent = revealCard
 
 -- Item Icon in Reveal Card!
-local cardItemIcon = Instance.new("ImageLabel")
-cardItemIcon.Size = UDim2.new(0, 64, 0, 64)
-cardItemIcon.Position = UDim2.new(0.5, -32, 0, 24)
-cardItemIcon.BackgroundTransparency = 1
-cardItemIcon.Image = "rbxasset://textures/particles/sparkles_main.dds"
-cardItemIcon.Parent = revealCard
+local revealEmblemHolder = Instance.new("Frame")
+revealEmblemHolder.Size = UDim2.new(0, 64, 0, 64)
+revealEmblemHolder.Position = UDim2.new(0.5, -32, 0, 24)
+revealEmblemHolder.BackgroundTransparency = 1
+revealEmblemHolder.Parent = revealCard
 
 local cardTierTag = Instance.new("TextLabel")
 cardTierTag.Size = UDim2.new(1, 0, 0, 22)
@@ -2635,8 +2662,8 @@ local function showRevealPopup(auraData)
 	cardRarity.Text = AuraConfig.FormatRarity(auraData.Rarity or 0)
 	cardDesc.Text = auraData.Description
 	cardStroke.Color = auraData.Color
-	cardItemIcon.Image = auraData.Icon or "rbxasset://textures/particles/sparkles_main.dds"
-	cardItemIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+	revealEmblemHolder:ClearAllChildren()
+	createAuraEmblem(revealEmblemHolder, auraData, 64, UDim2.new(0, 0, 0, 0))
 
 	local scrapCoins = AuraConfig.GetScrapValue(auraData.Rarity or 0)
 	cardSellBtn.Text = string.format("ПРОДАТЬ (+%d)", scrapCoins)
@@ -2707,14 +2734,8 @@ local function runCS2Roulette(winningAura, onFinished)
 		addCorner(card, 10)
 		addStroke(card, aura.Color, 2)
 
-		-- Item Icon in Roulette Card!
-		local cardIcon = Instance.new("ImageLabel")
-		cardIcon.Size = UDim2.new(0, 42, 0, 42)
-		cardIcon.Position = UDim2.new(0.5, -21, 0, 8)
-		cardIcon.BackgroundTransparency = 1
-		cardIcon.Image = aura.Icon or "rbxasset://textures/particles/sparkles_main.dds"
-		cardIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
-		cardIcon.Parent = card
+		-- Procedural Guaranteed Aura Emblem in Roulette Card
+		createAuraEmblem(card, aura, 40, UDim2.new(0.5, -20, 0, 8))
 
 		local rSym = Instance.new("TextLabel")
 		rSym.Size = UDim2.new(0, 28, 0, 14)
