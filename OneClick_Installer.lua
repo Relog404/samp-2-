@@ -3807,6 +3807,45 @@ local function addPadding(parent, top, bottom, left, right)
 	return pad
 end
 
+local function createAuraEmblem(parent, auraData, size, position)
+	if not parent or not auraData then return nil end
+	size = size or 36
+	position = position or UDim2.new(0, 0, 0, 0)
+
+	local emblemHolder = Instance.new("Frame")
+	emblemHolder.Name = "AuraEmblem_" .. tostring(auraData.Id or "Aura")
+	emblemHolder.Size = UDim2.new(0, size, 0, size)
+	emblemHolder.Position = position
+	emblemHolder.BackgroundColor3 = Color3.fromRGB(14, 18, 28)
+	emblemHolder.BorderSizePixel = 0
+	addCorner(emblemHolder, math.clamp(math.floor(size * 0.28), 4, 16))
+	addStroke(emblemHolder, auraData.Color or Color3.fromRGB(150, 160, 180), 1.5)
+
+	-- Radial soft glow behind the emblem
+	local glow = Instance.new("ImageLabel")
+	glow.Size = UDim2.new(1.4, 0, 1.4, 0)
+	glow.Position = UDim2.new(-0.2, 0, -0.2, 0)
+	glow.BackgroundTransparency = 1
+	glow.Image = "rbxasset://textures/ui/InspectMenu/radialGlow.png"
+	glow.ImageColor3 = auraData.Color or Color3.fromRGB(150, 160, 180)
+	glow.ImageTransparency = 0.65
+	glow.ZIndex = emblemHolder.ZIndex
+	glow.Parent = emblemHolder
+
+	-- Center graphical icon
+	local iconImg = Instance.new("ImageLabel")
+	iconImg.Size = UDim2.new(0.72, 0, 0.72, 0)
+	iconImg.Position = UDim2.new(0.14, 0, 0.14, 0)
+	iconImg.BackgroundTransparency = 1
+	iconImg.Image = auraData.Icon or "rbxasset://textures/particles/sparkles_main.dds"
+	iconImg.ImageColor3 = auraData.Color or Color3.fromRGB(255, 255, 255)
+	iconImg.ZIndex = emblemHolder.ZIndex + 1
+	iconImg.Parent = emblemHolder
+
+	emblemHolder.Parent = parent
+	return emblemHolder
+end
+
 --------------------------------------------------------------------------------
 -- 1. TOP HUD (RESPONSIVE CAPSULE)
 --------------------------------------------------------------------------------
@@ -6496,7 +6535,7 @@ local function runCS2Roulette(winningAura, onFinished)
 		table.insert(cardsList, card)
 	end
 
-	local containerWidth = rouletteContainer.AbsoluteSize.X
+	local containerWidth = math.max(rouletteContainer.AbsoluteSize.X, 600)
 	local centerOffset = containerWidth / 2
 	local cardCenterInTape = (WIN_INDEX - 1) * PITCH + 20 + (CARD_WIDTH / 2)
 	local randomJitter = math.random(-20, 20)
@@ -6555,9 +6594,10 @@ local banner = Instance.new("Frame")
 banner.Name = "GlobalBanner"
 banner.AnchorPoint = Vector2.new(0.5, 0)
 banner.Size = UDim2.new(0, 540, 0, 46)
-banner.Position = UDim2.new(0.5, 0, 0, -65)
+banner.Position = UDim2.new(0.5, 0, 0, -80)
 banner.BackgroundColor3 = Color3.fromRGB(20, 24, 38)
 banner.BackgroundTransparency = 0.1
+banner.Visible = false
 addCorner(banner, 12)
 local bannerStroke = addStroke(banner, Color3.fromRGB(250, 204, 21), 2)
 banner.Parent = screenGui
@@ -6569,7 +6609,7 @@ bannerText.BackgroundTransparency = 1
 bannerText.Font = Enum.Font.GothamBlack
 bannerText.TextSize = 14
 bannerText.TextColor3 = Color3.fromRGB(255, 235, 120)
-bannerText.Text = " Player rolled MYTHIC!"
+bannerText.Text = ""
 bannerText.Parent = banner
 
 GlobalAnnouncementEvent.OnClientEvent:Connect(function(info)
@@ -6577,15 +6617,20 @@ GlobalAnnouncementEvent.OnClientEvent:Connect(function(info)
 	bannerStroke.Color = tierColor
 	bannerText.Text = string.format(" %s rolled %s (%s)!", info.PlayerName, info.AuraName:upper(), AuraConfig.FormatRarity(info.Rarity))
 	bannerText.TextColor3 = tierColor
+	banner.Visible = true
 
 	TweenService:Create(banner, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
 		Position = UDim2.new(0.5, 0, 0, 68),
 	}):Play()
 
 	task.delay(4.5, function()
-		TweenService:Create(banner, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
-			Position = UDim2.new(0.5, 0, 0, -65),
-		}):Play()
+		local tw = TweenService:Create(banner, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
+			Position = UDim2.new(0.5, 0, 0, -80),
+		})
+		tw:Play()
+		tw.Completed:Connect(function()
+			banner.Visible = false
+		end)
 	end)
 end)
 
@@ -6603,18 +6648,28 @@ local function doRoll()
 
 	SoundEffects.Play("Spin")
 
-	local result = RollRequestFunc:InvokeServer(isFastRollOn)
+	local ok, result = pcall(function()
+		return RollRequestFunc:InvokeServer(isFastRollOn)
+	end)
 
 	task.wait(0.1)
 	TweenService:Create(rollButton, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
 		Size = UDim2.new(0, 240, 0, 64),
 	}):Play()
 
-	if result and result.Success and result.Aura then
-		runCS2Roulette(result.Aura, function()
+	if ok and result and result.Success and result.Aura then
+		local rOk, rErr = pcall(function()
+			runCS2Roulette(result.Aura, function()
+				showRevealPopup(result.Aura)
+				isRolling = false
+			end)
+		end)
+		if not rOk then
+			warn("[Sols RNG] Roulette error:", rErr)
+			rouletteContainer.Visible = false
 			showRevealPopup(result.Aura)
 			isRolling = false
-		end)
+		end
 	else
 		isRolling = false
 	end
@@ -6876,6 +6931,45 @@ local function addPadding(parent, top, bottom, left, right)
 	return pad
 end
 
+local function createAuraEmblem(parent, auraData, size, position)
+	if not parent or not auraData then return nil end
+	size = size or 36
+	position = position or UDim2.new(0, 0, 0, 0)
+
+	local emblemHolder = Instance.new("Frame")
+	emblemHolder.Name = "AuraEmblem_" .. tostring(auraData.Id or "Aura")
+	emblemHolder.Size = UDim2.new(0, size, 0, size)
+	emblemHolder.Position = position
+	emblemHolder.BackgroundColor3 = Color3.fromRGB(14, 18, 28)
+	emblemHolder.BorderSizePixel = 0
+	addCorner(emblemHolder, math.clamp(math.floor(size * 0.28), 4, 16))
+	addStroke(emblemHolder, auraData.Color or Color3.fromRGB(150, 160, 180), 1.5)
+
+	-- Radial soft glow behind the emblem
+	local glow = Instance.new("ImageLabel")
+	glow.Size = UDim2.new(1.4, 0, 1.4, 0)
+	glow.Position = UDim2.new(-0.2, 0, -0.2, 0)
+	glow.BackgroundTransparency = 1
+	glow.Image = "rbxasset://textures/ui/InspectMenu/radialGlow.png"
+	glow.ImageColor3 = auraData.Color or Color3.fromRGB(150, 160, 180)
+	glow.ImageTransparency = 0.65
+	glow.ZIndex = emblemHolder.ZIndex
+	glow.Parent = emblemHolder
+
+	-- Center graphical icon
+	local iconImg = Instance.new("ImageLabel")
+	iconImg.Size = UDim2.new(0.72, 0, 0.72, 0)
+	iconImg.Position = UDim2.new(0.14, 0, 0.14, 0)
+	iconImg.BackgroundTransparency = 1
+	iconImg.Image = auraData.Icon or "rbxasset://textures/particles/sparkles_main.dds"
+	iconImg.ImageColor3 = auraData.Color or Color3.fromRGB(255, 255, 255)
+	iconImg.ZIndex = emblemHolder.ZIndex + 1
+	iconImg.Parent = emblemHolder
+
+	emblemHolder.Parent = parent
+	return emblemHolder
+end
+
 --------------------------------------------------------------------------------
 -- 1. TOP HUD (RESPONSIVE CAPSULE)
 --------------------------------------------------------------------------------
@@ -9565,7 +9659,7 @@ local function runCS2Roulette(winningAura, onFinished)
 		table.insert(cardsList, card)
 	end
 
-	local containerWidth = rouletteContainer.AbsoluteSize.X
+	local containerWidth = math.max(rouletteContainer.AbsoluteSize.X, 600)
 	local centerOffset = containerWidth / 2
 	local cardCenterInTape = (WIN_INDEX - 1) * PITCH + 20 + (CARD_WIDTH / 2)
 	local randomJitter = math.random(-20, 20)
@@ -9624,9 +9718,10 @@ local banner = Instance.new("Frame")
 banner.Name = "GlobalBanner"
 banner.AnchorPoint = Vector2.new(0.5, 0)
 banner.Size = UDim2.new(0, 540, 0, 46)
-banner.Position = UDim2.new(0.5, 0, 0, -65)
+banner.Position = UDim2.new(0.5, 0, 0, -80)
 banner.BackgroundColor3 = Color3.fromRGB(20, 24, 38)
 banner.BackgroundTransparency = 0.1
+banner.Visible = false
 addCorner(banner, 12)
 local bannerStroke = addStroke(banner, Color3.fromRGB(250, 204, 21), 2)
 banner.Parent = screenGui
@@ -9638,7 +9733,7 @@ bannerText.BackgroundTransparency = 1
 bannerText.Font = Enum.Font.GothamBlack
 bannerText.TextSize = 14
 bannerText.TextColor3 = Color3.fromRGB(255, 235, 120)
-bannerText.Text = " Player rolled MYTHIC!"
+bannerText.Text = ""
 bannerText.Parent = banner
 
 GlobalAnnouncementEvent.OnClientEvent:Connect(function(info)
@@ -9646,15 +9741,20 @@ GlobalAnnouncementEvent.OnClientEvent:Connect(function(info)
 	bannerStroke.Color = tierColor
 	bannerText.Text = string.format(" %s rolled %s (%s)!", info.PlayerName, info.AuraName:upper(), AuraConfig.FormatRarity(info.Rarity))
 	bannerText.TextColor3 = tierColor
+	banner.Visible = true
 
 	TweenService:Create(banner, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
 		Position = UDim2.new(0.5, 0, 0, 68),
 	}):Play()
 
 	task.delay(4.5, function()
-		TweenService:Create(banner, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
-			Position = UDim2.new(0.5, 0, 0, -65),
-		}):Play()
+		local tw = TweenService:Create(banner, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
+			Position = UDim2.new(0.5, 0, 0, -80),
+		})
+		tw:Play()
+		tw.Completed:Connect(function()
+			banner.Visible = false
+		end)
 	end)
 end)
 
@@ -9672,18 +9772,28 @@ local function doRoll()
 
 	SoundEffects.Play("Spin")
 
-	local result = RollRequestFunc:InvokeServer(isFastRollOn)
+	local ok, result = pcall(function()
+		return RollRequestFunc:InvokeServer(isFastRollOn)
+	end)
 
 	task.wait(0.1)
 	TweenService:Create(rollButton, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
 		Size = UDim2.new(0, 240, 0, 64),
 	}):Play()
 
-	if result and result.Success and result.Aura then
-		runCS2Roulette(result.Aura, function()
+	if ok and result and result.Success and result.Aura then
+		local rOk, rErr = pcall(function()
+			runCS2Roulette(result.Aura, function()
+				showRevealPopup(result.Aura)
+				isRolling = false
+			end)
+		end)
+		if not rOk then
+			warn("[Sols RNG] Roulette error:", rErr)
+			rouletteContainer.Visible = false
 			showRevealPopup(result.Aura)
 			isRolling = false
-		end)
+		end
 	else
 		isRolling = false
 	end
