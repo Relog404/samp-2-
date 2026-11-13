@@ -49,12 +49,18 @@ end
 local RollRequestFunc = getRemoteFunction("RollRequest")
 local CraftAuraFunc = getRemoteFunction("CraftAura")
 local PurchaseProductFunc = getRemoteFunction("PurchaseProduct")
+local UpgradeAuraFunc = getRemoteFunction("UpgradeAura")
+local PvPChallengeFunc = getRemoteFunction("PvPChallenge")
+local PvPUseSkillFunc = getRemoteFunction("PvPUseSkill")
 local EquipAuraEvent = getRemoteEvent("EquipAura")
 local DeleteAuraEvent = getRemoteEvent("DeleteAura")
 local SetAutoDeleteEvent = getRemoteEvent("SetAutoDelete")
 local ToggleTestPerkEvent = getRemoteEvent("ToggleTestPerk")
 local DataSyncEvent = getRemoteEvent("DataSync")
 local GlobalAnnouncementEvent = getRemoteEvent("GlobalAnnouncement")
+local PvPResponseEvent = getRemoteEvent("PvPResponse")
+local PvPStateEvent = getRemoteEvent("PvPState")
+local PvPVFXEvent = getRemoteEvent("PvPVFX")
 
 -- Require shared modules
 local ModulesFolder = AuraRNGFolder:WaitForChild("Modules")
@@ -596,6 +602,179 @@ ToggleTestPerkEvent.OnServerEvent:Connect(function(player, perkName)
 
 	syncClient(player)
 end)
+
+-- AURA UPGRADER HANDLER (RISK MACHINE)
+UpgradeAuraFunc.OnServerInvoke = function(player, auraId, modeType, modeValue)
+	local data = sessionData[player]
+	if not data then return { Success = false, Message = "No data" } end
+	if not data.Inventory[auraId] or data.Inventory[auraId] <= 0 then
+		return { Success = false, Message = "Аура не найдена в инвентаре!" }
+	end
+
+	-- Deduct 1 aura
+	data.Inventory[auraId] = data.Inventory[auraId] - 1
+	if data.Inventory[auraId] <= 0 then data.Inventory[auraId] = nil end
+	if data.EquippedAura == auraId and not data.Inventory[auraId] then
+		data.EquippedAura = "None"
+		if player.Character then AuraVisuals.ClearAura(player.Character) end
+	end
+
+	local chance = 50
+	local tierStep = 1
+
+	if modeType == "Chance" then
+		chance = math.clamp(tonumber(modeValue) or 50, 5, 95)
+		if chance >= 75 then tierStep = 1
+		elseif chance >= 50 then tierStep = 2
+		else tierStep = 4 end
+	elseif modeType == "Multiplier" then
+		local mult = tonumber(modeValue) or 2
+		if mult == 2 then chance = 48; tierStep = 2
+		elseif mult == 5 then chance = 19; tierStep = 5
+		elseif mult == 10 then chance = 9; tierStep = 8 end
+	end
+
+	local roll = math.random(1, 100)
+	local won = (roll <= chance)
+
+	if won then
+		local curIdx = AuraConfig.GetLadderIndex(auraId)
+		local nextIdx = math.min(#AuraConfig.UpgradeLadder, curIdx + tierStep)
+		local targetAuraId = AuraConfig.UpgradeLadder[nextIdx]
+		local targetAura = AuraConfig.Auras[targetAuraId]
+
+		data.Inventory[targetAuraId] = (data.Inventory[targetAuraId] or 0) + 1
+		local jackpot = 1000 * tierStep
+		data.Coins = (data.Coins or 0) + jackpot
+
+		syncClient(player)
+		return {
+			Success = true,
+			Won = true,
+			Roll = roll,
+			Chance = chance,
+			TargetAura = targetAura,
+			Jackpot = jackpot,
+		}
+	else
+		local scrap = 50
+		data.Coins = (data.Coins or 0) + scrap
+		syncClient(player)
+		return {
+			Success = true,
+			Won = false,
+			Roll = roll,
+			Chance = chance,
+			Scrap = scrap,
+		}
+	end
+end
+
+-- PVP DUEL ENGINE
+local activeDuels = {}
+
+PvPChallengeFunc.OnServerInvoke = function(challenger, targetName)
+	local targetPlayer = Players:FindFirstChild(targetName)
+	if not targetPlayer or targetPlayer == challenger then
+		return { Success = false, Message = "Игрок не найден!" }
+	end
+	if activeDuels[challenger] or activeDuels[targetPlayer] then
+		return { Success = false, Message = "Один из игроков уже сражается!" }
+	end
+
+	PvPResponseEvent:FireClient(targetPlayer, {
+		Challenger = challenger.Name,
+		ChallengerDisplay = challenger.DisplayName or challenger.Name,
+	})
+	return { Success = true, Message = "Вызов отправлен!" }
+end
+
+PvPResponseEvent.OnServerEvent:Connect(function(targetPlayer, challengerName, accepted)
+	local challenger = Players:FindFirstChild(challengerName)
+	if not challenger then return end
+
+	if accepted then
+		local cData = sessionData[challenger]
+		local tData = sessionData[targetPlayer]
+		local cAura = cData and AuraConfig.Auras[cData.EquippedAura]
+		local tAura = tData and AuraConfig.Auras[tData.EquippedAura]
+		local cPower = cAura and cAura.Power or 100
+		local tPower = tAura and tAura.Power or 100
+
+		local cMaxHp = 1000 + math.floor(math.sqrt(cPower) * 12)
+		local tMaxHp = 1000 + math.floor(math.sqrt(tPower) * 12)
+
+		activeDuels[challenger] = {
+			Opponent = targetPlayer,
+			MaxHp = cMaxHp,
+			Hp = cMaxHp,
+			Power = cPower,
+			Color = cAura and cAura.Color or Color3.fromRGB(56, 189, 248),
+			LastSkill = {},
+		}
+		activeDuels[targetPlayer] = {
+			Opponent = challenger,
+			MaxHp = tMaxHp,
+			Hp = tMaxHp,
+			Power = tPower,
+			Color = tAura and tAura.Color or Color3.fromRGB(245, 158, 11),
+			LastSkill = {},
+		}
+
+		PvPStateEvent:FireClient(challenger, { InBattle = true, Opponent = targetPlayer.DisplayName or targetPlayer.Name, MyHp = cMaxHp, MyMaxHp = cMaxHp, OpHp = tMaxHp, OpMaxHp = tMaxHp })
+		PvPStateEvent:FireClient(targetPlayer, { InBattle = true, Opponent = challenger.DisplayName or challenger.Name, MyHp = tMaxHp, MyMaxHp = tMaxHp, OpHp = cMaxHp, OpMaxHp = cMaxHp })
+	end
+end)
+
+PvPUseSkillFunc.OnServerInvoke = function(caster, skillIndex)
+	local duel = activeDuels[caster]
+	if not duel then return { Success = false } end
+	local target = duel.Opponent
+	local targetDuel = activeDuels[target]
+	if not targetDuel then return { Success = false } end
+
+	local now = os.clock()
+	local cd = (skillIndex == 1 and 1.2) or (skillIndex == 2 and 3.5) or 7.0
+	if (now - (duel.LastSkill[skillIndex] or 0)) < cd then
+		return { Success = false, Message = "Кулдаун!" }
+	end
+	duel.LastSkill[skillIndex] = now
+
+	local baseDmg = (skillIndex == 1 and (120 + math.floor(math.sqrt(duel.Power) * 2)))
+		or (skillIndex == 2 and (280 + math.floor(math.sqrt(duel.Power) * 4)))
+		or (650 + math.floor(math.sqrt(duel.Power) * 8))
+
+	local isCrit = (math.random(1, 100) <= 25)
+	if isCrit then baseDmg = math.floor(baseDmg * 1.5) end
+
+	targetDuel.Hp = math.max(0, targetDuel.Hp - baseDmg)
+
+	PvPVFXEvent:FireAllClients({
+		SkillIndex = skillIndex,
+		Caster = caster.Name,
+		Target = target.Name,
+		Damage = baseDmg,
+		IsCrit = isCrit,
+		Color = duel.Color,
+	})
+
+	if targetDuel.Hp <= 0 then
+		local cData = sessionData[caster]
+		if cData then cData.Coins = (cData.Coins or 0) + 5000 end
+		syncClient(caster)
+
+		activeDuels[caster] = nil
+		activeDuels[target] = nil
+
+		PvPStateEvent:FireClient(caster, { InBattle = false, Won = true, Reward = 5000 })
+		PvPStateEvent:FireClient(target, { InBattle = false, Won = false })
+	else
+		PvPStateEvent:FireClient(caster, { InBattle = true, MyHp = duel.Hp, MyMaxHp = duel.MaxHp, OpHp = targetDuel.Hp, OpMaxHp = targetDuel.MaxHp })
+		PvPStateEvent:FireClient(target, { InBattle = true, MyHp = targetDuel.Hp, MyMaxHp = targetDuel.MaxHp, OpHp = duel.Hp, OpMaxHp = duel.MaxHp })
+	end
+
+	return { Success = true, Damage = baseDmg }
+end
 
 -- Connect PlayerAdded / PlayerRemoving
 Players.PlayerAdded:Connect(onPlayerAdded)

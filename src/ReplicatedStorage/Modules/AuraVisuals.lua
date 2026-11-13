@@ -553,4 +553,120 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 	end
 end
 
+-- =============================================================================
+-- PVP COMBAT SKILL VISUAL EFFECTS & FLOATING DAMAGE NUMBERS
+-- =============================================================================
+
+function AuraVisuals.ShowDamageNumber(targetChar, amount, isCrit, color)
+	local head = targetChar and targetChar:FindFirstChild("Head")
+	if not head or not head:IsA("BasePart") then return end
+
+	local bb = Instance.new("BillboardGui")
+	bb.Name = "DamageNumberGui"
+	bb.Size = UDim2.new(0, 140, 0, 40)
+	bb.StudsOffset = Vector3.new(math.random(-1, 1), 2.5, math.random(-1, 1))
+	bb.AlwaysOnTop = true
+	bb.MaxDistance = 100
+	bb.Parent = head
+
+	local lbl = Instance.new("TextLabel")
+	lbl.Size = UDim2.new(1, 0, 1, 0)
+	lbl.BackgroundTransparency = 1
+	lbl.Font = Enum.Font.GothamBlack
+	lbl.TextSize = isCrit and 22 or 17
+	lbl.TextColor3 = isCrit and Color3.fromRGB(250, 204, 21) or (color or Color3.fromRGB(239, 68, 68))
+	lbl.Text = isCrit and string.format("💥 CRIT! -%d", amount) or string.format("-%d", amount)
+	lbl.TextStrokeColor3 = Color3.fromRGB(15, 15, 20)
+	lbl.TextStrokeTransparency = 0.1
+	lbl.Parent = bb
+
+	local tweenService = game:GetService("TweenService")
+	tweenService:Create(bb, TweenInfo.new(0.9, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+		StudsOffset = bb.StudsOffset + Vector3.new(0, 2.2, 0)
+	}):Play()
+
+	task.delay(0.9, function()
+		if bb and bb.Parent then bb:Destroy() end
+	end)
+end
+
+-- Skill 1: Aura Strike (Laser Projectile Slash)
+function AuraVisuals.PlaySkill1VFX(casterChar, targetChar, color)
+	local casterRoot = casterChar and casterChar:FindFirstChild("HumanoidRootPart")
+	local targetRoot = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
+	if not casterRoot or not targetRoot then return end
+
+	local beamPart = Instance.new("Part")
+	beamPart.Size = Vector3.new(0.8, 0.8, (casterRoot.Position - targetRoot.Position).Magnitude)
+	beamPart.CFrame = CFrame.new(casterRoot.Position:Lerp(targetRoot.Position, 0.5), targetRoot.Position)
+	beamPart.Anchored = true
+	beamPart.CanCollide = false
+	beamPart.Material = Enum.Material.Neon
+	beamPart.Color = color or Color3.fromRGB(56, 189, 248)
+	beamPart.Transparency = 0.1
+	beamPart.Parent = game:GetService("Workspace")
+
+	local tweenService = game:GetService("TweenService")
+	tweenService:Create(beamPart, TweenInfo.new(0.25), { Transparency = 1.0, Size = Vector3.new(0.1, 0.1, beamPart.Size.Z) }):Play()
+	task.delay(0.25, function()
+		if beamPart and beamPart.Parent then beamPart:Destroy() end
+	end)
+end
+
+-- Skill 2: Elemental Burst (Ground Shockwave Eruption)
+function AuraVisuals.PlaySkill2VFX(targetChar, color)
+	local targetRoot = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
+	if not targetRoot then return end
+
+	local ring = Instance.new("Part")
+	ring.Shape = Enum.PartType.Cylinder
+	ring.Size = Vector3.new(0.4, 4, 4)
+	ring.Orientation = Vector3.new(0, 0, 90)
+	ring.Position = targetRoot.Position - Vector3.new(0, 2.5, 0)
+	ring.Anchored = true
+	ring.CanCollide = false
+	ring.Material = Enum.Material.Neon
+	ring.Color = color or Color3.fromRGB(245, 158, 11)
+	ring.Transparency = 0.2
+	ring.Parent = game:GetService("Workspace")
+
+	local tweenService = game:GetService("TweenService")
+	tweenService:Create(ring, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+		Size = Vector3.new(0.4, 18, 18),
+		Transparency = 1.0,
+	}):Play()
+
+	task.delay(0.4, function()
+		if ring and ring.Parent then ring:Destroy() end
+	end)
+end
+
+-- Skill 3: Celestial Ultimate (Massive Orbital Sky Beam)
+function AuraVisuals.PlaySkill3VFX(targetChar, color)
+	local targetRoot = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
+	if not targetRoot then return end
+
+	local pillar = Instance.new("Part")
+	pillar.Shape = Enum.PartType.Cylinder
+	pillar.Size = Vector3.new(120, 8, 8)
+	pillar.Orientation = Vector3.new(0, 0, 90)
+	pillar.Position = targetRoot.Position + Vector3.new(0, 45, 0)
+	pillar.Anchored = true
+	pillar.CanCollide = false
+	pillar.Material = Enum.Material.Neon
+	pillar.Color = color or Color3.fromRGB(250, 204, 21)
+	pillar.Transparency = 0.05
+	pillar.Parent = game:GetService("Workspace")
+
+	local tweenService = game:GetService("TweenService")
+	tweenService:Create(pillar, TweenInfo.new(0.6, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+		Size = Vector3.new(120, 24, 24),
+		Transparency = 1.0,
+	}):Play()
+
+	task.delay(0.6, function()
+		if pillar and pillar.Parent then pillar:Destroy() end
+	end)
+end
+
 return AuraVisuals
