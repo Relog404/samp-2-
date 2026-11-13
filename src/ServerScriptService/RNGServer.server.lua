@@ -604,47 +604,84 @@ ToggleTestPerkEvent.OnServerEvent:Connect(function(player, perkName)
 end)
 
 -- AURA UPGRADER HANDLER (RISK MACHINE)
-UpgradeAuraFunc.OnServerInvoke = function(player, auraId, modeType, modeValue)
+UpgradeAuraFunc.OnServerInvoke = function(player, sourceAuraId, targetAuraId, customChance, modeType, modeValue)
 	local data = sessionData[player]
 	if not data then return { Success = false, Message = "No data" } end
-	if not data.Inventory[auraId] or data.Inventory[auraId] <= 0 then
-		return { Success = false, Message = "Аура не найдена в инвентаре!" }
+	if not sourceAuraId or not data.Inventory[sourceAuraId] or data.Inventory[sourceAuraId] <= 0 then
+		return { Success = false, Message = "Исходная аура не найдена в инвентаре!" }
 	end
 
-	-- Deduct 1 aura
-	data.Inventory[auraId] = data.Inventory[auraId] - 1
-	if data.Inventory[auraId] <= 0 then data.Inventory[auraId] = nil end
-	if data.EquippedAura == auraId and not data.Inventory[auraId] then
+	local sourceAura = AuraConfig.Auras[sourceAuraId]
+	if not sourceAura then
+		return { Success = false, Message = "Неизвестная аура!" }
+	end
+
+	-- Deduct 1 source aura
+	data.Inventory[sourceAuraId] = data.Inventory[sourceAuraId] - 1
+	if data.Inventory[sourceAuraId] <= 0 then data.Inventory[sourceAuraId] = nil end
+	if data.EquippedAura == sourceAuraId and not data.Inventory[sourceAuraId] then
 		data.EquippedAura = "None"
 		if player.Character then AuraVisuals.ClearAura(player.Character) end
 	end
 
-	local chance = 50
-	local tierStep = 1
+	local chance = 50.0
+	local finalTargetAuraId = targetAuraId
+	local finalTargetAura = targetAuraId and AuraConfig.Auras[targetAuraId]
 
-	if modeType == "Chance" then
-		chance = math.clamp(tonumber(modeValue) or 50, 5, 95)
+	if finalTargetAura then
+		if customChance and tonumber(customChance) then
+			chance = math.clamp(math.floor(tonumber(customChance) * 10) / 10, 1.0, 85.0)
+		else
+			local sR = math.max(sourceAura.Rarity or 2, 2)
+			local tR = math.max(finalTargetAura.Rarity or 10, 4)
+			if sR >= tR then
+				chance = 85.0
+			else
+				chance = math.clamp(math.floor((sR / tR) * 85 * 10) / 10, 1.0, 85.0)
+			end
+		end
+	elseif modeType == "Custom" and customChance then
+		chance = math.clamp(math.floor(tonumber(customChance) * 10) / 10, 1.0, 85.0)
+		local curIdx = AuraConfig.GetLadderIndex(sourceAuraId)
+		local step = math.max(1, math.floor((100 - chance) / 18))
+		local nextIdx = math.min(#AuraConfig.UpgradeLadder, curIdx + step)
+		finalTargetAuraId = AuraConfig.UpgradeLadder[nextIdx]
+		finalTargetAura = AuraConfig.Auras[finalTargetAuraId]
+	elseif modeType == "Chance" then
+		chance = math.clamp(tonumber(modeValue) or 50, 5, 85)
+		local tierStep = 1
 		if chance >= 75 then tierStep = 1
 		elseif chance >= 50 then tierStep = 2
 		else tierStep = 4 end
+		local curIdx = AuraConfig.GetLadderIndex(sourceAuraId)
+		local nextIdx = math.min(#AuraConfig.UpgradeLadder, curIdx + tierStep)
+		finalTargetAuraId = AuraConfig.UpgradeLadder[nextIdx]
+		finalTargetAura = AuraConfig.Auras[finalTargetAuraId]
 	elseif modeType == "Multiplier" then
 		local mult = tonumber(modeValue) or 2
-		if mult == 2 then chance = 48; tierStep = 2
-		elseif mult == 5 then chance = 19; tierStep = 5
-		elseif mult == 10 then chance = 9; tierStep = 8 end
+		local tierStep = 2
+		if mult == 2 then chance = 48.0; tierStep = 2
+		elseif mult == 5 then chance = 19.0; tierStep = 5
+		elseif mult == 10 then chance = 9.0; tierStep = 8 end
+		local curIdx = AuraConfig.GetLadderIndex(sourceAuraId)
+		local nextIdx = math.min(#AuraConfig.UpgradeLadder, curIdx + tierStep)
+		finalTargetAuraId = AuraConfig.UpgradeLadder[nextIdx]
+		finalTargetAura = AuraConfig.Auras[finalTargetAuraId]
+	else
+		chance = 50.0
+		local curIdx = AuraConfig.GetLadderIndex(sourceAuraId)
+		local nextIdx = math.min(#AuraConfig.UpgradeLadder, curIdx + 2)
+		finalTargetAuraId = AuraConfig.UpgradeLadder[nextIdx]
+		finalTargetAura = AuraConfig.Auras[finalTargetAuraId]
 	end
 
-	local roll = math.random(1, 100)
+	-- High-precision roll from 0.1 to 100.0
+	local roll = math.random(1, 1000) / 10.0
 	local won = (roll <= chance)
 
-	if won then
-		local curIdx = AuraConfig.GetLadderIndex(auraId)
-		local nextIdx = math.min(#AuraConfig.UpgradeLadder, curIdx + tierStep)
-		local targetAuraId = AuraConfig.UpgradeLadder[nextIdx]
-		local targetAura = AuraConfig.Auras[targetAuraId]
-
-		data.Inventory[targetAuraId] = (data.Inventory[targetAuraId] or 0) + 1
-		local jackpot = 1000 * tierStep
+	if won and finalTargetAuraId and finalTargetAura then
+		data.Inventory[finalTargetAuraId] = (data.Inventory[finalTargetAuraId] or 0) + 1
+		local jackpot = 1500 + math.floor((finalTargetAura.Rarity or 100) * 0.05)
 		data.Coins = (data.Coins or 0) + jackpot
 
 		syncClient(player)
@@ -653,11 +690,12 @@ UpgradeAuraFunc.OnServerInvoke = function(player, auraId, modeType, modeValue)
 			Won = true,
 			Roll = roll,
 			Chance = chance,
-			TargetAura = targetAura,
+			TargetAura = finalTargetAura,
+			SourceAura = sourceAura,
 			Jackpot = jackpot,
 		}
 	else
-		local scrap = 50
+		local scrap = AuraConfig.GetScrapValue(sourceAura.Rarity) * 2
 		data.Coins = (data.Coins or 0) + scrap
 		syncClient(player)
 		return {
@@ -665,6 +703,8 @@ UpgradeAuraFunc.OnServerInvoke = function(player, auraId, modeType, modeValue)
 			Won = false,
 			Roll = roll,
 			Chance = chance,
+			TargetAura = finalTargetAura,
+			SourceAura = sourceAura,
 			Scrap = scrap,
 		}
 	end

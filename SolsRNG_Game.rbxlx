@@ -213,6 +213,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Common&quot;,
 		Power = 50,
 		Icon = &quot;rbxassetid://241594419&quot;,
+		Symbol = &quot;COM&quot;,
 		Color = Color3.fromRGB(220, 220, 225),
 		Description = &quot;Faint gentle dust of pure simple energy.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Normal,
@@ -226,6 +227,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Common&quot;,
 		Power = 100,
 		Icon = &quot;rbxassetid://241594419&quot;,
+		Symbol = &quot;UNC&quot;,
 		Color = Color3.fromRGB(160, 230, 160),
 		Description = &quot;Subtle green sparks glowing with mild vitality.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Normal,
@@ -241,6 +243,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Good&quot;,
 		Power = 250,
 		Icon = &quot;rbxasset://textures/particles/sparkles_main.dds&quot;,
+		Symbol = &quot;NAT&quot;,
 		Color = Color3.fromRGB(72, 199, 116),
 		Description = &quot;Leaves and emerald orbs dancing with forest vitality.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Normal,
@@ -254,6 +257,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Good&quot;,
 		Power = 500,
 		Icon = &quot;rbxassetid://258128463&quot;,
+		Symbol = &quot;RAR&quot;,
 		Color = Color3.fromRGB(56, 189, 248),
 		Description = &quot;A vivid sky-blue aura shimmering with rising azure flames.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Rare,
@@ -269,6 +273,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Rare&quot;,
 		Power = 1000,
 		Icon = &quot;rbxassetid://258127006&quot;,
+		Symbol = &quot;DIV&quot;,
 		Color = Color3.fromRGB(250, 204, 21),
 		Description = &quot;Holy golden sparkles blessing the bearer with light.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Rare,
@@ -282,6 +287,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Rare&quot;,
 		Power = 2000,
 		Icon = &quot;rbxassetid://241594432&quot;,
+		Symbol = &quot;CRX&quot;,
 		Color = Color3.fromRGB(6, 182, 212),
 		Description = &quot;Sharp diamond shards and icy cyan glow.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Rare,
@@ -297,6 +303,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Epic&quot;,
 		Power = 4500,
 		Icon = &quot;rbxassetid://241594419&quot;,
+		Symbol = &quot;TPZ&quot;,
 		Color = Color3.fromRGB(245, 158, 11),
 		Description = &quot;Deep amber embers floating in orbital harmony.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Rare,
@@ -310,6 +317,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Epic&quot;,
 		Power = 8000,
 		Icon = &quot;rbxassetid://241594432&quot;,
+		Symbol = &quot;GLC&quot;,
 		Color = Color3.fromRGB(147, 197, 253),
 		Description = &quot;An arctic chill radiating sub-zero frost and blizzard mists.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Rare,
@@ -323,6 +331,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Epic&quot;,
 		Power = 11000,
 		Icon = &quot;rbxassetid://243664672&quot;,
+		Symbol = &quot;WND&quot;,
 		Color = Color3.fromRGB(167, 243, 208),
 		Description = &quot;A raging cyclone spiral enveloping the character.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Rare,
@@ -338,6 +347,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Legendary&quot;,
 		Power = 25000,
 		Icon = &quot;rbxassetid://258128463&quot;,
+		Symbol = &quot;RBY&quot;,
 		Color = Color3.fromRGB(239, 68, 68),
 		Description = &quot;Blazing crimson volcanic flame pillar ascending to heaven.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Legendary,
@@ -351,6 +361,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Legendary&quot;,
 		Power = 45000,
 		Icon = &quot;rbxassetid://258128463&quot;,
+		Symbol = &quot;UND&quot;,
 		Color = Color3.fromRGB(16, 185, 129),
 		Description = &quot;Ominous necrotic souls and radioactive green mist.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Legendary,
@@ -364,6 +375,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Legendary&quot;,
 		Power = 90000,
 		Icon = &quot;rbxassetid://258127006&quot;,
+		Symbol = &quot;SOL&quot;,
 		Color = Color3.fromRGB(249, 115, 22),
 		Description = &quot;A blinding solar corona flaring with pure thermonuclear radiance.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Legendary,
@@ -379,6 +391,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Mythic&quot;,
 		Power = 180000,
 		Icon = &quot;rbxassetid://241594419&quot;,
+		Symbol = &quot;LUN&quot;,
 		Color = Color3.fromRGB(139, 92, 246),
 		Description = &quot;A mystical crescent night sky with celestial starlight.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Mythic,
@@ -392,6 +405,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Mythic&quot;,
 		Power = 350000,
 		Icon = &quot;rbxassetid://243664672&quot;,
+		Symbol = &quot;POS&quot;,
 		Color = Color3.fromRGB(2, 132, 199),
 		Description = &quot;Lord of the deep seas summoning aquatic geysers.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Mythic,
@@ -405,6 +419,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Mythic&quot;,
 		Power = 650000,
 		Icon = &quot;rbxassetid://258128463&quot;,
+		Symbol = &quot;HDS&quot;,
 		Color = Color3.fromRGB(220, 38, 38),
 		Description = &quot;Underworld hellfire and demonic dark red lightning.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Mythic,
@@ -418,6 +433,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Mythic&quot;,
 		Power = 1200000,
 		Icon = &quot;rbxassetid://243664672&quot;,
+		Symbol = &quot;GLX&quot;,
 		Color = Color3.fromRGB(99, 102, 241),
 		Description = &quot;A deep cosmic spiral galaxy with swirling nebulae.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Mythic,
@@ -425,19 +441,51 @@ AuraConfig.Auras = {
 		ParticleShape = &quot;NebulaSpiral&quot;,
 	},
 
-	-- GODLY TIER (1 in 250,000 to 1 in 1,000,000)
+	-- GODLY TIER (1 in 200,000 to 1 in 1,000,000)
+	AncientTurtle = {
+		Id = &quot;AncientTurtle&quot;,
+		Name = &quot;Ancient Turtle&quot;,
+		Rarity = 200000,
+		Tier = &quot;Godly&quot;,
+		Power = 2500000,
+		Icon = &quot;rbxassetid://243664672&quot;,
+		Symbol = &quot;TRT&quot;,
+		Symbol = &quot;TRT&quot;,
+		Color = Color3.fromRGB(16, 185, 129),
+		Description = &quot;Sacred celestial tortoise shell barrier and orbiting ancient jade runic plates.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Godly,
+		ParticleColor = Color3.fromRGB(52, 211, 153),
+		ParticleShape = &quot;Turtle&quot;,
+	},
 	Archangel = {
 		Id = &quot;Archangel&quot;,
 		Name = &quot;Archangel&quot;,
-		Rarity = 250000,
+		Rarity = 350000,
 		Tier = &quot;Godly&quot;,
-		Power = 3000000,
+		Power = 4000000,
 		Icon = &quot;rbxassetid://258127006&quot;,
+		Symbol = &quot;ANG&quot;,
+		Symbol = &quot;ANG&quot;,
 		Color = Color3.fromRGB(252, 211, 77),
 		Description = &quot;Six wings of divine light, holy choir and celestial halos.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Godly,
 		ParticleColor = Color3.fromRGB(255, 235, 120),
 		ParticleShape = &quot;DivineHalo&quot;,
+	},
+	MythicDragon = {
+		Id = &quot;MythicDragon&quot;,
+		Name = &quot;Mythic Dragon&quot;,
+		Rarity = 750000,
+		Tier = &quot;Godly&quot;,
+		Power = 8500000,
+		Icon = &quot;rbxassetid://258128463&quot;,
+		Symbol = &quot;DRG&quot;,
+		Symbol = &quot;DRG&quot;,
+		Color = Color3.fromRGB(244, 63, 94),
+		Description = &quot;Ancient mythical draconic serpent coiling around its master with magma embers.&quot;,
+		Cutscene = AuraConfig.CutsceneTier.Godly,
+		ParticleColor = Color3.fromRGB(255, 75, 40),
+		ParticleShape = &quot;Dragon&quot;,
 	},
 	ExoticApex = {
 		Id = &quot;ExoticApex&quot;,
@@ -446,6 +494,8 @@ AuraConfig.Auras = {
 		Tier = &quot;Godly&quot;,
 		Power = 6000000,
 		Icon = &quot;rbxassetid://241594432&quot;,
+		Symbol = &quot;APX&quot;,
+		Symbol = &quot;APX&quot;,
 		Color = Color3.fromRGB(236, 72, 153),
 		Description = &quot;Reality-bending prismatic chromatic spectrum.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Godly,
@@ -459,6 +509,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Godly&quot;,
 		Power = 12000000,
 		Icon = &quot;rbxassetid://243664672&quot;,
+		Symbol = &quot;ABY&quot;,
 		Color = Color3.fromRGB(124, 58, 237),
 		Description = &quot;A singularity black hole radiating neon violet lightning bolts.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Godly,
@@ -474,6 +525,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Crafted&quot;,
 		Power = 800000,
 		Icon = &quot;rbxassetid://243664672&quot;,
+		Symbol = &quot;ECL&quot;,
 		Color = Color3.fromRGB(245, 158, 11),
 		Description = &quot;The convergence of Solar and Lunar orbital harmony.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Godly,
@@ -488,6 +540,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Crafted&quot;,
 		Power = 4000000,
 		Icon = &quot;rbxassetid://243664672&quot;,
+		Symbol = &quot;CHR&quot;,
 		Color = Color3.fromRGB(6, 182, 212),
 		Description = &quot;Time bends to your command. Spinning clock dials and golden gears.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Godly,
@@ -502,6 +555,7 @@ AuraConfig.Auras = {
 		Tier = &quot;Crafted&quot;,
 		Power = 1500000,
 		Icon = &quot;rbxassetid://258128463&quot;,
+		Symbol = &quot;LVT&quot;,
 		Color = Color3.fromRGB(185, 28, 28),
 		Description = &quot;Boiling magma geysers and abyss waters in an unstoppable storm.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Godly,
@@ -516,6 +570,7 @@ AuraConfig.Auras = {
 		Tier = &quot;VIP&quot;,
 		Power = 200000,
 		Icon = &quot;rbxassetid://258127006&quot;,
+		Symbol = &quot;VIP&quot;,
 		Color = Color3.fromRGB(251, 191, 36),
 		Description = &quot;Exclusive regal golden crown aura for VIP supporters.&quot;,
 		Cutscene = AuraConfig.CutsceneTier.Legendary,
@@ -543,7 +598,9 @@ AuraConfig.UpgradeLadder = {
 	&quot;Poseidon&quot;,
 	&quot;Hades&quot;,
 	&quot;Galaxy&quot;,
+	&quot;AncientTurtle&quot;,
 	&quot;Archangel&quot;,
+	&quot;MythicDragon&quot;,
 	&quot;ExoticApex&quot;,
 	&quot;AbyssalHunter&quot;,
 }
@@ -783,7 +840,7 @@ local function createEmitter(parent, props)
 	pe.SpreadAngle = props.SpreadAngle or Vector2.new(15, 15)
 	pe.Acceleration = props.Acceleration or Vector3.new(0, 3, 0)
 	pe.Drag = props.Drag or 0.5
-	pe.LightEmission = props.LightEmission or 1.0
+	pe.LightEmission = props.LightEmission or 0.45
 	pe.LightInfluence = props.LightInfluence or 0.0
 	pe.Texture = props.Texture or TEXTURES.Sparkle
 	pe.RotSpeed = props.RotSpeed or NumberRange.new(-90, 90)
@@ -990,6 +1047,178 @@ local function addAngelicWings(character, folder, color)
 	makeWingEmitter(attWingR)
 end
 
+-- LAYER 4B: Mythic Dragon Serpent &amp; Draconic Flame Wings
+local function addDragonWings(character, folder, color)
+	local torso = character:FindFirstChild(&quot;UpperTorso&quot;) or character:FindFirstChild(&quot;Torso&quot;)
+	if not torso or not torso:IsA(&quot;BasePart&quot;) then return end
+
+	local attWingL = Instance.new(&quot;Attachment&quot;)
+	attWingL.Name = &quot;AuraVFXAttachment&quot;
+	attWingL.Position = Vector3.new(-1.8, 1.2, 0.9)
+	attWingL.Orientation = Vector3.new(0, 45, 25)
+	attWingL.Parent = torso
+
+	local attWingR = Instance.new(&quot;Attachment&quot;)
+	attWingR.Name = &quot;AuraVFXAttachment&quot;
+	attWingR.Position = Vector3.new(1.8, 1.2, 0.9)
+	attWingR.Orientation = Vector3.new(0, -45, -25)
+	attWingR.Parent = torso
+
+	local function makeDragonWing(att)
+		createEmitter(att, {
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 240, 150)),
+				ColorSequenceKeypoint.new(0.4, color),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 20, 10)),
+			}),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.8),
+				NumberSequenceKeypoint.new(0.5, 3.2),
+				NumberSequenceKeypoint.new(1, 0.4),
+			}),
+			Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.3),
+				NumberSequenceKeypoint.new(0.5, 0.05),
+				NumberSequenceKeypoint.new(1, 1.0),
+			}),
+			Lifetime = NumberRange.new(1.0, 1.8),
+			Rate = 50,
+			Speed = NumberRange.new(3.5, 7.5),
+			SpreadAngle = Vector2.new(15, 15),
+			Acceleration = Vector3.new(0, 3, 0),
+			Texture = TEXTURES.Flame,
+		})
+	end
+
+	makeDragonWing(attWingL)
+	makeDragonWing(attWingR)
+end
+
+local function addDragonSerpent(character, folder, color)
+	local rootPart = character:FindFirstChild(&quot;HumanoidRootPart&quot;) or character:FindFirstChild(&quot;Torso&quot;)
+	if not rootPart or not rootPart:IsA(&quot;BasePart&quot;) then return end
+
+	local angles = { 0, 60, 120, 180, 240, 300 }
+	for idx, deg in ipairs(angles) do
+		local rad = math.rad(deg)
+		local radius = 3.2
+		local height = -1.2 + (idx * 0.5)
+
+		local att = Instance.new(&quot;Attachment&quot;)
+		att.Name = &quot;AuraVFXAttachment&quot;
+		att.Position = Vector3.new(math.cos(rad) * radius, height, math.sin(rad) * radius)
+		att.Parent = rootPart
+
+		createEmitter(att, {
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 220, 100)),
+				ColorSequenceKeypoint.new(0.5, color),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 20, 10)),
+			}),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.6),
+				NumberSequenceKeypoint.new(0.5, 1.8),
+				NumberSequenceKeypoint.new(1, 0.2),
+			}),
+			Transparency = NumberSequence.new(0.1, 1.0),
+			Lifetime = NumberRange.new(0.8, 1.4),
+			Rate = 22,
+			Speed = NumberRange.new(1.0, 2.5),
+			SpreadAngle = Vector2.new(20, 20),
+			Texture = TEXTURES.Flame,
+		})
+
+		createEmitter(att, {
+			Color = ColorSequence.new(Color3.fromRGB(255, 180, 40)),
+			Size = NumberSequence.new(0.3, 0.05),
+			Transparency = NumberSequence.new(0.0, 1.0),
+			Lifetime = NumberRange.new(1.0, 1.8),
+			Rate = 12,
+			Speed = NumberRange.new(1.5, 3.5),
+			SpreadAngle = Vector2.new(180, 180),
+			Texture = TEXTURES.Sparkle,
+		})
+	end
+end
+
+-- LAYER 4C: Ancient Celestial Turtle Shell &amp; Orbiting Runic Jade Shields
+local function addAncientTurtleShell(character, folder, color)
+	local torso = character:FindFirstChild(&quot;UpperTorso&quot;) or character:FindFirstChild(&quot;Torso&quot;)
+	if not torso or not torso:IsA(&quot;BasePart&quot;) then return end
+
+	local attBack = Instance.new(&quot;Attachment&quot;)
+	attBack.Name = &quot;AuraVFXAttachment&quot;
+	attBack.Position = Vector3.new(0, 0.2, 1.1)
+	attBack.Parent = torso
+
+	createEmitter(attBack, {
+		Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 255, 230)),
+			ColorSequenceKeypoint.new(0.5, color),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 100, 60)),
+		}),
+		Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 2.2),
+			NumberSequenceKeypoint.new(0.5, 3.8),
+			NumberSequenceKeypoint.new(1, 2.4),
+		}),
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.6),
+			NumberSequenceKeypoint.new(0.5, 0.1),
+			NumberSequenceKeypoint.new(1, 0.8),
+		}),
+		Lifetime = NumberRange.new(1.2, 1.8),
+		Rate = 8,
+		Speed = NumberRange.new(0.1, 0.3),
+		SpreadAngle = Vector2.new(5, 5),
+		Texture = TEXTURES.Ring,
+		RotSpeed = NumberRange.new(15, 30),
+	})
+end
+
+local function addOrbitingTurtleShields(character, folder, color)
+	local rootPart = character:FindFirstChild(&quot;HumanoidRootPart&quot;) or character:FindFirstChild(&quot;Torso&quot;)
+	if not rootPart or not rootPart:IsA(&quot;BasePart&quot;) then return end
+
+	local angles = { 0, 90, 180, 270 }
+	for _, deg in ipairs(angles) do
+		local rad = math.rad(deg)
+		local radius = 3.6
+
+		local att = Instance.new(&quot;Attachment&quot;)
+		att.Name = &quot;AuraVFXAttachment&quot;
+		att.Position = Vector3.new(math.cos(rad) * radius, -0.2, math.sin(rad) * radius)
+		att.Parent = rootPart
+
+		createEmitter(att, {
+			Color = ColorSequence.new(color),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 1.0),
+				NumberSequenceKeypoint.new(0.5, 1.6),
+				NumberSequenceKeypoint.new(1, 1.0),
+			}),
+			Transparency = NumberSequence.new(0.2, 0.8),
+			Lifetime = NumberRange.new(1.0, 1.5),
+			Rate = 6,
+			Speed = NumberRange.new(0.1, 0.2),
+			Texture = TEXTURES.Ring,
+			RotSpeed = NumberRange.new(45, 90),
+		})
+
+		createEmitter(att, {
+			Color = ColorSequence.new(Color3.fromRGB(160, 255, 210)),
+			Size = NumberSequence.new(0.4, 0.1),
+			Transparency = NumberSequence.new(0.1, 1.0),
+			Lifetime = NumberRange.new(1.2, 1.8),
+			Rate = 14,
+			Speed = NumberRange.new(1.2, 2.8),
+			SpreadAngle = Vector2.new(15, 15),
+			Acceleration = Vector3.new(0, 2.5, 0),
+			Texture = TEXTURES.Cross,
+		})
+	end
+end
+
 -- LAYER 5: Animated Head Halos &amp; Celestial Crowns
 local function addHeadCrown(character, folder, color, isVIP)
 	local head = character:FindFirstChild(&quot;Head&quot;)
@@ -1193,17 +1422,17 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 	highlight.Name = &quot;AuraHighlight&quot;
 	highlight.Adornee = character
 	highlight.OutlineColor = auraColor
-	highlight.OutlineTransparency = 0.02
+	highlight.OutlineTransparency = 0.08
 	highlight.FillColor = auraColor
-	highlight.FillTransparency = 0.90
+	highlight.FillTransparency = 0.88
 	highlight.Parent = activeFolder
 
 	-- Dynamic Light
 	local light = Instance.new(&quot;PointLight&quot;)
 	light.Name = &quot;AuraLight&quot;
 	light.Color = auraColor
-	light.Range = (rarity &gt;= 10000 or auraData.IsCrafted) and 24 or 16
-	light.Brightness = (rarity &gt;= 10000 or auraData.IsCrafted) and 4.2 or 2.8
+	light.Range = (rarity &gt;= 10000 or auraData.IsCrafted) and 18 or 14
+	light.Brightness = (rarity &gt;= 10000 or auraData.IsCrafted) and 1.4 or 1.0
 	light.Shadows = false
 	light.Parent = attRoot
 
@@ -1266,6 +1495,18 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 		addHeadCrown(character, activeFolder, Color3.fromRGB(255, 215, 0), true)
 		addDenseBodyEnergy(attRoot, Color3.fromRGB(251, 191, 36), Color3.fromRGB(255, 255, 255), 60, NumberRange.new(3.5, 7.0), {0.4, 1.8, 0.3})
 
+	elseif shape == &quot;Dragon&quot; then
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(244, 63, 94), Color3.fromRGB(251, 191, 36), 75, NumberRange.new(5.0, 9.0), {0.6, 2.2, 0.3})
+		addDragonSerpent(character, activeFolder, pColor)
+		addDragonWings(character, activeFolder, pColor)
+		addLightPillar(rootPart, activeFolder, pColor)
+
+	elseif shape == &quot;Turtle&quot; then
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(16, 185, 129), Color3.fromRGB(52, 211, 153), 60, NumberRange.new(4.0, 8.0), {0.5, 2.0, 0.3})
+		addAncientTurtleShell(character, activeFolder, pColor)
+		addOrbitingTurtleShields(character, activeFolder, pColor)
+		addLightPillar(rootPart, activeFolder, pColor)
+
 	else
 		addDenseBodyEnergy(attRoot, pColor, auraColor, 55, NumberRange.new(4.0, 8.0), {0.5, 2.0, 0.3})
 		if rarity &gt;= 1000 then
@@ -1296,7 +1537,7 @@ function AuraVisuals.ShowDamageNumber(targetChar, amount, isCrit, color)
 	lbl.Font = Enum.Font.GothamBlack
 	lbl.TextSize = isCrit and 22 or 17
 	lbl.TextColor3 = isCrit and Color3.fromRGB(250, 204, 21) or (color or Color3.fromRGB(239, 68, 68))
-	lbl.Text = isCrit and string.format(&quot;💥 CRIT! -%d&quot;, amount) or string.format(&quot;-%d&quot;, amount)
+	lbl.Text = isCrit and string.format(&quot;CRIT! -%d&quot;, amount) or string.format(&quot;-%d&quot;, amount)
 	lbl.TextStrokeColor3 = Color3.fromRGB(15, 15, 20)
 	lbl.TextStrokeTransparency = 0.1
 	lbl.Parent = bb
@@ -2315,47 +2556,84 @@ ToggleTestPerkEvent.OnServerEvent:Connect(function(player, perkName)
 end)
 
 -- AURA UPGRADER HANDLER (RISK MACHINE)
-UpgradeAuraFunc.OnServerInvoke = function(player, auraId, modeType, modeValue)
+UpgradeAuraFunc.OnServerInvoke = function(player, sourceAuraId, targetAuraId, customChance, modeType, modeValue)
 	local data = sessionData[player]
 	if not data then return { Success = false, Message = &quot;No data&quot; } end
-	if not data.Inventory[auraId] or data.Inventory[auraId] &lt;= 0 then
-		return { Success = false, Message = &quot;Аура не найдена в инвентаре!&quot; }
+	if not sourceAuraId or not data.Inventory[sourceAuraId] or data.Inventory[sourceAuraId] &lt;= 0 then
+		return { Success = false, Message = &quot;Исходная аура не найдена в инвентаре!&quot; }
 	end
 
-	-- Deduct 1 aura
-	data.Inventory[auraId] = data.Inventory[auraId] - 1
-	if data.Inventory[auraId] &lt;= 0 then data.Inventory[auraId] = nil end
-	if data.EquippedAura == auraId and not data.Inventory[auraId] then
+	local sourceAura = AuraConfig.Auras[sourceAuraId]
+	if not sourceAura then
+		return { Success = false, Message = &quot;Неизвестная аура!&quot; }
+	end
+
+	-- Deduct 1 source aura
+	data.Inventory[sourceAuraId] = data.Inventory[sourceAuraId] - 1
+	if data.Inventory[sourceAuraId] &lt;= 0 then data.Inventory[sourceAuraId] = nil end
+	if data.EquippedAura == sourceAuraId and not data.Inventory[sourceAuraId] then
 		data.EquippedAura = &quot;None&quot;
 		if player.Character then AuraVisuals.ClearAura(player.Character) end
 	end
 
-	local chance = 50
-	local tierStep = 1
+	local chance = 50.0
+	local finalTargetAuraId = targetAuraId
+	local finalTargetAura = targetAuraId and AuraConfig.Auras[targetAuraId]
 
-	if modeType == &quot;Chance&quot; then
-		chance = math.clamp(tonumber(modeValue) or 50, 5, 95)
+	if finalTargetAura then
+		if customChance and tonumber(customChance) then
+			chance = math.clamp(math.floor(tonumber(customChance) * 10) / 10, 1.0, 85.0)
+		else
+			local sR = math.max(sourceAura.Rarity or 2, 2)
+			local tR = math.max(finalTargetAura.Rarity or 10, 4)
+			if sR &gt;= tR then
+				chance = 85.0
+			else
+				chance = math.clamp(math.floor((sR / tR) * 85 * 10) / 10, 1.0, 85.0)
+			end
+		end
+	elseif modeType == &quot;Custom&quot; and customChance then
+		chance = math.clamp(math.floor(tonumber(customChance) * 10) / 10, 1.0, 85.0)
+		local curIdx = AuraConfig.GetLadderIndex(sourceAuraId)
+		local step = math.max(1, math.floor((100 - chance) / 18))
+		local nextIdx = math.min(#AuraConfig.UpgradeLadder, curIdx + step)
+		finalTargetAuraId = AuraConfig.UpgradeLadder[nextIdx]
+		finalTargetAura = AuraConfig.Auras[finalTargetAuraId]
+	elseif modeType == &quot;Chance&quot; then
+		chance = math.clamp(tonumber(modeValue) or 50, 5, 85)
+		local tierStep = 1
 		if chance &gt;= 75 then tierStep = 1
 		elseif chance &gt;= 50 then tierStep = 2
 		else tierStep = 4 end
+		local curIdx = AuraConfig.GetLadderIndex(sourceAuraId)
+		local nextIdx = math.min(#AuraConfig.UpgradeLadder, curIdx + tierStep)
+		finalTargetAuraId = AuraConfig.UpgradeLadder[nextIdx]
+		finalTargetAura = AuraConfig.Auras[finalTargetAuraId]
 	elseif modeType == &quot;Multiplier&quot; then
 		local mult = tonumber(modeValue) or 2
-		if mult == 2 then chance = 48; tierStep = 2
-		elseif mult == 5 then chance = 19; tierStep = 5
-		elseif mult == 10 then chance = 9; tierStep = 8 end
+		local tierStep = 2
+		if mult == 2 then chance = 48.0; tierStep = 2
+		elseif mult == 5 then chance = 19.0; tierStep = 5
+		elseif mult == 10 then chance = 9.0; tierStep = 8 end
+		local curIdx = AuraConfig.GetLadderIndex(sourceAuraId)
+		local nextIdx = math.min(#AuraConfig.UpgradeLadder, curIdx + tierStep)
+		finalTargetAuraId = AuraConfig.UpgradeLadder[nextIdx]
+		finalTargetAura = AuraConfig.Auras[finalTargetAuraId]
+	else
+		chance = 50.0
+		local curIdx = AuraConfig.GetLadderIndex(sourceAuraId)
+		local nextIdx = math.min(#AuraConfig.UpgradeLadder, curIdx + 2)
+		finalTargetAuraId = AuraConfig.UpgradeLadder[nextIdx]
+		finalTargetAura = AuraConfig.Auras[finalTargetAuraId]
 	end
 
-	local roll = math.random(1, 100)
+	-- High-precision roll from 0.1 to 100.0
+	local roll = math.random(1, 1000) / 10.0
 	local won = (roll &lt;= chance)
 
-	if won then
-		local curIdx = AuraConfig.GetLadderIndex(auraId)
-		local nextIdx = math.min(#AuraConfig.UpgradeLadder, curIdx + tierStep)
-		local targetAuraId = AuraConfig.UpgradeLadder[nextIdx]
-		local targetAura = AuraConfig.Auras[targetAuraId]
-
-		data.Inventory[targetAuraId] = (data.Inventory[targetAuraId] or 0) + 1
-		local jackpot = 1000 * tierStep
+	if won and finalTargetAuraId and finalTargetAura then
+		data.Inventory[finalTargetAuraId] = (data.Inventory[finalTargetAuraId] or 0) + 1
+		local jackpot = 1500 + math.floor((finalTargetAura.Rarity or 100) * 0.05)
 		data.Coins = (data.Coins or 0) + jackpot
 
 		syncClient(player)
@@ -2364,11 +2642,12 @@ UpgradeAuraFunc.OnServerInvoke = function(player, auraId, modeType, modeValue)
 			Won = true,
 			Roll = roll,
 			Chance = chance,
-			TargetAura = targetAura,
+			TargetAura = finalTargetAura,
+			SourceAura = sourceAura,
 			Jackpot = jackpot,
 		}
 	else
-		local scrap = 50
+		local scrap = AuraConfig.GetScrapValue(sourceAura.Rarity) * 2
 		data.Coins = (data.Coins or 0) + scrap
 		syncClient(player)
 		return {
@@ -2376,6 +2655,8 @@ UpgradeAuraFunc.OnServerInvoke = function(player, auraId, modeType, modeValue)
 			Won = false,
 			Roll = roll,
 			Chance = chance,
+			TargetAura = finalTargetAura,
+			SourceAura = sourceAura,
 			Scrap = scrap,
 		}
 	end
@@ -2697,10 +2978,10 @@ local function createTopStatPill(icon, defaultText, color)
 	return label, pill
 end
 
-local rollsLabel, rollsPill = createTopStatPill(&quot;🎲&quot;, &quot;Rolls: 0&quot;, Color3.fromRGB(220, 225, 240))
-local luckLabel, luckPill = createTopStatPill(&quot;🍀&quot;, &quot;Luck: x1.0&quot;, Color3.fromRGB(74, 222, 128))
-local coinsLabel, coinsPill = createTopStatPill(&quot;🪙&quot;, &quot;Coins: 100&quot;, Color3.fromRGB(250, 204, 21))
-local potionLabel, potionPill = createTopStatPill(&quot;⏳&quot;, &quot;Pot: None&quot;, Color3.fromRGB(56, 189, 248))
+local rollsLabel, rollsPill = createTopStatPill(&quot;ROL&quot;, &quot;Rolls: 0&quot;, Color3.fromRGB(220, 225, 240))
+local luckLabel, luckPill = createTopStatPill(&quot;LCK&quot;, &quot;Luck: x1.0&quot;, Color3.fromRGB(74, 222, 128))
+local coinsLabel, coinsPill = createTopStatPill(&quot;COI&quot;, &quot;Coins: 100&quot;, Color3.fromRGB(250, 204, 21))
+local potionLabel, potionPill = createTopStatPill(&quot;POT&quot;, &quot;Pot: None&quot;, Color3.fromRGB(56, 189, 248))
 
 --------------------------------------------------------------------------------
 -- 2. TOP-RIGHT SPECIAL OFFER WIDGET (STARTER PACK PROMOTION)
@@ -2724,7 +3005,7 @@ offerTitle.BackgroundTransparency = 1
 offerTitle.Font = Enum.Font.GothamBlack
 offerTitle.TextSize = 11
 offerTitle.TextColor3 = Color3.fromRGB(250, 204, 21)
-offerTitle.Text = &quot;🔥 СТАРТЕР ПАК [-80%]&quot;
+offerTitle.Text = &quot;СТАРТЕР ПАК [-80%]&quot;
 offerTitle.Parent = specialOffer
 
 local offerSub = Instance.new(&quot;TextLabel&quot;)
@@ -2744,7 +3025,7 @@ offerBuyBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 offerBuyBtn.Font = Enum.Font.GothamBlack
 offerBuyBtn.TextSize = 11
 offerBuyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-offerBuyBtn.Text = &quot;💎 ЗАБРАТЬ (R$ 149 / ТЕСТ)&quot;
+offerBuyBtn.Text = &quot;ЗАБРАТЬ (R$ 149 / ТЕСТ)&quot;
 addCorner(offerBuyBtn, 6)
 offerBuyBtn.Parent = specialOffer
 
@@ -2806,39 +3087,39 @@ end
 
 local toggleShopModal = nil
 
-createQuickDonatePill(&quot;💎&quot;, &quot;ДОНАТ&quot;, Color3.fromRGB(168, 85, 247), function()
+createQuickDonatePill(&quot;R$&quot;, &quot;ДОНАТ&quot;, Color3.fromRGB(168, 85, 247), function()
 	if toggleShopModal then toggleShopModal() end
 end)
 
-createQuickDonatePill(&quot;🍀&quot;, &quot;x2 LUCK&quot;, Color3.fromRGB(74, 222, 128), function()
+createQuickDonatePill(&quot;2X&quot;, &quot;x2 LUCK&quot;, Color3.fromRGB(74, 222, 128), function()
 	ToggleTestPerkEvent:FireServer(&quot;X2Luck&quot;)
 end)
 
-createQuickDonatePill(&quot;⭐&quot;, &quot;VIP&quot;, Color3.fromRGB(245, 158, 11), function()
+createQuickDonatePill(&quot;VIP&quot;, &quot;VIP&quot;, Color3.fromRGB(245, 158, 11), function()
 	ToggleTestPerkEvent:FireServer(&quot;VIP&quot;)
 end)
 
-createQuickDonatePill(&quot;⚡&quot;, &quot;AUTO-ROLL&quot;, Color3.fromRGB(250, 204, 21), function()
+createQuickDonatePill(&quot;AUT&quot;, &quot;AUTO-ROLL&quot;, Color3.fromRGB(250, 204, 21), function()
 	ToggleTestPerkEvent:FireServer(&quot;AutoRoll&quot;)
 end)
 
-createQuickDonatePill(&quot;🧪&quot;, &quot;x5 ЗЕЛЬЕ&quot;, Color3.fromRGB(6, 182, 212), function()
+createQuickDonatePill(&quot;POT&quot;, &quot;x5 ЗЕЛЬЕ&quot;, Color3.fromRGB(6, 182, 212), function()
 	PurchaseProductFunc:InvokeServer(&quot;MegaPotion&quot;)
 end)
 
-createQuickDonatePill(&quot;🪙&quot;, &quot;+50K МОНЕТ&quot;, Color3.fromRGB(251, 191, 36), function()
+createQuickDonatePill(&quot;+COIN&quot;, &quot;+50K МОНЕТ&quot;, Color3.fromRGB(251, 191, 36), function()
 	PurchaseProductFunc:InvokeServer(&quot;CoinPack50k&quot;)
 end)
 
 --------------------------------------------------------------------------------
--- 4. BOTTOM CONTROLS &amp; MASSIVE ROLL BUTTON
+-- 4. BOTTOM CONTROLS &amp; REDESIGNED MODERN AAA ROLL BUTTON
 --------------------------------------------------------------------------------
 
 local bottomControls = Instance.new(&quot;Frame&quot;)
 bottomControls.Name = &quot;BottomControls&quot;
 bottomControls.AnchorPoint = Vector2.new(0.5, 1)
-bottomControls.Position = UDim2.new(0.5, 0, 1, -18)
-bottomControls.Size = UDim2.new(0, 460, 0, 110)
+bottomControls.Position = UDim2.new(0.5, 0, 1, -16)
+bottomControls.Size = UDim2.new(0, 480, 0, 116)
 bottomControls.BackgroundTransparency = 1
 bottomControls.Parent = screenGui
 
@@ -2846,26 +3127,80 @@ local rollButton = Instance.new(&quot;TextButton&quot;)
 rollButton.Name = &quot;RollButton&quot;
 rollButton.AnchorPoint = Vector2.new(0.5, 0)
 rollButton.Position = UDim2.new(0.5, 0, 0, 0)
-rollButton.Size = UDim2.new(0, 240, 0, 64)
-rollButton.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
-rollButton.Font = Enum.Font.GothamBlack
-rollButton.TextSize = 26
-rollButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-rollButton.Text = &quot;🎲 ROLL&quot;
-addCorner(rollButton, 16)
-local rollStroke = addStroke(rollButton, Color3.fromRGB(96, 165, 250), 2.5)
+rollButton.Size = UDim2.new(0, 260, 0, 68)
+rollButton.BackgroundColor3 = Color3.fromRGB(15, 20, 34)
+rollButton.AutoButtonColor = false
+rollButton.Text = &quot;&quot;
+addCorner(rollButton, 18)
+
+local rollStroke = addStroke(rollButton, Color3.fromRGB(56, 189, 248), 2.5)
 
 local rollGrad = Instance.new(&quot;UIGradient&quot;)
 rollGrad.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(59, 130, 246)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(29, 78, 216)),
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 58, 138)),
+	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(29, 78, 216)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(14, 165, 233)),
 })
 rollGrad.Rotation = 45
 rollGrad.Parent = rollButton
+
+local rollTitle = Instance.new(&quot;TextLabel&quot;)
+rollTitle.Size = UDim2.new(1, 0, 0, 30)
+rollTitle.Position = UDim2.new(0, 0, 0, 10)
+rollTitle.BackgroundTransparency = 1
+rollTitle.Font = Enum.Font.GothamBlack
+rollTitle.TextSize = 22
+rollTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+rollTitle.Text = &quot;КРУТИТЬ [ ROLL ]&quot;
+rollTitle.Parent = rollButton
+
+local rollSub = Instance.new(&quot;TextLabel&quot;)
+rollSub.Size = UDim2.new(1, 0, 0, 18)
+rollSub.Position = UDim2.new(0, 0, 0, 40)
+rollSub.BackgroundTransparency = 1
+rollSub.Font = Enum.Font.GothamBold
+rollSub.TextSize = 11
+rollSub.TextColor3 = Color3.fromRGB(147, 197, 253)
+rollSub.Text = &quot;[ ПРОБЕЛ / КЛИК ]&quot;
+rollSub.Parent = rollButton
+
+-- Interactive spring animations
+rollButton.MouseEnter:Connect(function()
+	TweenService:Create(rollButton, TweenInfo.new(0.18, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+		Size = UDim2.new(0, 272, 0, 72),
+		Position = UDim2.new(0.5, 0, 0, -2)
+	}):Play()
+	rollStroke.Color = Color3.fromRGB(125, 211, 252)
+	rollStroke.Thickness = 3.2
+end)
+
+rollButton.MouseLeave:Connect(function()
+	TweenService:Create(rollButton, TweenInfo.new(0.18, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+		Size = UDim2.new(0, 260, 0, 68),
+		Position = UDim2.new(0.5, 0, 0, 0)
+	}):Play()
+	rollStroke.Color = Color3.fromRGB(56, 189, 248)
+	rollStroke.Thickness = 2.5
+end)
+
+rollButton.MouseButton1Down:Connect(function()
+	TweenService:Create(rollButton, TweenInfo.new(0.08), {
+		Size = UDim2.new(0, 248, 0, 64),
+		Position = UDim2.new(0.5, 0, 0, 2)
+	}):Play()
+end)
+
+rollButton.MouseButton1Up:Connect(function()
+	TweenService:Create(rollButton, TweenInfo.new(0.12, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+		Size = UDim2.new(0, 272, 0, 72),
+		Position = UDim2.new(0.5, 0, 0, -2)
+	}):Play()
+end)
+
 rollButton.Parent = bottomControls
 
 local secondaryBar = Instance.new(&quot;Frame&quot;)
-secondaryBar.Size = UDim2.new(0, 320, 0, 34)
+secondaryBar.Size = UDim2.new(0, 340, 0, 34)
 secondaryBar.AnchorPoint = Vector2.new(0.5, 1)
 secondaryBar.Position = UDim2.new(0.5, 0, 1, 0)
 secondaryBar.BackgroundTransparency = 1
@@ -2879,30 +3214,30 @@ secLayout.Parent = secondaryBar
 
 local autoRollBtn = Instance.new(&quot;TextButton&quot;)
 autoRollBtn.Name = &quot;AutoRollBtn&quot;
-autoRollBtn.Size = UDim2.new(0, 150, 1, 0)
+autoRollBtn.Size = UDim2.new(0, 160, 1, 0)
 autoRollBtn.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
 autoRollBtn.Font = Enum.Font.GothamBold
 autoRollBtn.TextSize = 12
 autoRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
-autoRollBtn.Text = &quot;⚡ AUTO: OFF&quot;
+autoRollBtn.Text = &quot;АВТО-РОЛЛ: ВЫКЛ&quot;
 addCorner(autoRollBtn, 8)
 local autoStroke = addStroke(autoRollBtn, Color3.fromRGB(45, 52, 70), 1.2)
 autoRollBtn.Parent = secondaryBar
 
 local fastRollBtn = Instance.new(&quot;TextButton&quot;)
 fastRollBtn.Name = &quot;FastRollBtn&quot;
-fastRollBtn.Size = UDim2.new(0, 150, 1, 0)
+fastRollBtn.Size = UDim2.new(0, 160, 1, 0)
 fastRollBtn.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
 fastRollBtn.Font = Enum.Font.GothamBold
 fastRollBtn.TextSize = 12
 fastRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
-fastRollBtn.Text = &quot;⏩ FAST: OFF&quot;
+fastRollBtn.Text = &quot;ФАСТ-РОЛЛ: ВЫКЛ&quot;
 addCorner(fastRollBtn, 8)
 local fastStroke = addStroke(fastRollBtn, Color3.fromRGB(45, 52, 70), 1.2)
 fastRollBtn.Parent = secondaryBar
 
 --------------------------------------------------------------------------------
--- 5. LEFT DOCK NAVIGATION BAR (INCLUDING BATTLES &amp; UPGRADER)
+-- 5. LEFT DOCK NAVIGATION BAR (HIGH-TECH MONOGRAM BADGES)
 --------------------------------------------------------------------------------
 
 local leftDock = Instance.new(&quot;Frame&quot;)
@@ -2924,36 +3259,45 @@ dockLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 dockLayout.Padding = UDim.new(0, 8)
 dockLayout.Parent = leftDock
 
-local function createDockButton(name, icon, tooltipText)
+local function createDockButton(name, labelText, tooltipText)
 	local btn = Instance.new(&quot;TextButton&quot;)
 	btn.Name = name .. &quot;Btn&quot;
 	btn.Size = UDim2.new(0, 48, 0, 48)
-	btn.BackgroundColor3 = Color3.fromRGB(22, 26, 38)
-	btn.Font = Enum.Font.GothamBold
-	btn.TextSize = 22
-	btn.Text = icon
+	btn.BackgroundColor3 = Color3.fromRGB(20, 24, 36)
+	btn.Font = Enum.Font.GothamBlack
+	btn.TextSize = 12
+	btn.TextColor3 = Color3.fromRGB(220, 225, 240)
+	btn.Text = labelText
 	addCorner(btn, 10)
-	local stroke = addStroke(btn, Color3.fromRGB(45, 52, 72), 1)
+	local stroke = addStroke(btn, Color3.fromRGB(45, 55, 78), 1.2)
 
 	btn.MouseEnter:Connect(function()
-		TweenService:Create(btn, TweenInfo.new(0.15), { BackgroundColor3 = Color3.fromRGB(37, 99, 235) }):Play()
+		TweenService:Create(btn, TweenInfo.new(0.15), {
+			BackgroundColor3 = Color3.fromRGB(37, 99, 235),
+			Size = UDim2.new(0, 52, 0, 52)
+		}):Play()
+		btn.TextColor3 = Color3.fromRGB(255, 255, 255)
 		stroke.Color = Color3.fromRGB(96, 165, 250)
 	end)
 	btn.MouseLeave:Connect(function()
-		TweenService:Create(btn, TweenInfo.new(0.15), { BackgroundColor3 = Color3.fromRGB(22, 26, 38) }):Play()
-		stroke.Color = Color3.fromRGB(45, 52, 72)
+		TweenService:Create(btn, TweenInfo.new(0.15), {
+			BackgroundColor3 = Color3.fromRGB(20, 24, 36),
+			Size = UDim2.new(0, 48, 0, 48)
+		}):Play()
+		btn.TextColor3 = Color3.fromRGB(220, 225, 240)
+		stroke.Color = Color3.fromRGB(45, 55, 78)
 	end)
 
 	btn.Parent = leftDock
 	return btn
 end
 
-local navInventoryBtn = createDockButton(&quot;Inventory&quot;, &quot;🎒&quot;, &quot;Инвентарь&quot;)
-local navUpgraderBtn = createDockButton(&quot;Upgrader&quot;, &quot;🎰&quot;, &quot;Апгрейдер Аур&quot;)
-local navPvPBtn = createDockButton(&quot;PvP&quot;, &quot;⚔️&quot;, &quot;Батлы Аур&quot;)
-local navCraftingBtn = createDockButton(&quot;Crafting&quot;, &quot;⚗️&quot;, &quot;Кузница Крафта&quot;)
-local navShopBtn = createDockButton(&quot;Shop&quot;, &quot;🛒&quot;, &quot;Магазин Доната&quot;)
-local navSettingsBtn = createDockButton(&quot;Settings&quot;, &quot;⚙️&quot;, &quot;Настройки&quot;)
+local navInventoryBtn = createDockButton(&quot;Inventory&quot;, &quot;INV&quot;, &quot;Инвентарь&quot;)
+local navUpgraderBtn = createDockButton(&quot;Upgrader&quot;, &quot;UPG&quot;, &quot;Апгрейдер Аур&quot;)
+local navPvPBtn = createDockButton(&quot;PvP&quot;, &quot;PVP&quot;, &quot;Батлы Аур&quot;)
+local navCraftingBtn = createDockButton(&quot;Crafting&quot;, &quot;CRF&quot;, &quot;Кузница Крафта&quot;)
+local navShopBtn = createDockButton(&quot;Shop&quot;, &quot;SHP&quot;, &quot;Магазин Доната&quot;)
+local navSettingsBtn = createDockButton(&quot;Settings&quot;, &quot;SET&quot;, &quot;Настройки&quot;)
 
 --------------------------------------------------------------------------------
 -- 6. BOTTOM-LEFT EQUIPPED AURA SHOWCASE CARD
@@ -3000,7 +3344,7 @@ unequipBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 48)
 unequipBtn.Font = Enum.Font.GothamBold
 unequipBtn.TextSize = 12
 unequipBtn.TextColor3 = Color3.fromRGB(248, 113, 113)
-unequipBtn.Text = &quot;✕&quot;
+unequipBtn.Text = &quot;[X]&quot;
 addCorner(unequipBtn, 6)
 unequipBtn.Parent = equippedCard
 
@@ -3045,7 +3389,7 @@ local function createModal(titleText, width, height)
 	closeBtn.Font = Enum.Font.GothamBold
 	closeBtn.TextSize = 16
 	closeBtn.TextColor3 = Color3.fromRGB(200, 205, 225)
-	closeBtn.Text = &quot;✕&quot;
+	closeBtn.Text = &quot;[X]&quot;
 	addCorner(closeBtn, 8)
 	closeBtn.Parent = header
 
@@ -3084,7 +3428,7 @@ end
 -- 8. INVENTORY WINDOW (EXPLICIT EQUIP &amp; SELL BUTTONS WITH ITEM ICONS)
 --------------------------------------------------------------------------------
 
-local invWindow, invContent = createModal(&quot;🎒 ИНВЕНТАРЬ АУР&quot;, 680, 480)
+local invWindow, invContent = createModal(&quot;ИНВЕНТАРЬ АУР&quot;, 680, 480)
 
 local topInvBar = Instance.new(&quot;Frame&quot;)
 topInvBar.Size = UDim2.new(1, 0, 0, 28)
@@ -3195,7 +3539,7 @@ equipActionBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 equipActionBtn.Font = Enum.Font.GothamBlack
 equipActionBtn.TextSize = 13
 equipActionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-equipActionBtn.Text = &quot;⚔️ ЭКИПИРОВАТЬ&quot;
+equipActionBtn.Text = &quot;ЭКИПИРОВАТЬ&quot;
 equipActionBtn.Visible = false
 addCorner(equipActionBtn, 8)
 equipActionBtn.Parent = detailPanel
@@ -3207,7 +3551,7 @@ sellActionBtn.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
 sellActionBtn.Font = Enum.Font.GothamBlack
 sellActionBtn.TextSize = 12
 sellActionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-sellActionBtn.Text = &quot;💰 ПРОДАТЬ (+50 МОНЕТ)&quot;
+sellActionBtn.Text = &quot;ПРОДАТЬ (+50 МОНЕТ)&quot;
 sellActionBtn.Visible = false
 addCorner(sellActionBtn, 8)
 sellActionBtn.Parent = detailPanel
@@ -3235,8 +3579,19 @@ local function refreshInventoryUI()
 			iconImg.Position = UDim2.new(0.5, -18, 0, 6)
 			iconImg.BackgroundTransparency = 1
 			iconImg.Image = auraData.Icon or &quot;rbxasset://textures/particles/sparkles_main.dds&quot;
-			iconImg.ImageColor3 = auraData.Color
+			iconImg.ImageColor3 = Color3.fromRGB(255, 255, 255)
 			iconImg.Parent = card
+
+			local symBadge = Instance.new(&quot;TextLabel&quot;)
+			symBadge.Size = UDim2.new(0, 26, 0, 14)
+			symBadge.Position = UDim2.new(1, -28, 0, 4)
+			symBadge.BackgroundColor3 = Color3.fromRGB(12, 15, 24)
+			symBadge.Font = Enum.Font.GothamBlack
+			symBadge.TextSize = 8
+			symBadge.TextColor3 = auraData.Color
+			symBadge.Text = auraData.Symbol or &quot;AUR&quot;
+			addCorner(symBadge, 3)
+			symBadge.Parent = card
 
 			local name = Instance.new(&quot;TextLabel&quot;)
 			name.Size = UDim2.new(1, -8, 0, 20)
@@ -3291,19 +3646,19 @@ local function refreshInventoryUI()
 				detailRarity.Text = AuraConfig.FormatRarity(auraData.Rarity or 0)
 				detailDesc.Text = auraData.Description
 				detailIcon.Image = auraData.Icon or &quot;rbxasset://textures/particles/sparkles_main.dds&quot;
-				detailIcon.ImageColor3 = auraData.Color
+				detailIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
 
 				equipActionBtn.Visible = true
 				if localData.EquippedAura == auraId then
-					equipActionBtn.Text = &quot;✕ СНЯТЬ АУРУ&quot;
+					equipActionBtn.Text = &quot;СНЯТЬ АУРУ&quot;
 					equipActionBtn.BackgroundColor3 = Color3.fromRGB(60, 70, 85)
 				else
-					equipActionBtn.Text = &quot;⚔️ ЭКИПИРОВАТЬ&quot;
+					equipActionBtn.Text = &quot;ЭКИПИРОВАТЬ&quot;
 					equipActionBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 				end
 
 				local scrapCoins = AuraConfig.GetScrapValue(auraData.Rarity or 0)
-				sellActionBtn.Text = string.format(&quot;💰 ПРОДАТЬ (+%d МОНЕТ)&quot;, scrapCoins)
+				sellActionBtn.Text = string.format(&quot;ПРОДАТЬ (+%d МОНЕТ)&quot;, scrapCoins)
 				sellActionBtn.Visible = true
 			end)
 
@@ -3364,246 +3719,690 @@ autoDeleteBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------------------------------------------------
--- 9. AURA UPGRADER WINDOW (30% / 50% / 75% &amp; 2x / 5x / 10x RISK MACHINE)
+-- 9. AURA UPGRADER WINDOW (WHEEL ANIMATION, 2 BLOCKS &amp; CUSTOM CHANCE)
 --------------------------------------------------------------------------------
 
-local upgWindow, upgContent = createModal(&quot;🎰 АПГРЕЙДЕР АУР (РИСК-МАШИНА)&quot;, 700, 480)
+local upgWindow, upgContent = createModal(&quot;АПГРЕЙДЕР АУР [ РИСК-КОЛЕСО ]&quot;, 880, 540)
 
--- Left: Source Aura Slot
-local upgSlot = Instance.new(&quot;Frame&quot;)
-upgSlot.Size = UDim2.new(0, 210, 1, 0)
-upgSlot.BackgroundColor3 = Color3.fromRGB(16, 19, 28)
-addCorner(upgSlot, 12)
-local slotStroke = addStroke(upgSlot, Color3.fromRGB(45, 55, 78), 1.5)
-addPadding(upgSlot, 12, 12, 12, 12)
-upgSlot.Parent = upgContent
+local selectedSourceAuraId = nil
+local selectedTargetAuraId = nil
+local isUpgraderFast = false
+local upgraderChance = 50.0
+local isWheelSpinning = false
 
-local upgSlotHeader = Instance.new(&quot;TextLabel&quot;)
-upgSlotHeader.Size = UDim2.new(1, 0, 0, 22)
-upgSlotHeader.BackgroundTransparency = 1
-upgSlotHeader.Font = Enum.Font.GothamBlack
-upgSlotHeader.TextSize = 13
-upgSlotHeader.TextColor3 = Color3.fromRGB(240, 243, 250)
-upgSlotHeader.Text = &quot;АУРА ДЛЯ АПГРЕЙДА&quot;
-upgSlotHeader.Parent = upgSlot
+-- Top Control Bar of Upgrader (Mode Toggle: Arcade vs Fast)
+local upgTopBar = Instance.new(&quot;Frame&quot;)
+upgTopBar.Size = UDim2.new(1, 0, 0, 32)
+upgTopBar.Position = UDim2.new(0, 0, 0, 0)
+upgTopBar.BackgroundTransparency = 1
+upgTopBar.Parent = upgContent
 
-local upgSlotIcon = Instance.new(&quot;ImageLabel&quot;)
-upgSlotIcon.Size = UDim2.new(0, 64, 0, 64)
-upgSlotIcon.Position = UDim2.new(0.5, -32, 0, 36)
-upgSlotIcon.BackgroundTransparency = 1
-upgSlotIcon.Image = &quot;rbxasset://textures/particles/sparkles_main.dds&quot;
-upgSlotIcon.Parent = upgSlot
+local upgModeToggleBtn = Instance.new(&quot;TextButton&quot;)
+upgModeToggleBtn.Size = UDim2.new(0, 240, 1, 0)
+upgModeToggleBtn.Position = UDim2.new(1, -240, 0, 0)
+upgModeToggleBtn.BackgroundColor3 = Color3.fromRGB(24, 28, 42)
+upgModeToggleBtn.Font = Enum.Font.GothamBold
+upgModeToggleBtn.TextSize = 11
+upgModeToggleBtn.TextColor3 = Color3.fromRGB(56, 189, 248)
+upgModeToggleBtn.Text = &quot;РЕЖИМ: АРКАДНЫЙ (3.2С)&quot;
+addCorner(upgModeToggleBtn, 6)
+local modeStroke = addStroke(upgModeToggleBtn, Color3.fromRGB(56, 189, 248), 1.2)
+upgModeToggleBtn.Parent = upgTopBar
 
-local upgSlotName = Instance.new(&quot;TextLabel&quot;)
-upgSlotName.Size = UDim2.new(1, 0, 0, 22)
-upgSlotName.Position = UDim2.new(0, 0, 0, 110)
-upgSlotName.BackgroundTransparency = 1
-upgSlotName.Font = Enum.Font.GothamBlack
-upgSlotName.TextSize = 15
-upgSlotName.TextColor3 = Color3.fromRGB(250, 204, 21)
-upgSlotName.Text = &quot;Выберите в Инвентаре&quot;
-upgSlotName.Parent = upgSlot
-
-local upgSelectBtn = Instance.new(&quot;TextButton&quot;)
-upgSelectBtn.Size = UDim2.new(1, 0, 0, 38)
-upgSelectBtn.Position = UDim2.new(0, 0, 1, -40)
-upgSelectBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
-upgSelectBtn.Font = Enum.Font.GothamBold
-upgSelectBtn.TextSize = 12
-upgSelectBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-upgSelectBtn.Text = &quot;🎒 ВЫБРАТЬ ИЗ СУМКИ&quot;
-addCorner(upgSelectBtn, 8)
-upgSelectBtn.Parent = upgSlot
-
--- Right: Risk Dial &amp; Mode Selectors
-local upgRight = Instance.new(&quot;Frame&quot;)
-upgRight.Size = UDim2.new(1, -225, 1, 0)
-upgRight.Position = UDim2.new(0, 225, 0, 0)
-upgRight.BackgroundColor3 = Color3.fromRGB(16, 19, 28)
-addCorner(upgRight, 12)
-addStroke(upgRight, Color3.fromRGB(45, 55, 78), 1.5)
-addPadding(upgRight, 12, 12, 12, 12)
-upgRight.Parent = upgContent
-
-local modeHeader = Instance.new(&quot;TextLabel&quot;)
-modeHeader.Size = UDim2.new(1, 0, 0, 20)
-modeHeader.BackgroundTransparency = 1
-modeHeader.Font = Enum.Font.GothamBlack
-modeHeader.TextSize = 13
-modeHeader.TextColor3 = Color3.fromRGB(250, 204, 21)
-modeHeader.Text = &quot;РЕЖИМ АПГРЕЙДА:&quot;
-modeHeader.TextXAlignment = Enum.TextXAlignment.Left
-modeHeader.Parent = upgRight
-
--- 30% / 50% / 75% Chance Buttons
-local chanceRow = Instance.new(&quot;Frame&quot;)
-chanceRow.Size = UDim2.new(1, 0, 0, 38)
-chanceRow.Position = UDim2.new(0, 0, 0, 24)
-chanceRow.BackgroundTransparency = 1
-chanceRow.Parent = upgRight
-
-local chanceLayout = Instance.new(&quot;UIListLayout&quot;)
-chanceLayout.FillDirection = Enum.FillDirection.Horizontal
-chanceLayout.Padding = UDim.new(0, 8)
-chanceLayout.Parent = chanceRow
-
-local function createPillOption(parent, text, color, onClick)
-	local btn = Instance.new(&quot;TextButton&quot;)
-	btn.Size = UDim2.new(0.31, 0, 1, 0)
-	btn.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
-	btn.Font = Enum.Font.GothamBold
-	btn.TextSize = 11
-	btn.TextColor3 = color
-	btn.Text = text
-	addCorner(btn, 8)
-	local strk = addStroke(btn, color, 1.2)
-
-	btn.MouseButton1Click:Connect(function()
-		SoundEffects.Play(&quot;Click&quot;)
-		if onClick then onClick(btn) end
-	end)
-
-	btn.Parent = parent
-	return btn
-end
-
--- 2x / 5x / 10x Multiplier Buttons
-local multHeader = Instance.new(&quot;TextLabel&quot;)
-multHeader.Size = UDim2.new(1, 0, 0, 20)
-multHeader.Position = UDim2.new(0, 0, 0, 68)
-multHeader.BackgroundTransparency = 1
-multHeader.Font = Enum.Font.GothamBlack
-multHeader.TextSize = 13
-multHeader.TextColor3 = Color3.fromRGB(250, 204, 21)
-multHeader.Text = &quot;ИЛИ МНОЖИТЕЛЬ ВЫИГРЫША:&quot;
-multHeader.TextXAlignment = Enum.TextXAlignment.Left
-multHeader.Parent = upgRight
-
-local multRow = Instance.new(&quot;Frame&quot;)
-multRow.Size = UDim2.new(1, 0, 0, 38)
-multRow.Position = UDim2.new(0, 0, 0, 92)
-multRow.BackgroundTransparency = 1
-multRow.Parent = upgRight
-
-local multLayout = Instance.new(&quot;UIListLayout&quot;)
-multLayout.FillDirection = Enum.FillDirection.Horizontal
-multLayout.Padding = UDim.new(0, 8)
-multLayout.Parent = multRow
-
-local chanceText = Instance.new(&quot;TextLabel&quot;)
-chanceText.Size = UDim2.new(1, 0, 0, 24)
-chanceText.Position = UDim2.new(0, 0, 0, 138)
-chanceText.BackgroundTransparency = 1
-chanceText.Font = Enum.Font.GothamBlack
-chanceText.TextSize = 16
-chanceText.TextColor3 = Color3.fromRGB(74, 222, 128)
-chanceText.Text = &quot;Шанс Успеха: 50% (+2 Тира)&quot;
-chanceText.Parent = upgRight
-
-createPillOption(chanceRow, &quot;30% ШАНС&quot;, Color3.fromRGB(239, 68, 68), function()
-	upgraderMode = &quot;Chance&quot;
-	upgraderValue = 30
-	chanceText.Text = &quot;Шанс Успеха: 30% (+4 Тира!)&quot;
-	chanceText.TextColor3 = Color3.fromRGB(239, 68, 68)
+upgModeToggleBtn.MouseButton1Click:Connect(function()
+	SoundEffects.Play(&quot;Click&quot;)
+	isUpgraderFast = not isUpgraderFast
+	if isUpgraderFast then
+		upgModeToggleBtn.Text = &quot;РЕЖИМ: БЫСТРЫЙ (0.6С)&quot;
+		upgModeToggleBtn.TextColor3 = Color3.fromRGB(251, 191, 36)
+		modeStroke.Color = Color3.fromRGB(251, 191, 36)
+	else
+		upgModeToggleBtn.Text = &quot;РЕЖИМ: АРКАДНЫЙ (3.2С)&quot;
+		upgModeToggleBtn.TextColor3 = Color3.fromRGB(56, 189, 248)
+		modeStroke.Color = Color3.fromRGB(56, 189, 248)
+	end
 end)
 
-createPillOption(chanceRow, &quot;50% ШАНС&quot;, Color3.fromRGB(245, 158, 11), function()
-	upgraderMode = &quot;Chance&quot;
-	upgraderValue = 50
-	chanceText.Text = &quot;Шанс Успеха: 50% (+2 Тира)&quot;
-	chanceText.TextColor3 = Color3.fromRGB(245, 158, 11)
-end)
+-- Main 3-Column Layout
+-- Column 1: BLOCK 1 - Source Aura / Inventory Selection (Left)
+local upgColLeft = Instance.new(&quot;Frame&quot;)
+upgColLeft.Size = UDim2.new(0, 240, 1, -38)
+upgColLeft.Position = UDim2.new(0, 0, 0, 38)
+upgColLeft.BackgroundColor3 = Color3.fromRGB(16, 19, 28)
+addCorner(upgColLeft, 10)
+addStroke(upgColLeft, Color3.fromRGB(45, 55, 78), 1.2)
+addPadding(upgColLeft, 8, 8, 8, 8)
+upgColLeft.Parent = upgContent
 
-createPillOption(chanceRow, &quot;75% ШАНС&quot;, Color3.fromRGB(74, 222, 128), function()
-	upgraderMode = &quot;Chance&quot;
-	upgraderValue = 75
-	chanceText.Text = &quot;Шанс Успеха: 75% (+1 Тир)&quot;
-	chanceText.TextColor3 = Color3.fromRGB(74, 222, 128)
-end)
+local colLeftTitle = Instance.new(&quot;TextLabel&quot;)
+colLeftTitle.Size = UDim2.new(1, 0, 0, 18)
+colLeftTitle.BackgroundTransparency = 1
+colLeftTitle.Font = Enum.Font.GothamBlack
+colLeftTitle.TextSize = 11
+colLeftTitle.TextColor3 = Color3.fromRGB(240, 243, 250)
+colLeftTitle.Text = &quot;1. ВАША АУРА (ИНВЕНТАРЬ)&quot;
+colLeftTitle.Parent = upgColLeft
 
-createPillOption(multRow, &quot;2x МНОЖИТЕЛЬ&quot;, Color3.fromRGB(56, 189, 248), function()
-	upgraderMode = &quot;Multiplier&quot;
-	upgraderValue = 2
-	chanceText.Text = &quot;Множитель 2x (Шанс ~48%)&quot;
-	chanceText.TextColor3 = Color3.fromRGB(56, 189, 248)
-end)
+-- Source Preview Card
+local sourcePreviewFrame = Instance.new(&quot;Frame&quot;)
+sourcePreviewFrame.Size = UDim2.new(1, 0, 0, 68)
+sourcePreviewFrame.Position = UDim2.new(0, 0, 0, 22)
+sourcePreviewFrame.BackgroundColor3 = Color3.fromRGB(22, 26, 38)
+addCorner(sourcePreviewFrame, 8)
+local srcStroke = addStroke(sourcePreviewFrame, Color3.fromRGB(56, 189, 248), 1.2)
+sourcePreviewFrame.Parent = upgColLeft
 
-createPillOption(multRow, &quot;5x МНОЖИТЕЛЬ&quot;, Color3.fromRGB(168, 85, 247), function()
-	upgraderMode = &quot;Multiplier&quot;
-	upgraderValue = 5
-	chanceText.Text = &quot;Множитель 5x (Шанс ~19%!)&quot;
-	chanceText.TextColor3 = Color3.fromRGB(168, 85, 247)
-end)
+local srcIcon = Instance.new(&quot;ImageLabel&quot;)
+srcIcon.Size = UDim2.new(0, 38, 0, 38)
+srcIcon.Position = UDim2.new(0, 8, 0.5, -19)
+srcIcon.BackgroundTransparency = 1
+srcIcon.Image = &quot;rbxasset://textures/particles/sparkles_main.dds&quot;
+srcIcon.Parent = sourcePreviewFrame
 
-createPillOption(multRow, &quot;10x МНОЖИТЕЛЬ&quot;, Color3.fromRGB(250, 204, 21), function()
-	upgraderMode = &quot;Multiplier&quot;
-	upgraderValue = 10
-	chanceText.Text = &quot;Множитель 10x (Шанс ~9% ДЖЕКПОТ!)&quot;
-	chanceText.TextColor3 = Color3.fromRGB(250, 204, 21)
-end)
+local srcNameLbl = Instance.new(&quot;TextLabel&quot;)
+srcNameLbl.Size = UDim2.new(1, -54, 0, 18)
+srcNameLbl.Position = UDim2.new(0, 50, 0, 8)
+srcNameLbl.BackgroundTransparency = 1
+srcNameLbl.Font = Enum.Font.GothamBlack
+srcNameLbl.TextSize = 12
+srcNameLbl.TextColor3 = Color3.fromRGB(250, 204, 21)
+srcNameLbl.Text = &quot;Выберите ауру ниже&quot;
+srcNameLbl.TextXAlignment = Enum.TextXAlignment.Left
+srcNameLbl.Parent = sourcePreviewFrame
 
+local srcSubLbl = Instance.new(&quot;TextLabel&quot;)
+srcSubLbl.Size = UDim2.new(1, -54, 0, 16)
+srcSubLbl.Position = UDim2.new(0, 50, 0, 28)
+srcSubLbl.BackgroundTransparency = 1
+srcSubLbl.Font = Enum.Font.GothamMedium
+srcSubLbl.TextSize = 9
+srcSubLbl.TextColor3 = Color3.fromRGB(156, 163, 175)
+srcSubLbl.Text = &quot;Нажмите в списке ниже&quot;
+srcSubLbl.TextXAlignment = Enum.TextXAlignment.Left
+srcSubLbl.Parent = sourcePreviewFrame
+
+local srcScrapLbl = Instance.new(&quot;TextLabel&quot;)
+srcScrapLbl.Size = UDim2.new(1, -54, 0, 14)
+srcScrapLbl.Position = UDim2.new(0, 50, 0, 46)
+srcScrapLbl.BackgroundTransparency = 1
+srcScrapLbl.Font = Enum.Font.GothamBold
+srcScrapLbl.TextSize = 9
+srcScrapLbl.TextColor3 = Color3.fromRGB(74, 222, 128)
+srcScrapLbl.Text = &quot;Возврат: +50 монет&quot;
+srcScrapLbl.TextXAlignment = Enum.TextXAlignment.Left
+srcScrapLbl.Parent = sourcePreviewFrame
+
+-- Inventory Scroll
+local srcScroll = Instance.new(&quot;ScrollingFrame&quot;)
+srcScroll.Size = UDim2.new(1, 0, 1, -100)
+srcScroll.Position = UDim2.new(0, 0, 0, 96)
+srcScroll.BackgroundTransparency = 1
+srcScroll.ScrollBarThickness = 4
+srcScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+srcScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+srcScroll.Parent = upgColLeft
+
+local srcLayout = Instance.new(&quot;UIGridLayout&quot;)
+srcLayout.CellSize = UDim2.new(0, 68, 0, 80)
+srcLayout.CellPadding = UDim2.new(0, 6, 0, 6)
+srcLayout.Parent = srcScroll
+
+-- Column 2: CENTER - UPGRADER WHEEL &amp; CONTROLS
+local upgColCenter = Instance.new(&quot;Frame&quot;)
+upgColCenter.Size = UDim2.new(1, -500, 1, -38)
+upgColCenter.Position = UDim2.new(0, 250, 0, 38)
+upgColCenter.BackgroundColor3 = Color3.fromRGB(14, 17, 26)
+addCorner(upgColCenter, 10)
+addStroke(upgColCenter, Color3.fromRGB(45, 55, 78), 1.2)
+addPadding(upgColCenter, 10, 10, 8, 8)
+upgColCenter.Parent = upgContent
+
+-- Upgrader Wheel Circular Container
+local wheelFrame = Instance.new(&quot;Frame&quot;)
+wheelFrame.Size = UDim2.new(0, 180, 0, 180)
+wheelFrame.AnchorPoint = Vector2.new(0.5, 0)
+wheelFrame.Position = UDim2.new(0.5, 0, 0, 4)
+wheelFrame.BackgroundColor3 = Color3.fromRGB(18, 22, 34)
+addCorner(wheelFrame, 90)
+local wheelStroke = addStroke(wheelFrame, Color3.fromRGB(56, 189, 248), 2.8)
+wheelFrame.Parent = upgColCenter
+
+-- Needle Pointer Container (Rotates around center)
+local needleContainer = Instance.new(&quot;Frame&quot;)
+needleContainer.Size = UDim2.new(1, 0, 1, 0)
+needleContainer.AnchorPoint = Vector2.new(0.5, 0.5)
+needleContainer.Position = UDim2.new(0.5, 0, 0.5, 0)
+needleContainer.BackgroundTransparency = 1
+needleContainer.Parent = wheelFrame
+
+local needle = Instance.new(&quot;Frame&quot;)
+needle.Size = UDim2.new(0, 4, 0, 78)
+needle.AnchorPoint = Vector2.new(0.5, 1)
+needle.Position = UDim2.new(0.5, 0, 0.5, 0)
+needle.BackgroundColor3 = Color3.fromRGB(250, 204, 21)
+addCorner(needle, 2)
+needle.Parent = needleContainer
+
+local needleArrow = Instance.new(&quot;Frame&quot;)
+needleArrow.Size = UDim2.new(0, 12, 0, 12)
+needleArrow.AnchorPoint = Vector2.new(0.5, 0.5)
+needleArrow.Position = UDim2.new(0.5, 0, 0, 4)
+needleArrow.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
+needleArrow.Rotation = 45
+needleArrow.Parent = needleContainer
+
+-- Center Hub inside Wheel
+local centerHub = Instance.new(&quot;Frame&quot;)
+centerHub.Size = UDim2.new(0, 98, 0, 98)
+centerHub.AnchorPoint = Vector2.new(0.5, 0.5)
+centerHub.Position = UDim2.new(0.5, 0, 0.5, 0)
+centerHub.BackgroundColor3 = Color3.fromRGB(12, 15, 24)
+addCorner(centerHub, 49)
+local hubStroke = addStroke(centerHub, Color3.fromRGB(74, 222, 128), 2.0)
+centerHub.Parent = wheelFrame
+
+local chanceDisplay = Instance.new(&quot;TextLabel&quot;)
+chanceDisplay.Size = UDim2.new(1, 0, 0, 24)
+chanceDisplay.Position = UDim2.new(0, 0, 0, 18)
+chanceDisplay.BackgroundTransparency = 1
+chanceDisplay.Font = Enum.Font.GothamBlack
+chanceDisplay.TextSize = 17
+chanceDisplay.TextColor3 = Color3.fromRGB(74, 222, 128)
+chanceDisplay.Text = &quot;50.0%&quot;
+chanceDisplay.Parent = centerHub
+
+local multDisplay = Instance.new(&quot;TextLabel&quot;)
+multDisplay.Size = UDim2.new(1, 0, 0, 16)
+multDisplay.Position = UDim2.new(0, 0, 0, 44)
+multDisplay.BackgroundTransparency = 1
+multDisplay.Font = Enum.Font.GothamBold
+multDisplay.TextSize = 11
+multDisplay.TextColor3 = Color3.fromRGB(250, 204, 21)
+multDisplay.Text = &quot;2.00x МНОЖИТЕЛЬ&quot;
+multDisplay.Parent = centerHub
+
+local sectorDisplay = Instance.new(&quot;TextLabel&quot;)
+sectorDisplay.Size = UDim2.new(1, 0, 0, 14)
+sectorDisplay.Position = UDim2.new(0, 0, 0, 64)
+sectorDisplay.BackgroundTransparency = 1
+sectorDisplay.Font = Enum.Font.GothamMedium
+sectorDisplay.TextSize = 8
+sectorDisplay.TextColor3 = Color3.fromRGB(147, 197, 253)
+sectorDisplay.Text = &quot;СЕКТОР: 0 град. - 180 град.&quot;
+sectorDisplay.Parent = centerHub
+
+-- Presets Row
+local presetRow = Instance.new(&quot;Frame&quot;)
+presetRow.Size = UDim2.new(1, 0, 0, 28)
+presetRow.Position = UDim2.new(0, 0, 0, 196)
+presetRow.BackgroundTransparency = 1
+presetRow.Parent = upgColCenter
+
+local presetLayout = Instance.new(&quot;UIListLayout&quot;)
+presetLayout.FillDirection = Enum.FillDirection.Horizontal
+presetLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+presetLayout.Padding = UDim.new(0, 6)
+presetLayout.Parent = presetRow
+
+-- Custom Chance Row
+local customRow = Instance.new(&quot;Frame&quot;)
+customRow.Size = UDim2.new(1, 0, 0, 32)
+customRow.Position = UDim2.new(0, 0, 0, 230)
+customRow.BackgroundTransparency = 1
+customRow.Parent = upgColCenter
+
+local customTitle = Instance.new(&quot;TextLabel&quot;)
+customTitle.Size = UDim2.new(0, 85, 1, 0)
+customTitle.BackgroundTransparency = 1
+customTitle.Font = Enum.Font.GothamBold
+customTitle.TextSize = 10
+customTitle.TextColor3 = Color3.fromRGB(200, 205, 220)
+customTitle.Text = &quot;СВОЙ ШАНС:&quot;
+customTitle.TextXAlignment = Enum.TextXAlignment.Left
+customTitle.Parent = customRow
+
+local minusBtn = Instance.new(&quot;TextButton&quot;)
+minusBtn.Size = UDim2.new(0, 38, 1, 0)
+minusBtn.Position = UDim2.new(0, 88, 0, 0)
+minusBtn.BackgroundColor3 = Color3.fromRGB(24, 28, 42)
+minusBtn.Font = Enum.Font.GothamBlack
+minusBtn.TextSize = 12
+minusBtn.TextColor3 = Color3.fromRGB(239, 68, 68)
+minusBtn.Text = &quot;-5%&quot;
+addCorner(minusBtn, 6)
+minusBtn.Parent = customRow
+
+local customBox = Instance.new(&quot;TextBox&quot;)
+customBox.Size = UDim2.new(0, 78, 1, 0)
+customBox.Position = UDim2.new(0, 132, 0, 0)
+customBox.BackgroundColor3 = Color3.fromRGB(20, 24, 36)
+customBox.Font = Enum.Font.GothamBlack
+customBox.TextSize = 13
+customBox.TextColor3 = Color3.fromRGB(74, 222, 128)
+customBox.Text = &quot;50.0&quot;
+addCorner(customBox, 6)
+addStroke(customBox, Color3.fromRGB(45, 55, 78), 1)
+customBox.Parent = customRow
+
+local plusBtn = Instance.new(&quot;TextButton&quot;)
+plusBtn.Size = UDim2.new(0, 38, 1, 0)
+plusBtn.Position = UDim2.new(0, 216, 0, 0)
+plusBtn.BackgroundColor3 = Color3.fromRGB(24, 28, 42)
+plusBtn.Font = Enum.Font.GothamBlack
+plusBtn.TextSize = 12
+plusBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
+plusBtn.Text = &quot;+5%&quot;
+addCorner(plusBtn, 6)
+plusBtn.Parent = customRow
+
+-- Action Button and Result Message
 local upgResultMsg = Instance.new(&quot;TextLabel&quot;)
-upgResultMsg.Size = UDim2.new(1, 0, 0, 36)
-upgResultMsg.Position = UDim2.new(0, 0, 0, 168)
+upgResultMsg.Size = UDim2.new(1, 0, 0, 32)
+upgResultMsg.Position = UDim2.new(0, 0, 0, 268)
 upgResultMsg.BackgroundTransparency = 1
 upgResultMsg.Font = Enum.Font.GothamBold
-upgResultMsg.TextSize = 13
-upgResultMsg.TextColor3 = Color3.fromRGB(200, 205, 220)
-upgResultMsg.Text = &quot;Поместите ауру и нажмите 'РИСКНУТЬ'.&quot;
-upgResultMsg.Parent = upgRight
+upgResultMsg.TextSize = 11
+upgResultMsg.TextColor3 = Color3.fromRGB(180, 185, 200)
+upgResultMsg.Text = &quot;Выберите исходную и целевую ауру, затем крутите!&quot;
+upgResultMsg.TextWrapped = true
+upgResultMsg.Parent = upgColCenter
 
 local doUpgradeBtn = Instance.new(&quot;TextButton&quot;)
-doUpgradeBtn.Size = UDim2.new(1, 0, 0, 48)
-doUpgradeBtn.Position = UDim2.new(0, 0, 1, -50)
+doUpgradeBtn.Size = UDim2.new(1, -20, 0, 46)
+doUpgradeBtn.AnchorPoint = Vector2.new(0.5, 1)
+doUpgradeBtn.Position = UDim2.new(0.5, 0, 1, -10)
 doUpgradeBtn.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
 doUpgradeBtn.Font = Enum.Font.GothamBlack
-doUpgradeBtn.TextSize = 16
+doUpgradeBtn.TextSize = 15
 doUpgradeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-doUpgradeBtn.Text = &quot;🎰 АПГРЕЙДИТЬ / РИСКНУТЬ&quot;
+doUpgradeBtn.Text = &quot;АПГРЕЙДИТЬ АУРУ&quot;
 addCorner(doUpgradeBtn, 10)
-doUpgradeBtn.Parent = upgRight
+local doStroke = addStroke(doUpgradeBtn, Color3.fromRGB(251, 191, 36), 1.5)
+doUpgradeBtn.Parent = upgColCenter
 
-upgSelectBtn.MouseButton1Click:Connect(function()
-	toggleModal(invWindow)
-	refreshInventoryUI()
+-- Column 3: BLOCK 2 - Target Aura Selection Catalog (Right)
+local upgColRight = Instance.new(&quot;Frame&quot;)
+upgColRight.Size = UDim2.new(0, 240, 1, -38)
+upgColRight.Position = UDim2.new(1, -240, 0, 38)
+upgColRight.BackgroundColor3 = Color3.fromRGB(16, 19, 28)
+addCorner(upgColRight, 10)
+addStroke(upgColRight, Color3.fromRGB(45, 55, 78), 1.2)
+addPadding(upgColRight, 8, 8, 8, 8)
+upgColRight.Parent = upgContent
+
+local colRightTitle = Instance.new(&quot;TextLabel&quot;)
+colRightTitle.Size = UDim2.new(1, 0, 0, 18)
+colRightTitle.BackgroundTransparency = 1
+colRightTitle.Font = Enum.Font.GothamBlack
+colRightTitle.TextSize = 11
+colRightTitle.TextColor3 = Color3.fromRGB(240, 243, 250)
+colRightTitle.Text = &quot;2. ЦЕЛЕВАЯ АУРА (ВЫБОР)&quot;
+colRightTitle.Parent = upgColRight
+
+-- Target Preview Card
+local targetPreviewFrame = Instance.new(&quot;Frame&quot;)
+targetPreviewFrame.Size = UDim2.new(1, 0, 0, 68)
+targetPreviewFrame.Position = UDim2.new(0, 0, 0, 22)
+targetPreviewFrame.BackgroundColor3 = Color3.fromRGB(22, 26, 38)
+addCorner(targetPreviewFrame, 8)
+local tgtStroke = addStroke(targetPreviewFrame, Color3.fromRGB(245, 158, 11), 1.2)
+targetPreviewFrame.Parent = upgColRight
+
+local tgtIcon = Instance.new(&quot;ImageLabel&quot;)
+tgtIcon.Size = UDim2.new(0, 38, 0, 38)
+tgtIcon.Position = UDim2.new(0, 8, 0.5, -19)
+tgtIcon.BackgroundTransparency = 1
+tgtIcon.Image = &quot;rbxasset://textures/particles/sparkles_main.dds&quot;
+tgtIcon.Parent = targetPreviewFrame
+
+local tgtNameLbl = Instance.new(&quot;TextLabel&quot;)
+tgtNameLbl.Size = UDim2.new(1, -54, 0, 18)
+tgtNameLbl.Position = UDim2.new(0, 50, 0, 8)
+tgtNameLbl.BackgroundTransparency = 1
+tgtNameLbl.Font = Enum.Font.GothamBlack
+tgtNameLbl.TextSize = 12
+tgtNameLbl.TextColor3 = Color3.fromRGB(250, 204, 21)
+tgtNameLbl.Text = &quot;Любая аура из списка&quot;
+tgtNameLbl.TextXAlignment = Enum.TextXAlignment.Left
+tgtNameLbl.Parent = targetPreviewFrame
+
+local tgtSubLbl = Instance.new(&quot;TextLabel&quot;)
+tgtSubLbl.Size = UDim2.new(1, -54, 0, 16)
+tgtSubLbl.Position = UDim2.new(0, 50, 0, 28)
+tgtSubLbl.BackgroundTransparency = 1
+tgtSubLbl.Font = Enum.Font.GothamMedium
+tgtSubLbl.TextSize = 9
+tgtSubLbl.TextColor3 = Color3.fromRGB(156, 163, 175)
+tgtSubLbl.Text = &quot;Выберите желаемую ауру&quot;
+tgtSubLbl.TextXAlignment = Enum.TextXAlignment.Left
+tgtSubLbl.Parent = targetPreviewFrame
+
+local tgtRarityLbl = Instance.new(&quot;TextLabel&quot;)
+tgtRarityLbl.Size = UDim2.new(1, -54, 0, 14)
+tgtRarityLbl.Position = UDim2.new(0, 50, 0, 46)
+tgtRarityLbl.BackgroundTransparency = 1
+tgtRarityLbl.Font = Enum.Font.GothamBold
+tgtRarityLbl.TextSize = 9
+tgtRarityLbl.TextColor3 = Color3.fromRGB(147, 197, 253)
+tgtRarityLbl.Text = &quot;Шанс рассчитается сам&quot;
+tgtRarityLbl.TextXAlignment = Enum.TextXAlignment.Left
+tgtRarityLbl.Parent = targetPreviewFrame
+
+-- Target Catalog Scroll
+local tgtScroll = Instance.new(&quot;ScrollingFrame&quot;)
+tgtScroll.Size = UDim2.new(1, 0, 1, -100)
+tgtScroll.Position = UDim2.new(0, 0, 0, 96)
+tgtScroll.BackgroundTransparency = 1
+tgtScroll.ScrollBarThickness = 4
+tgtScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+tgtScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+tgtScroll.Parent = upgColRight
+
+local tgtLayout = Instance.new(&quot;UIGridLayout&quot;)
+tgtLayout.CellSize = UDim2.new(0, 68, 0, 80)
+tgtLayout.CellPadding = UDim2.new(0, 6, 0, 6)
+tgtLayout.Parent = tgtScroll
+
+local function updateWheelDisplay()
+	upgraderChance = math.clamp(math.floor(upgraderChance * 10) / 10, 1.0, 85.0)
+	customBox.Text = string.format(&quot;%.1f&quot;, upgraderChance)
+	chanceDisplay.Text = string.format(&quot;%.1f%%&quot;, upgraderChance)
+	local mult = 100.0 / upgraderChance
+	multDisplay.Text = string.format(&quot;%.2fx МНОЖИТЕЛЬ&quot;, mult)
+	local maxDeg = math.floor((upgraderChance / 100.0) * 360)
+	sectorDisplay.Text = string.format(&quot;СЕКТОР: 0 град. - %d град.&quot;, maxDeg)
+end
+
+local function addUpgPreset(name, chanceVal)
+	local btn = Instance.new(&quot;TextButton&quot;)
+	btn.Size = UDim2.new(0, 42, 1, 0)
+	btn.BackgroundColor3 = Color3.fromRGB(24, 28, 42)
+	btn.Font = Enum.Font.GothamBlack
+	btn.TextSize = 9
+	btn.TextColor3 = Color3.fromRGB(147, 197, 253)
+	btn.Text = name
+	addCorner(btn, 5)
+	btn.MouseButton1Click:Connect(function()
+		SoundEffects.Play(&quot;Click&quot;)
+		upgraderChance = chanceVal
+		updateWheelDisplay()
+	end)
+	btn.Parent = presetRow
+end
+
+addUpgPreset(&quot;75%&quot;, 75.0)
+addUpgPreset(&quot;50%&quot;, 50.0)
+addUpgPreset(&quot;30%&quot;, 30.0)
+addUpgPreset(&quot;2x&quot;, 48.0)
+addUpgPreset(&quot;5x&quot;, 19.0)
+addUpgPreset(&quot;10x&quot;, 9.0)
+
+minusBtn.MouseButton1Click:Connect(function()
+	SoundEffects.Play(&quot;Click&quot;)
+	upgraderChance = math.max(1.0, upgraderChance - 5.0)
+	updateWheelDisplay()
 end)
 
+plusBtn.MouseButton1Click:Connect(function()
+	SoundEffects.Play(&quot;Click&quot;)
+	upgraderChance = math.min(85.0, upgraderChance + 5.0)
+	updateWheelDisplay()
+end)
+
+customBox.FocusLost:Connect(function()
+	local num = tonumber(customBox.Text)
+	if num then
+		upgraderChance = num
+		updateWheelDisplay()
+	else
+		customBox.Text = string.format(&quot;%.1f&quot;, upgraderChance)
+	end
+end)
+
+local function refreshUpgraderUI()
+	for _, ch in ipairs(srcScroll:GetChildren()) do
+		if ch:IsA(&quot;GuiObject&quot;) and not ch:IsA(&quot;UIGridLayout&quot;) then ch:Destroy() end
+	end
+	for _, ch in ipairs(tgtScroll:GetChildren()) do
+		if ch:IsA(&quot;GuiObject&quot;) and not ch:IsA(&quot;UIGridLayout&quot;) then ch:Destroy() end
+	end
+
+	local hasAny = false
+	for auraId, count in pairs(localData.Inventory or {}) do
+		if count &gt; 0 then
+			local aura = AuraConfig.Auras[auraId]
+			if aura then
+				hasAny = true
+				local card = Instance.new(&quot;TextButton&quot;)
+				card.Size = UDim2.new(0, 68, 0, 80)
+				card.BackgroundColor3 = Color3.fromRGB(18, 22, 32)
+				card.Text = &quot;&quot;
+				addCorner(card, 6)
+				addStroke(card, aura.Color, 1.2)
+
+				local icon = Instance.new(&quot;ImageLabel&quot;)
+				icon.Size = UDim2.new(0, 32, 0, 32)
+				icon.Position = UDim2.new(0.5, -16, 0, 4)
+				icon.BackgroundTransparency = 1
+				icon.Image = aura.Icon or &quot;rbxasset://textures/particles/sparkles_main.dds&quot;
+				icon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+				icon.Parent = card
+
+				local sym = Instance.new(&quot;TextLabel&quot;)
+				sym.Size = UDim2.new(0, 22, 0, 12)
+				sym.Position = UDim2.new(1, -24, 0, 2)
+				sym.BackgroundColor3 = Color3.fromRGB(10, 12, 20)
+				sym.Font = Enum.Font.GothamBlack
+				sym.TextSize = 7
+				sym.TextColor3 = aura.Color
+				sym.Text = aura.Symbol or &quot;AUR&quot;
+				addCorner(sym, 3)
+				sym.Parent = card
+
+				local name = Instance.new(&quot;TextLabel&quot;)
+				name.Size = UDim2.new(1, -4, 0, 16)
+				name.Position = UDim2.new(0, 2, 0, 38)
+				name.BackgroundTransparency = 1
+				name.Font = Enum.Font.GothamBold
+				name.TextSize = 8
+				name.TextColor3 = aura.Color
+				name.Text = aura.Name
+				name.TextWrapped = true
+				name.Parent = card
+
+				local cnt = Instance.new(&quot;TextLabel&quot;)
+				cnt.Size = UDim2.new(0, 22, 0, 12)
+				cnt.Position = UDim2.new(1, -24, 1, -14)
+				cnt.BackgroundColor3 = Color3.fromRGB(28, 33, 48)
+				cnt.Font = Enum.Font.GothamBold
+				cnt.TextSize = 7
+				cnt.TextColor3 = Color3.fromRGB(220, 225, 240)
+				cnt.Text = &quot;x&quot; .. tostring(count)
+				addCorner(cnt, 3)
+				cnt.Parent = card
+
+				card.MouseButton1Click:Connect(function()
+					SoundEffects.Play(&quot;Click&quot;)
+					selectedSourceAuraId = auraId
+					srcIcon.Image = aura.Icon or &quot;rbxasset://textures/particles/sparkles_main.dds&quot;
+					srcNameLbl.Text = aura.Name
+					srcNameLbl.TextColor3 = aura.Color
+					srcSubLbl.Text = AuraConfig.FormatRarity(aura.Rarity or 0)
+					local scrap = AuraConfig.GetScrapValue(aura.Rarity) * 2
+					srcScrapLbl.Text = string.format(&quot;Возврат: +%d монет&quot;, scrap)
+					srcStroke.Color = aura.Color
+
+					if selectedTargetAuraId then
+						local tgtAura = AuraConfig.Auras[selectedTargetAuraId]
+						if tgtAura then
+							local sR = math.max(aura.Rarity or 2, 2)
+							local tR = math.max(tgtAura.Rarity or 10, 4)
+							if sR &gt;= tR then
+								upgraderChance = 85.0
+							else
+								upgraderChance = math.clamp(math.floor((sR / tR) * 85 * 10) / 10, 1.0, 85.0)
+							end
+							updateWheelDisplay()
+						end
+					end
+				end)
+
+				card.Parent = srcScroll
+			end
+		end
+	end
+
+	if not hasAny then
+		srcNameLbl.Text = &quot;Инвентарь пуст&quot;
+		srcSubLbl.Text = &quot;Крутите роллы!&quot;
+	end
+
+	for _, aura in ipairs(AuraConfig.RollableAuras) do
+		local card = Instance.new(&quot;TextButton&quot;)
+		card.Size = UDim2.new(0, 68, 0, 80)
+		card.BackgroundColor3 = Color3.fromRGB(18, 22, 32)
+		card.Text = &quot;&quot;
+		addCorner(card, 6)
+		addStroke(card, aura.Color, 1.2)
+
+		local icon = Instance.new(&quot;ImageLabel&quot;)
+		icon.Size = UDim2.new(0, 32, 0, 32)
+		icon.Position = UDim2.new(0.5, -16, 0, 4)
+		icon.BackgroundTransparency = 1
+		icon.Image = aura.Icon or &quot;rbxasset://textures/particles/sparkles_main.dds&quot;
+		icon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+		icon.Parent = card
+
+		local sym = Instance.new(&quot;TextLabel&quot;)
+		sym.Size = UDim2.new(0, 22, 0, 12)
+		sym.Position = UDim2.new(1, -24, 0, 2)
+		sym.BackgroundColor3 = Color3.fromRGB(10, 12, 20)
+		sym.Font = Enum.Font.GothamBlack
+		sym.TextSize = 7
+		sym.TextColor3 = aura.Color
+		sym.Text = aura.Symbol or &quot;AUR&quot;
+		addCorner(sym, 3)
+		sym.Parent = card
+
+		local name = Instance.new(&quot;TextLabel&quot;)
+		name.Size = UDim2.new(1, -4, 0, 16)
+		name.Position = UDim2.new(0, 2, 0, 38)
+		name.BackgroundTransparency = 1
+		name.Font = Enum.Font.GothamBold
+		name.TextSize = 8
+		name.TextColor3 = aura.Color
+		name.Text = aura.Name
+		name.TextWrapped = true
+		name.Parent = card
+
+		local rar = Instance.new(&quot;TextLabel&quot;)
+		rar.Size = UDim2.new(1, -4, 0, 12)
+		rar.Position = UDim2.new(0, 2, 0, 56)
+		rar.BackgroundTransparency = 1
+		rar.Font = Enum.Font.GothamMedium
+		rar.TextSize = 7
+		rar.TextColor3 = Color3.fromRGB(156, 163, 175)
+		rar.Text = AuraConfig.FormatRarity(aura.Rarity or 0)
+		rar.Parent = card
+
+		card.MouseButton1Click:Connect(function()
+			SoundEffects.Play(&quot;Click&quot;)
+			selectedTargetAuraId = aura.Id
+			tgtIcon.Image = aura.Icon or &quot;rbxasset://textures/particles/sparkles_main.dds&quot;
+			tgtNameLbl.Text = aura.Name
+			tgtNameLbl.TextColor3 = aura.Color
+			tgtSubLbl.Text = AuraConfig.FormatRarity(aura.Rarity or 0)
+			tgtRarityLbl.Text = aura.Tier:upper()
+			tgtStroke.Color = aura.Color
+
+			if selectedSourceAuraId then
+				local srcAura = AuraConfig.Auras[selectedSourceAuraId]
+				if srcAura then
+					local sR = math.max(srcAura.Rarity or 2, 2)
+					local tR = math.max(aura.Rarity or 10, 4)
+					if sR &gt;= tR then
+						upgraderChance = 85.0
+					else
+						upgraderChance = math.clamp(math.floor((sR / tR) * 85 * 10) / 10, 1.0, 85.0)
+					end
+					updateWheelDisplay()
+				end
+			end
+		end)
+
+		card.Parent = tgtScroll
+	end
+end
+
 doUpgradeBtn.MouseButton1Click:Connect(function()
-	local targetAura = selectedUpgradeAura or localData.EquippedAura
-	if not targetAura or targetAura == &quot;None&quot; or not localData.Inventory[targetAura] then
-		upgResultMsg.Text = &quot;⚠️ Наденьте или выберите ауру из инвентаря!&quot;
+	if isWheelSpinning then return end
+
+	local sourceId = selectedSourceAuraId or localData.EquippedAura
+	if not sourceId or sourceId == &quot;None&quot; or not localData.Inventory[sourceId] or localData.Inventory[sourceId] &lt;= 0 then
+		upgResultMsg.Text = &quot;Выберите ауру слева из инвентаря для ставки!&quot;
 		upgResultMsg.TextColor3 = Color3.fromRGB(248, 113, 113)
 		return
 	end
 
-	SoundEffects.Play(&quot;Spin&quot;)
-	doUpgradeBtn.Text = &quot;ВРАЩЕНИЕ...&quot;
+	isWheelSpinning = true
+	doUpgradeBtn.Text = &quot;ВРАЩЕНИЕ КОЛЕСА...&quot;
 	doUpgradeBtn.BackgroundColor3 = Color3.fromRGB(60, 70, 85)
+	SoundEffects.Play(&quot;Spin&quot;)
 
-	task.wait(0.6)
-	local res = UpgradeAuraFunc:InvokeServer(targetAura, upgraderMode, upgraderValue)
-	doUpgradeBtn.Text = &quot;🎰 АПГРЕЙДИТЬ / РИСКНУТЬ&quot;
-	doUpgradeBtn.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
+	local res = UpgradeAuraFunc:InvokeServer(sourceId, selectedTargetAuraId, upgraderChance, &quot;Custom&quot;, upgraderChance)
 
 	if res and res.Success then
+		local startRot = needleContainer.Rotation % 360
+		local targetAngle = (res.Roll / 100.0) * 360
+		local spins = isUpgraderFast and 1 or 5
+		local endRot = startRot + (spins * 360) + targetAngle
+		local duration = isUpgraderFast and 0.6 or 3.2
+
+		TweenService:Create(needleContainer, TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+			Rotation = endRot
+		}):Play()
+
+		task.spawn(function()
+			local tickInterval = isUpgraderFast and 0.05 or 0.08
+			local steps = math.floor(duration / tickInterval)
+			for _ = 1, steps do
+				task.wait(tickInterval)
+				SoundEffects.Play(&quot;Tick&quot;)
+			end
+		end)
+
+		task.wait(duration)
+
 		if res.Won then
 			SoundEffects.Play(&quot;RevealMythic&quot;)
-			upgResultMsg.Text = string.format(&quot;🎉 УСПЕХ! Вы получили %s (+%d монет)!&quot;, res.TargetAura.Name:upper(), res.Jackpot or 1000)
+			hubStroke.Color = Color3.fromRGB(16, 185, 129)
+			upgResultMsg.Text = string.format(&quot;ПОБЕДА! Вы получили: %s (+%d монет)!&quot;, res.TargetAura.Name:upper(), res.Jackpot or 1500)
 			upgResultMsg.TextColor3 = Color3.fromRGB(74, 222, 128)
 		else
 			SoundEffects.Play(&quot;Coin&quot;)
-			upgResultMsg.Text = string.format(&quot;💥 НЕУДАЧА! Аура сломалась (возврат: +%d монет).&quot;, res.Scrap or 50)
+			hubStroke.Color = Color3.fromRGB(239, 68, 68)
+			upgResultMsg.Text = string.format(&quot;НЕУДАЧА! Аура сгорела (компенсация: +%d монет).&quot;, res.Scrap or 100)
 			upgResultMsg.TextColor3 = Color3.fromRGB(248, 113, 113)
 		end
+
+		selectedSourceAuraId = nil
+		refreshUpgraderUI()
 		refreshInventoryUI()
+	else
+		upgResultMsg.Text = (res and res.Message) or &quot;Ошибка апгрейда!&quot;
+		upgResultMsg.TextColor3 = Color3.fromRGB(248, 113, 113)
 	end
+
+	isWheelSpinning = false
+	doUpgradeBtn.Text = &quot;АПГРЕЙДИТЬ АУРУ&quot;
+	doUpgradeBtn.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
 end)
 
 --------------------------------------------------------------------------------
 -- 10. PVP DUEL ARENA WINDOW &amp; COMBAT HUD
 --------------------------------------------------------------------------------
 
-local pvpWindow, pvpContent = createModal(&quot;⚔️ АРЕНА БАТЛОВ АУР&quot;, 620, 440)
+local pvpWindow, pvpContent = createModal(&quot;АРЕНА БАТЛОВ АУР&quot;, 620, 440)
 
 local pvpPlayerList = Instance.new(&quot;ScrollingFrame&quot;)
 pvpPlayerList.Size = UDim2.new(1, 0, 1, 0)
@@ -3649,7 +4448,7 @@ local function refreshPvPWindow()
 			challengeBtn.Font = Enum.Font.GothamBlack
 			challengeBtn.TextSize = 12
 			challengeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-			challengeBtn.Text = &quot;⚔️ ВЫЗВАТЬ НА БОЙ&quot;
+			challengeBtn.Text = &quot;ВЫЗВАТЬ НА БОЙ&quot;
 			addCorner(challengeBtn, 8)
 			challengeBtn.Parent = row
 
@@ -3778,9 +4577,9 @@ local function createSkillButton(index, name, cdTime, color)
 	return btn
 end
 
-createSkillButton(1, &quot;⚔️ [1] УДАР АУРЫ&quot;, 1.2, Color3.fromRGB(56, 189, 248))
-createSkillButton(2, &quot;💥 [2] ВЗРЫВ СТИХИИ&quot;, 3.5, Color3.fromRGB(245, 158, 11))
-createSkillButton(3, &quot;☄️ [3] УЛЬТИМЕЙТ&quot;, 7.0, Color3.fromRGB(250, 204, 21))
+createSkillButton(1, &quot;[1] УДАР АУРЫ&quot;, 1.2, Color3.fromRGB(56, 189, 248))
+createSkillButton(2, &quot;[2] ВЗРЫВ СТИХИИ&quot;, 3.5, Color3.fromRGB(245, 158, 11))
+createSkillButton(3, &quot;[3] УЛЬТИМЕЙТ&quot;, 7.0, Color3.fromRGB(250, 204, 21))
 
 -- Incoming Duel Challenge Popup
 local challengePopup = Instance.new(&quot;Frame&quot;)
@@ -3812,7 +4611,7 @@ acceptBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 acceptBtn.Font = Enum.Font.GothamBlack
 acceptBtn.TextSize = 12
 acceptBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-acceptBtn.Text = &quot;⚔️ ПРИНЯТЬ&quot;
+acceptBtn.Text = &quot;ПРИНЯТЬ&quot;
 addCorner(acceptBtn, 8)
 acceptBtn.Parent = challengePopup
 
@@ -3823,13 +4622,13 @@ declineBtn.BackgroundColor3 = Color3.fromRGB(60, 70, 85)
 declineBtn.Font = Enum.Font.GothamBlack
 declineBtn.TextSize = 12
 declineBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-declineBtn.Text = &quot;✕ ОТКЛОНИТЬ&quot;
+declineBtn.Text = &quot;[X] ОТКЛОНИТЬ&quot;
 addCorner(declineBtn, 8)
 declineBtn.Parent = challengePopup
 
 PvPResponseEvent.OnClientEvent:Connect(function(info)
 	currentChallengerName = info.Challenger
-	chText.Text = string.format(&quot;⚔️ %s вызывает вас на Дуэль!&quot;, info.ChallengerDisplay or info.Challenger)
+	chText.Text = string.format(&quot;%s вызывает вас на Дуэль!&quot;, info.ChallengerDisplay or info.Challenger)
 	challengePopup.Visible = true
 	SoundEffects.Play(&quot;RevealRare&quot;)
 end)
@@ -3887,7 +4686,7 @@ end)
 -- 11. CRAFTING ALCHEMIST FORGE
 --------------------------------------------------------------------------------
 
-local craftWindow, craftContent = createModal(&quot;⚗️ КУЗНИЦА КРАФТА АУР&quot;, 720, 500)
+local craftWindow, craftContent = createModal(&quot;КУЗНИЦА КРАФТА АУР&quot;, 720, 500)
 
 local recipeScroll = Instance.new(&quot;ScrollingFrame&quot;)
 recipeScroll.Size = UDim2.new(0, 240, 1, 0)
@@ -3959,7 +4758,7 @@ forgeBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
 forgeBtn.Font = Enum.Font.GothamBlack
 forgeBtn.TextSize = 16
 forgeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-forgeBtn.Text = &quot;⚗️ КОВАТЬ РЕЦЕПТ&quot;
+forgeBtn.Text = &quot;КОВАТЬ РЕЦЕПТ&quot;
 forgeBtn.Visible = false
 addCorner(forgeBtn, 10)
 forgeBtn.Parent = craftDetail
@@ -4042,10 +4841,10 @@ local function refreshCraftingUI()
 				countLbl.TextSize = 12
 				if owned &gt;= ing.Count then
 					countLbl.TextColor3 = Color3.fromRGB(74, 222, 128)
-					countLbl.Text = string.format(&quot;✓ %d / %d&quot;, owned, ing.Count)
+					countLbl.Text = string.format(&quot; %d / %d&quot;, owned, ing.Count)
 				else
 					countLbl.TextColor3 = Color3.fromRGB(248, 113, 113)
-					countLbl.Text = string.format(&quot;✕ %d / %d&quot;, owned, ing.Count)
+					countLbl.Text = string.format(&quot;[X] %d / %d&quot;, owned, ing.Count)
 					canCraftAll = false
 				end
 				countLbl.Parent = row
@@ -4053,7 +4852,7 @@ local function refreshCraftingUI()
 
 			forgeBtn.Visible = true
 			if canCraftAll then
-				forgeBtn.Text = &quot;⚗️ КОВАТЬ СЕЙЧАС&quot;
+				forgeBtn.Text = &quot; КОВАТЬ СЕЙЧАС&quot;
 				forgeBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 			else
 				forgeBtn.Text = &quot;Не хватает аур&quot;
@@ -4082,7 +4881,7 @@ end)
 -- 12. MULTI-CATEGORY DONATION SHOP
 --------------------------------------------------------------------------------
 
-local shopWindow, shopContent = createModal(&quot;💎 МАГАЗИН ДОНАТА И ПАССОВ (АКЦИИ -80%)&quot;, 740, 520)
+local shopWindow, shopContent = createModal(&quot; МАГАЗИН ДОНАТА И ПАССОВ (АКЦИИ -80%)&quot;, 740, 520)
 
 toggleShopModal = function()
 	toggleModal(shopWindow)
@@ -4107,8 +4906,8 @@ local donateCatalog = {
 		Items = {
 			{
 				Id = &quot;X2Luck&quot;,
-				Badge = &quot;🔥 ХИТ&quot;,
-				Name = &quot;🎲 x2 Luck Pass (Навсегда)&quot;,
+				Badge = &quot; ХИТ&quot;,
+				Name = &quot; x2 Luck Pass (Навсегда)&quot;,
 				Color = Color3.fromRGB(74, 222, 128),
 				Desc = &quot;Удваивает шанс выпадения всех редких, мифических и богоподобных аур навсегда!&quot;,
 				Price = &quot;R$ 199&quot;,
@@ -4117,8 +4916,8 @@ local donateCatalog = {
 			},
 			{
 				Id = &quot;X3Luck&quot;,
-				Badge = &quot;⚡ СВЕРХУДАЧА&quot;,
-				Name = &quot;🍀 x3 Luck Overload (Навсегда)&quot;,
+				Badge = &quot; СВЕРХУДАЧА&quot;,
+				Name = &quot; x3 Luck Overload (Навсегда)&quot;,
 				Color = Color3.fromRGB(16, 185, 129),
 				Desc = &quot;Тройной шанс на все ауры! Стакается со всеми другими бонусами!&quot;,
 				Price = &quot;R$ 499&quot;,
@@ -4127,8 +4926,8 @@ local donateCatalog = {
 			},
 			{
 				Id = &quot;AutoRoll&quot;,
-				Badge = &quot;⚡ АВТО-РОЛЛ&quot;,
-				Name = &quot;⚡ Auto Roll Pass (Навсегда)&quot;,
+				Badge = &quot; АВТО-РОЛЛ&quot;,
+				Name = &quot; Auto Roll Pass (Навсегда)&quot;,
 				Color = Color3.fromRGB(250, 204, 21),
 				Desc = &quot;Автоматический ролл в фоне пока вы общаетесь, гуляете или стоите AFK!&quot;,
 				Price = &quot;R$ 99&quot;,
@@ -4137,8 +4936,8 @@ local donateCatalog = {
 			},
 			{
 				Id = &quot;ExtraStorage&quot;,
-				Badge = &quot;📦 +50 СЛОТОВ&quot;,
-				Name = &quot;🎨 Aura Storage (+50)&quot;,
+				Badge = &quot; +50 СЛОТОВ&quot;,
+				Name = &quot; Aura Storage (+50)&quot;,
 				Color = Color3.fromRGB(56, 189, 248),
 				Desc = &quot;Расширяет ваш инвентарь на +50 дополнительных слотов для редких аур!&quot;,
 				Price = &quot;R$ 149&quot;,
@@ -4147,8 +4946,8 @@ local donateCatalog = {
 			},
 			{
 				Id = &quot;VIP&quot;,
-				Badge = &quot;⭐ VIP КЛУБ&quot;,
-				Name = &quot;⭐ VIP Supporter Pass&quot;,
+				Badge = &quot; VIP КЛУБ&quot;,
+				Name = &quot; VIP Supporter Pass&quot;,
 				Color = Color3.fromRGB(245, 158, 11),
 				Desc = &quot;Аура VIP Crown + x1.5 Удача + Золотой титул VIP над головой и в чате!&quot;,
 				Price = &quot;R$ 299&quot;,
@@ -4157,8 +4956,8 @@ local donateCatalog = {
 			},
 			{
 				Id = &quot;FastRoll&quot;,
-				Badge = &quot;⏩ БЫСТРЫЙ РОЛЛ&quot;,
-				Name = &quot;⏩ Fast Roll Instant Pass&quot;,
+				Badge = &quot; БЫСТРЫЙ РОЛЛ&quot;,
+				Name = &quot; Fast Roll Instant Pass&quot;,
 				Color = Color3.fromRGB(236, 72, 153),
 				Desc = &quot;Моментальное раскрытие роллов без ожидания рулетки!&quot;,
 				Price = &quot;R$ 79&quot;,
@@ -4172,8 +4971,8 @@ local donateCatalog = {
 		Items = {
 			{
 				Id = &quot;MegaPotion&quot;,
-				Badge = &quot;🌟 5x LUCK&quot;,
-				Name = &quot;🧪 Мега-Зелье Удачи x5 (15 мин)&quot;,
+				Badge = &quot; 5x LUCK&quot;,
+				Name = &quot; Мега-Зелье Удачи x5 (15 мин)&quot;,
 				Color = Color3.fromRGB(6, 182, 212),
 				Desc = &quot;Дает бешеное пятикратное (5x) увеличение шансов на 15 минут!&quot;,
 				Price = &quot;R$ 129&quot;,
@@ -4187,8 +4986,8 @@ local donateCatalog = {
 		Items = {
 			{
 				Id = &quot;Coins10k&quot;,
-				Badge = &quot;🪙 10K&quot;,
-				Name = &quot;🪙 10,000 Монет&quot;,
+				Badge = &quot; 10K&quot;,
+				Name = &quot; 10,000 Монет&quot;,
 				Color = Color3.fromRGB(250, 204, 21),
 				Desc = &quot;Стартовый запас монет для крафта и улучшений.&quot;,
 				Price = &quot;R$ 49&quot;,
@@ -4197,8 +4996,8 @@ local donateCatalog = {
 			},
 			{
 				Id = &quot;Coins50k&quot;,
-				Badge = &quot;🔥 ХИТ&quot;,
-				Name = &quot;🪙 50,000 Монет&quot;,
+				Badge = &quot; ХИТ&quot;,
+				Name = &quot; 50,000 Монет&quot;,
 				Color = Color3.fromRGB(245, 158, 11),
 				Desc = &quot;Большой мешок золота для покупки слотов и расходников!&quot;,
 				Price = &quot;R$ 149&quot;,
@@ -4207,10 +5006,10 @@ local donateCatalog = {
 			},
 			{
 				Id = &quot;Coins250k&quot;,
-				Badge = &quot;💎 БОГАТСТВО&quot;,
-				Name = &quot;🪙 250,000 Монет&quot;,
+				Badge = &quot; БОГАТСТВО&quot;,
+				Name = &quot; 250,000 Монет&quot;,
 				Color = Color3.fromRGB(251, 191, 36),
-				Desc = &quot;Сундук с золотом — никогда больше не беспокойтесь о монетах!&quot;,
+				Desc = &quot;Сундук с золотом - никогда больше не беспокойтесь о монетах!&quot;,
 				Price = &quot;R$ 399&quot;,
 				Type = &quot;Product&quot;,
 				ProductKey = &quot;CoinPack250k&quot;,
@@ -4222,8 +5021,8 @@ local donateCatalog = {
 		Items = {
 			{
 				Id = &quot;InstantLegendary&quot;,
-				Badge = &quot;👑 1/1,000+&quot;,
-				Name = &quot;🎰 Гарантированная Легендарная Аура&quot;,
+				Badge = &quot; 1/1,000+&quot;,
+				Name = &quot; Гарантированная Легендарная Аура&quot;,
 				Color = Color3.fromRGB(239, 68, 68),
 				Desc = &quot;Мгновенно начисляет случайную Легендарную ауру (Ruby, Undead, Solar)!&quot;,
 				Price = &quot;R$ 199&quot;,
@@ -4232,8 +5031,8 @@ local donateCatalog = {
 			},
 			{
 				Id = &quot;InstantMythic&quot;,
-				Badge = &quot;🌌 1/10,000+&quot;,
-				Name = &quot;🌌 Гарантированная Мифическая Аура&quot;,
+				Badge = &quot; 1/10,000+&quot;,
+				Name = &quot; Гарантированная Мифическая Аура&quot;,
 				Color = Color3.fromRGB(168, 85, 247),
 				Desc = &quot;Мгновенно начисляет случайную Мифическую ауру (Lunar, Poseidon, Hades, Galaxy)!&quot;,
 				Price = &quot;R$ 499&quot;,
@@ -4257,7 +5056,7 @@ local function refreshShopUI()
 		catHeader.TextSize = 13
 		catHeader.TextColor3 = Color3.fromRGB(250, 204, 21)
 		catHeader.TextXAlignment = Enum.TextXAlignment.Left
-		catHeader.Text = &quot;✦ &quot; .. cat.Category
+		catHeader.Text = &quot; &quot; .. cat.Category
 		catHeader.Parent = shopScroll
 
 		for _, item in ipairs(cat.Items) do
@@ -4338,7 +5137,7 @@ end
 -- 13. SETTINGS WINDOW
 --------------------------------------------------------------------------------
 
-local setWindow, setContent = createModal(&quot;⚙️ НАСТРОЙКИ&quot;, 460, 260)
+local setWindow, setContent = createModal(&quot; НАСТРОЙКИ&quot;, 460, 260)
 
 local setFastBtn = Instance.new(&quot;TextButton&quot;)
 setFastBtn.Size = UDim2.new(1, 0, 0, 44)
@@ -4347,7 +5146,7 @@ setFastBtn.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
 setFastBtn.Font = Enum.Font.GothamBold
 setFastBtn.TextSize = 14
 setFastBtn.TextColor3 = Color3.fromRGB(220, 225, 240)
-setFastBtn.Text = &quot;⏩ Быстрый Ролл (Без Рулетки): ВЫКЛ&quot;
+setFastBtn.Text = &quot; Быстрый Ролл (Без Рулетки): ВЫКЛ&quot;
 addCorner(setFastBtn, 8)
 addStroke(setFastBtn, Color3.fromRGB(45, 55, 75), 1)
 setFastBtn.Parent = setContent
@@ -4359,7 +5158,7 @@ setSoundBtn.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
 setSoundBtn.Font = Enum.Font.GothamBold
 setSoundBtn.TextSize = 14
 setSoundBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
-setSoundBtn.Text = &quot;🔊 Звуки Игры: ВКЛ (Мягкие)&quot;
+setSoundBtn.Text = &quot; Звуки Игры: ВКЛ (Мягкие)&quot;
 addCorner(setSoundBtn, 8)
 addStroke(setSoundBtn, Color3.fromRGB(45, 55, 75), 1)
 setSoundBtn.Parent = setContent
@@ -4379,12 +5178,12 @@ setFastBtn.MouseButton1Click:Connect(function()
 	SoundEffects.Play(&quot;Click&quot;)
 	isFastRollOn = not isFastRollOn
 	if isFastRollOn then
-		setFastBtn.Text = &quot;⏩ Быстрый Ролл (Без Рулетки): ВКЛ&quot;
-		fastRollBtn.Text = &quot;⏩ FAST: ON&quot;
+		setFastBtn.Text = &quot; Быстрый Ролл (Без Рулетки): ВКЛ&quot;
+		fastRollBtn.Text = &quot; FAST: ON&quot;
 		fastRollBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
 	else
-		setFastBtn.Text = &quot;⏩ Быстрый Ролл (Без Рулетки): ВЫКЛ&quot;
-		fastRollBtn.Text = &quot;⏩ FAST: OFF&quot;
+		setFastBtn.Text = &quot; Быстрый Ролл (Без Рулетки): ВЫКЛ&quot;
+		fastRollBtn.Text = &quot; FAST: OFF&quot;
 		fastRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
 	end
 end)
@@ -4392,10 +5191,10 @@ end)
 setSoundBtn.MouseButton1Click:Connect(function()
 	local isMuted = SoundEffects.ToggleMute()
 	if isMuted then
-		setSoundBtn.Text = &quot;🔇 Звуки Игры: ВЫКЛЮЧЕНЫ&quot;
+		setSoundBtn.Text = &quot; Звуки Игры: ВЫКЛЮЧЕНЫ&quot;
 		setSoundBtn.TextColor3 = Color3.fromRGB(248, 113, 113)
 	else
-		setSoundBtn.Text = &quot;🔊 Звуки Игры: ВКЛ (Мягкие)&quot;
+		setSoundBtn.Text = &quot; Звуки Игры: ВКЛ (Мягкие)&quot;
 		setSoundBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
 		SoundEffects.Play(&quot;Click&quot;)
 	end
@@ -4486,7 +5285,7 @@ cardHeaderTitle.BackgroundTransparency = 1
 cardHeaderTitle.Font = Enum.Font.GothamBlack
 cardHeaderTitle.TextSize = 13
 cardHeaderTitle.TextColor3 = Color3.fromRGB(250, 204, 21)
-cardHeaderTitle.Text = &quot;🎉 ВЫ ВЫБИЛИ НОВУЮ АУРУ!&quot;
+cardHeaderTitle.Text = &quot; ВЫ ВЫБИЛИ НОВУЮ АУРУ!&quot;
 cardHeaderTitle.Parent = revealCard
 
 -- Item Icon in Reveal Card!
@@ -4545,7 +5344,7 @@ cardEquipBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
 cardEquipBtn.Font = Enum.Font.GothamBlack
 cardEquipBtn.TextSize = 15
 cardEquipBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-cardEquipBtn.Text = &quot;⚔️ ЭКИПИРОВАТЬ СЕЙЧАС&quot;
+cardEquipBtn.Text = &quot;ЭКИПИРОВАТЬ СЕЙЧАС&quot;
 addCorner(cardEquipBtn, 10)
 cardEquipBtn.Parent = revealCard
 
@@ -4556,7 +5355,7 @@ cardSellBtn.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
 cardSellBtn.Font = Enum.Font.GothamBlack
 cardSellBtn.TextSize = 13
 cardSellBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-cardSellBtn.Text = &quot;💰 ПРОДАТЬ (+50)&quot;
+cardSellBtn.Text = &quot;ПРОДАТЬ (+50)&quot;
 addCorner(cardSellBtn, 10)
 cardSellBtn.Parent = revealCard
 
@@ -4567,7 +5366,7 @@ cardCollectBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
 cardCollectBtn.Font = Enum.Font.GothamBlack
 cardCollectBtn.TextSize = 13
 cardCollectBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-cardCollectBtn.Text = &quot;🎒 В ИНВЕНТАРЬ&quot;
+cardCollectBtn.Text = &quot; В ИНВЕНТАРЬ&quot;
 addCorner(cardCollectBtn, 10)
 cardCollectBtn.Parent = revealCard
 
@@ -4575,17 +5374,17 @@ local currentRolledAura = nil
 
 local function showRevealPopup(auraData)
 	currentRolledAura = auraData
-	cardTierTag.Text = string.format(&quot;[ ✦ %s ✦ ]&quot;, auraData.Tier:upper())
+	cardTierTag.Text = string.format(&quot;[  %s  ]&quot;, auraData.Tier:upper())
 	cardName.Text = auraData.Name
 	cardName.TextColor3 = auraData.Color
 	cardRarity.Text = AuraConfig.FormatRarity(auraData.Rarity or 0)
 	cardDesc.Text = auraData.Description
 	cardStroke.Color = auraData.Color
 	cardItemIcon.Image = auraData.Icon or &quot;rbxasset://textures/particles/sparkles_main.dds&quot;
-	cardItemIcon.ImageColor3 = auraData.Color
+	cardItemIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
 
 	local scrapCoins = AuraConfig.GetScrapValue(auraData.Rarity or 0)
-	cardSellBtn.Text = string.format(&quot;💰 ПРОДАТЬ (+%d)&quot;, scrapCoins)
+	cardSellBtn.Text = string.format(&quot;ПРОДАТЬ (+%d)&quot;, scrapCoins)
 
 	cutsceneOverlay.Visible = true
 
@@ -4659,8 +5458,19 @@ local function runCS2Roulette(winningAura, onFinished)
 		cardIcon.Position = UDim2.new(0.5, -21, 0, 8)
 		cardIcon.BackgroundTransparency = 1
 		cardIcon.Image = aura.Icon or &quot;rbxasset://textures/particles/sparkles_main.dds&quot;
-		cardIcon.ImageColor3 = aura.Color
+		cardIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
 		cardIcon.Parent = card
+
+		local rSym = Instance.new(&quot;TextLabel&quot;)
+		rSym.Size = UDim2.new(0, 28, 0, 14)
+		rSym.Position = UDim2.new(1, -32, 0, 6)
+		rSym.BackgroundColor3 = Color3.fromRGB(12, 15, 24)
+		rSym.Font = Enum.Font.GothamBlack
+		rSym.TextSize = 8
+		rSym.TextColor3 = aura.Color
+		rSym.Text = aura.Symbol or &quot;AUR&quot;
+		addCorner(rSym, 3)
+		rSym.Parent = card
 
 		local name = Instance.new(&quot;TextLabel&quot;)
 		name.Size = UDim2.new(1, -8, 0, 24)
@@ -4771,13 +5581,13 @@ bannerText.BackgroundTransparency = 1
 bannerText.Font = Enum.Font.GothamBlack
 bannerText.TextSize = 14
 bannerText.TextColor3 = Color3.fromRGB(255, 235, 120)
-bannerText.Text = &quot;🎉 Player rolled MYTHIC!&quot;
+bannerText.Text = &quot; Player rolled MYTHIC!&quot;
 bannerText.Parent = banner
 
 GlobalAnnouncementEvent.OnClientEvent:Connect(function(info)
 	local tierColor = AuraConfig.GetTierColor(info.Tier)
 	bannerStroke.Color = tierColor
-	bannerText.Text = string.format(&quot;🎉 %s rolled %s (%s)!&quot;, info.PlayerName, info.AuraName:upper(), AuraConfig.FormatRarity(info.Rarity))
+	bannerText.Text = string.format(&quot; %s rolled %s (%s)!&quot;, info.PlayerName, info.AuraName:upper(), AuraConfig.FormatRarity(info.Rarity))
 	bannerText.TextColor3 = tierColor
 
 	TweenService:Create(banner, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
@@ -4830,12 +5640,12 @@ autoRollBtn.MouseButton1Click:Connect(function()
 	SoundEffects.Play(&quot;Click&quot;)
 	isAutoRollOn = not isAutoRollOn
 	if isAutoRollOn then
-		autoRollBtn.Text = &quot;⚡ AUTO: ON&quot;
+		autoRollBtn.Text = &quot; AUTO: ON&quot;
 		autoRollBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
 		autoRollBtn.BackgroundColor3 = Color3.fromRGB(22, 50, 35)
 		autoStroke.Color = Color3.fromRGB(74, 222, 128)
 	else
-		autoRollBtn.Text = &quot;⚡ AUTO: OFF&quot;
+		autoRollBtn.Text = &quot; AUTO: OFF&quot;
 		autoRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
 		autoRollBtn.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
 		autoStroke.Color = Color3.fromRGB(45, 52, 70)
@@ -4855,13 +5665,13 @@ fastRollBtn.MouseButton1Click:Connect(function()
 	SoundEffects.Play(&quot;Click&quot;)
 	isFastRollOn = not isFastRollOn
 	if isFastRollOn then
-		fastRollBtn.Text = &quot;⏩ FAST: ON&quot;
+		fastRollBtn.Text = &quot; FAST: ON&quot;
 		fastRollBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
-		setFastBtn.Text = &quot;⏩ Быстрый Ролл (Без Рулетки): ВКЛ&quot;
+		setFastBtn.Text = &quot; Быстрый Ролл (Без Рулетки): ВКЛ&quot;
 	else
-		fastRollBtn.Text = &quot;⏩ FAST: OFF&quot;
+		fastRollBtn.Text = &quot; FAST: OFF&quot;
 		fastRollBtn.TextColor3 = Color3.fromRGB(180, 185, 200)
-		setFastBtn.Text = &quot;⏩ Быстрый Ролл (Без Рулетки): ВЫКЛ&quot;
+		setFastBtn.Text = &quot; Быстрый Ролл (Без Рулетки): ВЫКЛ&quot;
 	end
 end)
 
@@ -4877,6 +5687,7 @@ end)
 
 navUpgraderBtn.MouseButton1Click:Connect(function()
 	toggleModal(upgWindow)
+	refreshUpgraderUI()
 end)
 
 navPvPBtn.MouseButton1Click:Connect(function()
@@ -4914,24 +5725,24 @@ DataSyncEvent.OnClientEvent:Connect(function(data)
 		localData[k] = v
 	end
 
-	rollsLabel.Text = string.format(&quot;🎲 Rolls: %s&quot;, AuraConfig.FormatNumber(localData.Rolls or 0))
-	luckLabel.Text = string.format(&quot;🍀 Luck: x%.1f&quot;, localData.CurrentLuck or 1.0)
-	coinsLabel.Text = string.format(&quot;🪙 %s&quot;, AuraConfig.FormatNumber(localData.Coins or 0))
+	rollsLabel.Text = string.format(&quot; Rolls: %s&quot;, AuraConfig.FormatNumber(localData.Rolls or 0))
+	luckLabel.Text = string.format(&quot; Luck: x%.1f&quot;, localData.CurrentLuck or 1.0)
+	coinsLabel.Text = string.format(&quot; %s&quot;, AuraConfig.FormatNumber(localData.Coins or 0))
 
 	if localData.MegaPotionExpiry and localData.MegaPotionExpiry &gt; os.time() then
 		local remaining = localData.MegaPotionExpiry - os.time()
 		local mins = math.floor(remaining / 60)
 		local secs = remaining % 60
-		potionLabel.Text = string.format(&quot;⏳ 5x Mega: %02d:%02d&quot;, mins, secs)
+		potionLabel.Text = string.format(&quot; 5x Mega: %02d:%02d&quot;, mins, secs)
 		potionLabel.TextColor3 = Color3.fromRGB(6, 182, 212)
 	elseif localData.PotionExpiry and localData.PotionExpiry &gt; os.time() then
 		local remaining = localData.PotionExpiry - os.time()
 		local mins = math.floor(remaining / 60)
 		local secs = remaining % 60
-		potionLabel.Text = string.format(&quot;⏳ 2x Pot: %02d:%02d&quot;, mins, secs)
+		potionLabel.Text = string.format(&quot; 2x Pot: %02d:%02d&quot;, mins, secs)
 		potionLabel.TextColor3 = Color3.fromRGB(74, 222, 128)
 	else
-		potionLabel.Text = &quot;⏳ Pot: None&quot;
+		potionLabel.Text = &quot; Pot: None&quot;
 		potionLabel.TextColor3 = Color3.fromRGB(156, 163, 175)
 	end
 

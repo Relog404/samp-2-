@@ -62,7 +62,7 @@ local function createEmitter(parent, props)
 	pe.SpreadAngle = props.SpreadAngle or Vector2.new(15, 15)
 	pe.Acceleration = props.Acceleration or Vector3.new(0, 3, 0)
 	pe.Drag = props.Drag or 0.5
-	pe.LightEmission = props.LightEmission or 1.0
+	pe.LightEmission = props.LightEmission or 0.45
 	pe.LightInfluence = props.LightInfluence or 0.0
 	pe.Texture = props.Texture or TEXTURES.Sparkle
 	pe.RotSpeed = props.RotSpeed or NumberRange.new(-90, 90)
@@ -269,6 +269,178 @@ local function addAngelicWings(character, folder, color)
 	makeWingEmitter(attWingR)
 end
 
+-- LAYER 4B: Mythic Dragon Serpent & Draconic Flame Wings
+local function addDragonWings(character, folder, color)
+	local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+	if not torso or not torso:IsA("BasePart") then return end
+
+	local attWingL = Instance.new("Attachment")
+	attWingL.Name = "AuraVFXAttachment"
+	attWingL.Position = Vector3.new(-1.8, 1.2, 0.9)
+	attWingL.Orientation = Vector3.new(0, 45, 25)
+	attWingL.Parent = torso
+
+	local attWingR = Instance.new("Attachment")
+	attWingR.Name = "AuraVFXAttachment"
+	attWingR.Position = Vector3.new(1.8, 1.2, 0.9)
+	attWingR.Orientation = Vector3.new(0, -45, -25)
+	attWingR.Parent = torso
+
+	local function makeDragonWing(att)
+		createEmitter(att, {
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 240, 150)),
+				ColorSequenceKeypoint.new(0.4, color),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 20, 10)),
+			}),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.8),
+				NumberSequenceKeypoint.new(0.5, 3.2),
+				NumberSequenceKeypoint.new(1, 0.4),
+			}),
+			Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.3),
+				NumberSequenceKeypoint.new(0.5, 0.05),
+				NumberSequenceKeypoint.new(1, 1.0),
+			}),
+			Lifetime = NumberRange.new(1.0, 1.8),
+			Rate = 50,
+			Speed = NumberRange.new(3.5, 7.5),
+			SpreadAngle = Vector2.new(15, 15),
+			Acceleration = Vector3.new(0, 3, 0),
+			Texture = TEXTURES.Flame,
+		})
+	end
+
+	makeDragonWing(attWingL)
+	makeDragonWing(attWingR)
+end
+
+local function addDragonSerpent(character, folder, color)
+	local rootPart = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
+	if not rootPart or not rootPart:IsA("BasePart") then return end
+
+	local angles = { 0, 60, 120, 180, 240, 300 }
+	for idx, deg in ipairs(angles) do
+		local rad = math.rad(deg)
+		local radius = 3.2
+		local height = -1.2 + (idx * 0.5)
+
+		local att = Instance.new("Attachment")
+		att.Name = "AuraVFXAttachment"
+		att.Position = Vector3.new(math.cos(rad) * radius, height, math.sin(rad) * radius)
+		att.Parent = rootPart
+
+		createEmitter(att, {
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 220, 100)),
+				ColorSequenceKeypoint.new(0.5, color),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 20, 10)),
+			}),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.6),
+				NumberSequenceKeypoint.new(0.5, 1.8),
+				NumberSequenceKeypoint.new(1, 0.2),
+			}),
+			Transparency = NumberSequence.new(0.1, 1.0),
+			Lifetime = NumberRange.new(0.8, 1.4),
+			Rate = 22,
+			Speed = NumberRange.new(1.0, 2.5),
+			SpreadAngle = Vector2.new(20, 20),
+			Texture = TEXTURES.Flame,
+		})
+
+		createEmitter(att, {
+			Color = ColorSequence.new(Color3.fromRGB(255, 180, 40)),
+			Size = NumberSequence.new(0.3, 0.05),
+			Transparency = NumberSequence.new(0.0, 1.0),
+			Lifetime = NumberRange.new(1.0, 1.8),
+			Rate = 12,
+			Speed = NumberRange.new(1.5, 3.5),
+			SpreadAngle = Vector2.new(180, 180),
+			Texture = TEXTURES.Sparkle,
+		})
+	end
+end
+
+-- LAYER 4C: Ancient Celestial Turtle Shell & Orbiting Runic Jade Shields
+local function addAncientTurtleShell(character, folder, color)
+	local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+	if not torso or not torso:IsA("BasePart") then return end
+
+	local attBack = Instance.new("Attachment")
+	attBack.Name = "AuraVFXAttachment"
+	attBack.Position = Vector3.new(0, 0.2, 1.1)
+	attBack.Parent = torso
+
+	createEmitter(attBack, {
+		Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 255, 230)),
+			ColorSequenceKeypoint.new(0.5, color),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 100, 60)),
+		}),
+		Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 2.2),
+			NumberSequenceKeypoint.new(0.5, 3.8),
+			NumberSequenceKeypoint.new(1, 2.4),
+		}),
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.6),
+			NumberSequenceKeypoint.new(0.5, 0.1),
+			NumberSequenceKeypoint.new(1, 0.8),
+		}),
+		Lifetime = NumberRange.new(1.2, 1.8),
+		Rate = 8,
+		Speed = NumberRange.new(0.1, 0.3),
+		SpreadAngle = Vector2.new(5, 5),
+		Texture = TEXTURES.Ring,
+		RotSpeed = NumberRange.new(15, 30),
+	})
+end
+
+local function addOrbitingTurtleShields(character, folder, color)
+	local rootPart = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
+	if not rootPart or not rootPart:IsA("BasePart") then return end
+
+	local angles = { 0, 90, 180, 270 }
+	for _, deg in ipairs(angles) do
+		local rad = math.rad(deg)
+		local radius = 3.6
+
+		local att = Instance.new("Attachment")
+		att.Name = "AuraVFXAttachment"
+		att.Position = Vector3.new(math.cos(rad) * radius, -0.2, math.sin(rad) * radius)
+		att.Parent = rootPart
+
+		createEmitter(att, {
+			Color = ColorSequence.new(color),
+			Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 1.0),
+				NumberSequenceKeypoint.new(0.5, 1.6),
+				NumberSequenceKeypoint.new(1, 1.0),
+			}),
+			Transparency = NumberSequence.new(0.2, 0.8),
+			Lifetime = NumberRange.new(1.0, 1.5),
+			Rate = 6,
+			Speed = NumberRange.new(0.1, 0.2),
+			Texture = TEXTURES.Ring,
+			RotSpeed = NumberRange.new(45, 90),
+		})
+
+		createEmitter(att, {
+			Color = ColorSequence.new(Color3.fromRGB(160, 255, 210)),
+			Size = NumberSequence.new(0.4, 0.1),
+			Transparency = NumberSequence.new(0.1, 1.0),
+			Lifetime = NumberRange.new(1.2, 1.8),
+			Rate = 14,
+			Speed = NumberRange.new(1.2, 2.8),
+			SpreadAngle = Vector2.new(15, 15),
+			Acceleration = Vector3.new(0, 2.5, 0),
+			Texture = TEXTURES.Cross,
+		})
+	end
+end
+
 -- LAYER 5: Animated Head Halos & Celestial Crowns
 local function addHeadCrown(character, folder, color, isVIP)
 	local head = character:FindFirstChild("Head")
@@ -472,17 +644,17 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 	highlight.Name = "AuraHighlight"
 	highlight.Adornee = character
 	highlight.OutlineColor = auraColor
-	highlight.OutlineTransparency = 0.02
+	highlight.OutlineTransparency = 0.08
 	highlight.FillColor = auraColor
-	highlight.FillTransparency = 0.90
+	highlight.FillTransparency = 0.88
 	highlight.Parent = activeFolder
 
 	-- Dynamic Light
 	local light = Instance.new("PointLight")
 	light.Name = "AuraLight"
 	light.Color = auraColor
-	light.Range = (rarity >= 10000 or auraData.IsCrafted) and 24 or 16
-	light.Brightness = (rarity >= 10000 or auraData.IsCrafted) and 4.2 or 2.8
+	light.Range = (rarity >= 10000 or auraData.IsCrafted) and 18 or 14
+	light.Brightness = (rarity >= 10000 or auraData.IsCrafted) and 1.4 or 1.0
 	light.Shadows = false
 	light.Parent = attRoot
 
@@ -545,6 +717,18 @@ function AuraVisuals.ApplyAura(character, auraId, isVIP)
 		addHeadCrown(character, activeFolder, Color3.fromRGB(255, 215, 0), true)
 		addDenseBodyEnergy(attRoot, Color3.fromRGB(251, 191, 36), Color3.fromRGB(255, 255, 255), 60, NumberRange.new(3.5, 7.0), {0.4, 1.8, 0.3})
 
+	elseif shape == "Dragon" then
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(244, 63, 94), Color3.fromRGB(251, 191, 36), 75, NumberRange.new(5.0, 9.0), {0.6, 2.2, 0.3})
+		addDragonSerpent(character, activeFolder, pColor)
+		addDragonWings(character, activeFolder, pColor)
+		addLightPillar(rootPart, activeFolder, pColor)
+
+	elseif shape == "Turtle" then
+		addDenseBodyEnergy(attRoot, Color3.fromRGB(16, 185, 129), Color3.fromRGB(52, 211, 153), 60, NumberRange.new(4.0, 8.0), {0.5, 2.0, 0.3})
+		addAncientTurtleShell(character, activeFolder, pColor)
+		addOrbitingTurtleShields(character, activeFolder, pColor)
+		addLightPillar(rootPart, activeFolder, pColor)
+
 	else
 		addDenseBodyEnergy(attRoot, pColor, auraColor, 55, NumberRange.new(4.0, 8.0), {0.5, 2.0, 0.3})
 		if rarity >= 1000 then
@@ -575,7 +759,7 @@ function AuraVisuals.ShowDamageNumber(targetChar, amount, isCrit, color)
 	lbl.Font = Enum.Font.GothamBlack
 	lbl.TextSize = isCrit and 22 or 17
 	lbl.TextColor3 = isCrit and Color3.fromRGB(250, 204, 21) or (color or Color3.fromRGB(239, 68, 68))
-	lbl.Text = isCrit and string.format("💥 CRIT! -%d", amount) or string.format("-%d", amount)
+	lbl.Text = isCrit and string.format("CRIT! -%d", amount) or string.format("-%d", amount)
 	lbl.TextStrokeColor3 = Color3.fromRGB(15, 15, 20)
 	lbl.TextStrokeTransparency = 0.1
 	lbl.Parent = bb
