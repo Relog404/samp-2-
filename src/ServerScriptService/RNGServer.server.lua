@@ -48,6 +48,7 @@ end
 
 local RollRequestFunc = getRemoteFunction("RollRequest")
 local CraftAuraFunc = getRemoteFunction("CraftAura")
+local PurchaseProductFunc = getRemoteFunction("PurchaseProduct")
 local EquipAuraEvent = getRemoteEvent("EquipAura")
 local DeleteAuraEvent = getRemoteEvent("DeleteAura")
 local SetAutoDeleteEvent = getRemoteEvent("SetAutoDelete")
@@ -91,6 +92,11 @@ local function calculateLuck(player, data)
 		luck = luck * 2.0
 	end
 
+	-- x3 Luck Gamepass or Test Perk
+	if data.Gamepasses.X3Luck or data.TestPerks.X3Luck then
+		luck = luck * 3.0
+	end
+
 	-- VIP Gamepass or Test Perk (x1.5 Luck)
 	if data.Gamepasses.VIP or data.TestPerks.VIP then
 		luck = luck * 1.5
@@ -104,6 +110,11 @@ local function calculateLuck(player, data)
 	-- Active Fortune Elixir Potion (x2 Luck)
 	if data.PotionExpiry and os.time() < data.PotionExpiry then
 		luck = luck * 2.0
+	end
+
+	-- Mega Potion (x5 Luck)
+	if data.MegaPotionExpiry and os.time() < data.MegaPotionExpiry then
+		luck = luck * 5.0
 	end
 
 	return luck
@@ -167,6 +178,7 @@ local function syncClient(player)
 		MaxStorage = data.MaxStorage,
 		AutoDeleteThreshold = data.AutoDeleteThreshold,
 		PotionExpiry = data.PotionExpiry,
+		MegaPotionExpiry = data.MegaPotionExpiry,
 		Gamepasses = data.Gamepasses,
 		TestPerks = data.TestPerks,
 		CurrentLuck = currentLuck,
@@ -536,21 +548,53 @@ CraftAuraFunc.OnServerInvoke = function(player, recipeId)
 	}
 end
 
+-- PURCHASE PRODUCT HANDLER (DONATION & DEVPRODUCTS)
+PurchaseProductFunc.OnServerInvoke = function(player, productKey)
+	local data = sessionData[player]
+	if not data then return { Success = false } end
+
+	if productKey == "CoinPack10k" then
+		data.Coins = (data.Coins or 0) + 10000
+	elseif productKey == "CoinPack50k" then
+		data.Coins = (data.Coins or 0) + 50000
+	elseif productKey == "CoinPack250k" then
+		data.Coins = (data.Coins or 0) + 250000
+	elseif productKey == "MegaPotion" then
+		data.MegaPotionExpiry = os.time() + 900 -- 15 mins x5 luck!
+	elseif productKey == "InstantLegendary" then
+		local pool = { "Ruby", "Undead", "Solar" }
+		local pick = pool[math.random(1, #pool)]
+		data.Inventory[pick] = (data.Inventory[pick] or 0) + 1
+	elseif productKey == "InstantMythic" then
+		local pool = { "Lunar", "Poseidon", "Hades", "Galaxy" }
+		local pick = pool[math.random(1, #pool)]
+		data.Inventory[pick] = (data.Inventory[pick] or 0) + 1
+	elseif productKey == "StarterPack" then
+		data.Coins = (data.Coins or 0) + 25000
+		data.TestPerks.X2Luck = true
+		data.TestPerks.VIP = true
+		data.Inventory["VIPCrown"] = (data.Inventory["VIPCrown"] or 0) + 1
+		data.MegaPotionExpiry = os.time() + 1800
+	end
+
+	syncClient(player)
+	return { Success = true, Message = "Purchase Successful!" }
+end
+
 -- TEST PERK TOGGLE (Allows free testing of all monetization features without Robux!)
 ToggleTestPerkEvent.OnServerEvent:Connect(function(player, perkName)
 	local data = sessionData[player]
 	if not data then return end
 
-	if data.TestPerks[perkName] ~= nil then
-		data.TestPerks[perkName] = not data.TestPerks[perkName]
+	data.TestPerks = data.TestPerks or {}
+	data.TestPerks[perkName] = not data.TestPerks[perkName]
 
-		-- If VIP was toggled on, give VIP Crown
-		if perkName == "VIP" and data.TestPerks.VIP then
-			data.Inventory["VIPCrown"] = (data.Inventory["VIPCrown"] or 0) + 1
-		end
-
-		syncClient(player)
+	-- If VIP was toggled on, give VIP Crown
+	if perkName == "VIP" and data.TestPerks.VIP then
+		data.Inventory["VIPCrown"] = (data.Inventory["VIPCrown"] or 0) + 1
 	end
+
+	syncClient(player)
 end)
 
 -- Connect PlayerAdded / PlayerRemoving

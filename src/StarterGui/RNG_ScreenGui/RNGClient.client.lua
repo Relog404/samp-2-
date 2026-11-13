@@ -1,6 +1,6 @@
 -- RNGClient.client.lua
 -- Dynamic CS2-style Case Opening Roulette, Glassmorphic UI, Clear Sell & Equip Controls,
--- and High-Performance Client Controller for Sol's RNG.
+-- Rich Multi-Category Donation Shop, Quick-Donate HUD Bar, Special Offers, and Soft Audio Controls.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -22,6 +22,7 @@ local SoundEffects = require(ModulesFolder:WaitForChild("SoundEffects"))
 -- Remotes
 local RollRequestFunc = EventsFolder:WaitForChild("RollRequest")
 local CraftAuraFunc = EventsFolder:WaitForChild("CraftAura")
+local PurchaseProductFunc = EventsFolder:WaitForChild("PurchaseProduct")
 local EquipAuraEvent = EventsFolder:WaitForChild("EquipAura")
 local DeleteAuraEvent = EventsFolder:WaitForChild("DeleteAura")
 local SetAutoDeleteEvent = EventsFolder:WaitForChild("SetAutoDelete")
@@ -41,6 +42,7 @@ local localData = {
 	MaxStorage = 20,
 	AutoDeleteThreshold = 0,
 	PotionExpiry = 0,
+	MegaPotionExpiry = 0,
 	Gamepasses = {},
 	TestPerks = {},
 	CurrentLuck = 1.0,
@@ -110,7 +112,7 @@ addPadding(topHud, 4, 4, 16, 16)
 topHud.Parent = screenGui
 
 local topSizeConstraint = Instance.new("UISizeConstraint")
-topSizeConstraint.MaxSize = Vector2.new(700, 48)
+topSizeConstraint.MaxSize = Vector2.new(720, 48)
 topSizeConstraint.MinSize = Vector2.new(320, 40)
 topSizeConstraint.Parent = topHud
 
@@ -149,7 +151,136 @@ local coinsLabel, coinsPill = createTopStatPill("🪙", "Coins: 100", Color3.fro
 local potionLabel, potionPill = createTopStatPill("⏳", "Pot: None", Color3.fromRGB(56, 189, 248))
 
 --------------------------------------------------------------------------------
--- 2. BOTTOM CONTROLS & MASSIVE ROLL BUTTON
+-- 2. TOP-RIGHT SPECIAL OFFER WIDGET (DONATE PROMOTION)
+--------------------------------------------------------------------------------
+
+local specialOffer = Instance.new("Frame")
+specialOffer.Name = "SpecialOffer"
+specialOffer.AnchorPoint = Vector2.new(1, 0)
+specialOffer.Position = UDim2.new(1, -14, 0, 12)
+specialOffer.Size = UDim2.new(0, 220, 0, 72)
+specialOffer.BackgroundColor3 = Color3.fromRGB(22, 18, 32)
+specialOffer.BackgroundTransparency = 0.1
+addCorner(specialOffer, 12)
+local offerStroke = addStroke(specialOffer, Color3.fromRGB(245, 158, 11), 1.8)
+addPadding(specialOffer, 6, 6, 8, 8)
+specialOffer.Parent = screenGui
+
+local offerTitle = Instance.new("TextLabel")
+offerTitle.Size = UDim2.new(1, 0, 0, 16)
+offerTitle.BackgroundTransparency = 1
+offerTitle.Font = Enum.Font.GothamBlack
+offerTitle.TextSize = 11
+offerTitle.TextColor3 = Color3.fromRGB(250, 204, 21)
+offerTitle.Text = "🔥 СТАРТЕР ПАК [-80%]"
+offerTitle.Parent = specialOffer
+
+local offerSub = Instance.new("TextLabel")
+offerSub.Size = UDim2.new(1, 0, 0, 14)
+offerSub.Position = UDim2.new(0, 0, 0, 16)
+offerSub.BackgroundTransparency = 1
+offerSub.Font = Enum.Font.GothamMedium
+offerSub.TextSize = 10
+offerSub.TextColor3 = Color3.fromRGB(220, 225, 240)
+offerSub.Text = "x2 Luck + VIP + 25,000 Монет"
+offerSub.Parent = specialOffer
+
+local offerBuyBtn = Instance.new("TextButton")
+offerBuyBtn.Size = UDim2.new(1, 0, 0, 26)
+offerBuyBtn.Position = UDim2.new(0, 0, 1, -26)
+offerBuyBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+offerBuyBtn.Font = Enum.Font.GothamBlack
+offerBuyBtn.TextSize = 11
+offerBuyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+offerBuyBtn.Text = "💎 ЗАБРАТЬ (R$ 149 / ТЕСТ)"
+addCorner(offerBuyBtn, 6)
+offerBuyBtn.Parent = specialOffer
+
+offerBuyBtn.MouseButton1Click:Connect(function()
+	SoundEffects.Play("Click")
+	PurchaseProductFunc:InvokeServer("StarterPack")
+end)
+
+--------------------------------------------------------------------------------
+-- 3. RIGHT FLOATING QUICK-DONATE BAR (ДОНАТ КНОПКИ)
+--------------------------------------------------------------------------------
+
+local rightDonateBar = Instance.new("Frame")
+rightDonateBar.Name = "RightDonateBar"
+rightDonateBar.AnchorPoint = Vector2.new(1, 0.5)
+rightDonateBar.Position = UDim2.new(1, -14, 0.5, 0)
+rightDonateBar.Size = UDim2.new(0, 110, 0, 280)
+rightDonateBar.BackgroundTransparency = 1
+rightDonateBar.Parent = screenGui
+
+local rightLayout = Instance.new("UIListLayout")
+rightLayout.FillDirection = Enum.FillDirection.Vertical
+rightLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+rightLayout.Padding = UDim.new(0, 8)
+rightLayout.Parent = rightDonateBar
+
+local function createQuickDonatePill(icon, title, color, onClick)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1, 0, 0, 38)
+	btn.BackgroundColor3 = Color3.fromRGB(18, 22, 32)
+	btn.Text = ""
+	addCorner(btn, 10)
+	local stroke = addStroke(btn, color, 1.5)
+
+	local lbl = Instance.new("TextLabel")
+	lbl.Size = UDim2.new(1, 0, 1, 0)
+	lbl.BackgroundTransparency = 1
+	lbl.Font = Enum.Font.GothamBlack
+	lbl.TextSize = 11
+	lbl.TextColor3 = color
+	lbl.Text = icon .. " " .. title
+	lbl.Parent = btn
+
+	btn.MouseEnter:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.15), { BackgroundColor3 = Color3.fromRGB(28, 34, 52) }):Play()
+	end)
+	btn.MouseLeave:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.15), { BackgroundColor3 = Color3.fromRGB(18, 22, 32) }):Play()
+	end)
+
+	btn.MouseButton1Click:Connect(function()
+		SoundEffects.Play("Click")
+		if onClick then onClick() end
+	end)
+
+	btn.Parent = rightDonateBar
+	return btn
+end
+
+-- Forward declaration of shop modal toggle
+local toggleShopModal = nil
+
+createQuickDonatePill("💎", "ДОНАТ", Color3.fromRGB(168, 85, 247), function()
+	if toggleShopModal then toggleShopModal() end
+end)
+
+createQuickDonatePill("🍀", "x2 LUCK", Color3.fromRGB(74, 222, 128), function()
+	ToggleTestPerkEvent:FireServer("X2Luck")
+end)
+
+createQuickDonatePill("⭐", "VIP", Color3.fromRGB(245, 158, 11), function()
+	ToggleTestPerkEvent:FireServer("VIP")
+end)
+
+createQuickDonatePill("⚡", "AUTO-ROLL", Color3.fromRGB(250, 204, 21), function()
+	ToggleTestPerkEvent:FireServer("AutoRoll")
+end)
+
+createQuickDonatePill("🧪", "x5 ЗЕЛЬЕ", Color3.fromRGB(6, 182, 212), function()
+	PurchaseProductFunc:InvokeServer("MegaPotion")
+end)
+
+createQuickDonatePill("🪙", "+50K МОНЕТ", Color3.fromRGB(251, 191, 36), function()
+	PurchaseProductFunc:InvokeServer("CoinPack50k")
+end)
+
+--------------------------------------------------------------------------------
+-- 4. BOTTOM CONTROLS & MASSIVE ROLL BUTTON
 --------------------------------------------------------------------------------
 
 local bottomControls = Instance.new("Frame")
@@ -220,7 +351,7 @@ local fastStroke = addStroke(fastRollBtn, Color3.fromRGB(45, 52, 70), 1.2)
 fastRollBtn.Parent = secondaryBar
 
 --------------------------------------------------------------------------------
--- 3. LEFT DOCK NAVIGATION BAR
+-- 5. LEFT DOCK NAVIGATION BAR
 --------------------------------------------------------------------------------
 
 local leftDock = Instance.new("Frame")
@@ -268,11 +399,11 @@ end
 
 local navInventoryBtn = createDockButton("Inventory", "🎒", "Инвентарь")
 local navCraftingBtn = createDockButton("Crafting", "⚗️", "Кузница Крафта")
-local navShopBtn = createDockButton("Shop", "🛒", "Магазин и Пассы")
+local navShopBtn = createDockButton("Shop", "🛒", "Магазин Доната")
 local navSettingsBtn = createDockButton("Settings", "⚙️", "Настройки")
 
 --------------------------------------------------------------------------------
--- 4. BOTTOM-LEFT EQUIPPED AURA SHOWCASE CARD
+-- 6. BOTTOM-LEFT EQUIPPED AURA SHOWCASE CARD
 --------------------------------------------------------------------------------
 
 local equippedCard = Instance.new("Frame")
@@ -321,7 +452,7 @@ addCorner(unequipBtn, 6)
 unequipBtn.Parent = equippedCard
 
 --------------------------------------------------------------------------------
--- 5. MODAL WINDOW CREATOR
+-- 7. MODAL WINDOW CREATOR
 --------------------------------------------------------------------------------
 
 local function createModal(titleText, width, height)
@@ -397,7 +528,7 @@ local function toggleModal(modal)
 end
 
 --------------------------------------------------------------------------------
--- 6. INVENTORY WINDOW (CLEAR EQUIP & SELL CONTROLS)
+-- 8. INVENTORY WINDOW (EXPLICIT EQUIP & SELL BUTTONS)
 --------------------------------------------------------------------------------
 
 local invWindow, invContent = createModal("🎒 ИНВЕНТАРЬ АУР", 680, 480)
@@ -455,7 +586,6 @@ invGrid.CellPadding = UDim2.new(0, 8, 0, 8)
 invGrid.Parent = invScroll
 addPadding(invScroll, 8, 8, 8, 8)
 
--- Right Inspector Panel with VERY CLEAR Equip & Sell Buttons
 local detailPanel = Instance.new("Frame")
 detailPanel.Size = UDim2.new(0, 215, 1, -38)
 detailPanel.Position = UDim2.new(1, -215, 0, 36)
@@ -493,10 +623,9 @@ detailDesc.TextSize = 12
 detailDesc.TextColor3 = Color3.fromRGB(200, 205, 220)
 detailDesc.TextWrapped = true
 detailDesc.TextYAlignment = Enum.TextYAlignment.Top
-detailDesc.Text = "Нажмите на карточку ауры слева для экипировки или продажи."
+detailDesc.Text = "Нажмите на ауру слева для управления."
 detailDesc.Parent = detailPanel
 
--- VERY CLEAR: ЭКИПИРОВАТЬ Button
 local equipActionBtn = Instance.new("TextButton")
 equipActionBtn.Size = UDim2.new(1, 0, 0, 42)
 equipActionBtn.Position = UDim2.new(0, 0, 1, -94)
@@ -509,7 +638,6 @@ equipActionBtn.Visible = false
 addCorner(equipActionBtn, 8)
 equipActionBtn.Parent = detailPanel
 
--- VERY CLEAR: ПРОДАТЬ Button
 local sellActionBtn = Instance.new("TextButton")
 sellActionBtn.Size = UDim2.new(1, 0, 0, 40)
 sellActionBtn.Position = UDim2.new(0, 0, 1, -44)
@@ -663,7 +791,7 @@ autoDeleteBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------------------------------------------------
--- 7. CRAFTING ALCHEMIST FORGE
+-- 9. CRAFTING ALCHEMIST FORGE
 --------------------------------------------------------------------------------
 
 local craftWindow, craftContent = createModal("⚗️ КУЗНИЦА КРАФТА АУР", 720, 500)
@@ -858,10 +986,14 @@ forgeBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------------------------------------------------
--- 8. SHOP & MONETIZATION
+-- 10. MULTI-CATEGORY DONATION SHOP (ДОНАТ ДОНАТ ДОНАТ)
 --------------------------------------------------------------------------------
 
-local shopWindow, shopContent = createModal("🛒 МАГАЗИН И ПАССЫ (ТЕСТ-РЕЖИМ)", 700, 480)
+local shopWindow, shopContent = createModal("💎 МАГАЗИН ДОНАТА И ПАССОВ (АКЦИИ -80%)", 740, 520)
+
+toggleShopModal = function()
+	toggleModal(shopWindow)
+end
 
 local shopScroll = Instance.new("ScrollingFrame")
 shopScroll.Size = UDim2.new(1, 0, 1, 0)
@@ -876,113 +1008,252 @@ shopLayout.Padding = UDim.new(0, 10)
 shopLayout.Parent = shopScroll
 addPadding(shopScroll, 8, 8, 8, 8)
 
-local passItems = {
+local donateCatalog = {
+	-- GAMEPASSES
 	{
-		Id = "X2Luck",
-		Name = "🎲 x2 Luck Pass",
-		Color = Color3.fromRGB(74, 222, 128),
-		Desc = "Удваивает шанс выпадения всех редких, мифических и богоподобных аур навсегда!",
-		PerkKey = "X2Luck",
+		Category = "ГЕЙМПАССЫ НАВСЕГДА",
+		Items = {
+			{
+				Id = "X2Luck",
+				Badge = "🔥 ХИТ",
+				Name = "🎲 x2 Luck Pass (Навсегда)",
+				Color = Color3.fromRGB(74, 222, 128),
+				Desc = "Удваивает шанс выпадения всех редких, мифических и богоподобных аур навсегда!",
+				Price = "R$ 199",
+				Type = "Perk",
+				PerkKey = "X2Luck",
+			},
+			{
+				Id = "X3Luck",
+				Badge = "⚡ СВЕРХУДАЧА",
+				Name = "🍀 x3 Luck Overload (Навсегда)",
+				Color = Color3.fromRGB(16, 185, 129),
+				Desc = "Тройной шанс на все ауры! Стакается со всеми другими бонусами!",
+				Price = "R$ 499",
+				Type = "Perk",
+				PerkKey = "X3Luck",
+			},
+			{
+				Id = "AutoRoll",
+				Badge = "⚡ АВТО-РОЛЛ",
+				Name = "⚡ Auto Roll Pass (Навсегда)",
+				Color = Color3.fromRGB(250, 204, 21),
+				Desc = "Автоматический ролл в фоне пока вы общаетесь, гуляете или стоите AFK!",
+				Price = "R$ 99",
+				Type = "Perk",
+				PerkKey = "AutoRoll",
+			},
+			{
+				Id = "ExtraStorage",
+				Badge = "📦 +50 СЛОТОВ",
+				Name = "🎨 Aura Storage (+50)",
+				Color = Color3.fromRGB(56, 189, 248),
+				Desc = "Расширяет ваш инвентарь на +50 дополнительных слотов для редких аур!",
+				Price = "R$ 149",
+				Type = "Perk",
+				PerkKey = "ExtraStorage",
+			},
+			{
+				Id = "VIP",
+				Badge = "⭐ VIP КЛУБ",
+				Name = "⭐ VIP Supporter Pass",
+				Color = Color3.fromRGB(245, 158, 11),
+				Desc = "Аура VIP Crown + x1.5 Удача + Золотой титул VIP над головой и в чате!",
+				Price = "R$ 299",
+				Type = "Perk",
+				PerkKey = "VIP",
+			},
+			{
+				Id = "FastRoll",
+				Badge = "⏩ БЫСТРЫЙ РОЛЛ",
+				Name = "⏩ Fast Roll Instant Pass",
+				Color = Color3.fromRGB(236, 72, 153),
+				Desc = "Моментальное раскрытие роллов без ожидания рулетки!",
+				Price = "R$ 79",
+				Type = "Perk",
+				PerkKey = "FastRoll",
+			},
+		}
 	},
+	-- POTIONS & BOOSTS
 	{
-		Id = "AutoRoll",
-		Name = "⚡ Auto Roll Pass",
-		Color = Color3.fromRGB(250, 204, 21),
-		Desc = "Автоматический ролл в фоне пока вы общаетесь, гуляете или стоите AFK!",
-		PerkKey = "AutoRoll",
+		Category = "МЕГА-БУСТЫ И ЗЕЛЬЯ",
+		Items = {
+			{
+				Id = "MegaPotion",
+				Badge = "🌟 5x LUCK",
+				Name = "🧪 Мега-Зелье Удачи x5 (15 мин)",
+				Color = Color3.fromRGB(6, 182, 212),
+				Desc = "Дает бешеное пятикратное (5x) увеличение шансов на 15 минут!",
+				Price = "R$ 129",
+				Type = "Product",
+				ProductKey = "MegaPotion",
+			},
+		}
 	},
+	-- COINS
 	{
-		Id = "ExtraStorage",
-		Name = "🎨 Aura Storage (+30)",
-		Color = Color3.fromRGB(56, 189, 248),
-		Desc = "Расширяет ваш инвентарь на +30 дополнительных слотов!",
-		PerkKey = "ExtraStorage",
+		Category = "ПАКЕТЫ МОНЕТ",
+		Items = {
+			{
+				Id = "Coins10k",
+				Badge = "🪙 10K",
+				Name = "🪙 10,000 Монет",
+				Color = Color3.fromRGB(250, 204, 21),
+				Desc = "Стартовый запас монет для крафта и улучшений.",
+				Price = "R$ 49",
+				Type = "Product",
+				ProductKey = "CoinPack10k",
+			},
+			{
+				Id = "Coins50k",
+				Badge = "🔥 ХИТ",
+				Name = "🪙 50,000 Монет",
+				Color = Color3.fromRGB(245, 158, 11),
+				Desc = "Большой мешок золота для покупки слотов и расходников!",
+				Price = "R$ 149",
+				Type = "Product",
+				ProductKey = "CoinPack50k",
+			},
+			{
+				Id = "Coins250k",
+				Badge = "💎 БОГАТСТВО",
+				Name = "🪙 250,000 Монет",
+				Color = Color3.fromRGB(251, 191, 36),
+				Desc = "Сундук с золотом — никогда больше не беспокойтесь о монетах!",
+				Price = "R$ 399",
+				Type = "Product",
+				ProductKey = "CoinPack250k",
+			},
+		}
 	},
+	-- INSTANT GOD ROLLS
 	{
-		Id = "VIP",
-		Name = "⭐ VIP Supporter Pass",
-		Color = Color3.fromRGB(245, 158, 11),
-		Desc = "Аура VIP Crown + x1.5 Удача + Золотой титул VIP над головой и в чате!",
-		PerkKey = "VIP",
+		Category = "МГНОВЕННЫЙ ВЫБИВ АУР",
+		Items = {
+			{
+				Id = "InstantLegendary",
+				Badge = "👑 1/1,000+",
+				Name = "🎰 Гарантированная Легендарная Аура",
+				Color = Color3.fromRGB(239, 68, 68),
+				Desc = "Мгновенно начисляет случайную Легендарную ауру (Ruby, Undead, Solar)!",
+				Price = "R$ 199",
+				Type = "Product",
+				ProductKey = "InstantLegendary",
+			},
+			{
+				Id = "InstantMythic",
+				Badge = "🌌 1/10,000+",
+				Name = "🌌 Гарантированная Мифическая Аура",
+				Color = Color3.fromRGB(168, 85, 247),
+				Desc = "Мгновенно начисляет случайную Мифическую ауру (Lunar, Poseidon, Hades, Galaxy)!",
+				Price = "R$ 499",
+				Type = "Product",
+				ProductKey = "InstantMythic",
+			},
+		}
 	},
 }
 
 local function refreshShopUI()
 	for _, child in ipairs(shopScroll:GetChildren()) do
-		if child:IsA("Frame") then child:Destroy() end
+		if child:IsA("Frame") or child:IsA("TextLabel") then child:Destroy() end
 	end
 
-	for _, item in ipairs(passItems) do
-		local row = Instance.new("Frame")
-		row.Size = UDim2.new(1, 0, 0, 84)
-		row.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
-		addCorner(row, 8)
-		addStroke(row, item.Color, 1.2)
-		addPadding(row, 8, 8, 12, 12)
+	for _, cat in ipairs(donateCatalog) do
+		local catHeader = Instance.new("TextLabel")
+		catHeader.Size = UDim2.new(1, 0, 0, 24)
+		catHeader.BackgroundTransparency = 1
+		catHeader.Font = Enum.Font.GothamBlack
+		catHeader.TextSize = 13
+		catHeader.TextColor3 = Color3.fromRGB(250, 204, 21)
+		catHeader.TextXAlignment = Enum.TextXAlignment.Left
+		catHeader.Text = "✦ " .. cat.Category
+		catHeader.Parent = shopScroll
 
-		local nameLbl = Instance.new("TextLabel")
-		nameLbl.Size = UDim2.new(0.65, 0, 0, 24)
-		nameLbl.BackgroundTransparency = 1
-		nameLbl.Font = Enum.Font.GothamBlack
-		nameLbl.TextSize = 16
-		nameLbl.TextColor3 = item.Color
-		nameLbl.TextXAlignment = Enum.TextXAlignment.Left
-		nameLbl.Text = item.Name
-		nameLbl.Parent = row
+		for _, item in ipairs(cat.Items) do
+			local row = Instance.new("Frame")
+			row.Size = UDim2.new(1, 0, 0, 84)
+			row.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
+			addCorner(row, 8)
+			addStroke(row, item.Color, 1.2)
+			addPadding(row, 8, 8, 12, 12)
 
-		local descLbl = Instance.new("TextLabel")
-		descLbl.Size = UDim2.new(0.65, 0, 0, 38)
-		descLbl.Position = UDim2.new(0, 0, 0, 26)
-		descLbl.BackgroundTransparency = 1
-		descLbl.Font = Enum.Font.Gotham
-		descLbl.TextSize = 12
-		descLbl.TextColor3 = Color3.fromRGB(180, 185, 200)
-		descLbl.TextXAlignment = Enum.TextXAlignment.Left
-		descLbl.TextWrapped = true
-		descLbl.Text = item.Desc
-		descLbl.Parent = row
+			local nameLbl = Instance.new("TextLabel")
+			nameLbl.Size = UDim2.new(0.65, 0, 0, 22)
+			nameLbl.BackgroundTransparency = 1
+			nameLbl.Font = Enum.Font.GothamBlack
+			nameLbl.TextSize = 15
+			nameLbl.TextColor3 = item.Color
+			nameLbl.TextXAlignment = Enum.TextXAlignment.Left
+			nameLbl.Text = string.format("%s [%s]", item.Name, item.Badge)
+			nameLbl.Parent = row
 
-		local testBtn = Instance.new("TextButton")
-		testBtn.Size = UDim2.new(0, 170, 0, 42)
-		testBtn.Position = UDim2.new(1, -170, 0.5, -21)
-		testBtn.Font = Enum.Font.GothamBold
-		testBtn.TextSize = 12
-		addCorner(testBtn, 8)
+			local descLbl = Instance.new("TextLabel")
+			descLbl.Size = UDim2.new(0.65, 0, 0, 38)
+			descLbl.Position = UDim2.new(0, 0, 0, 24)
+			descLbl.BackgroundTransparency = 1
+			descLbl.Font = Enum.Font.Gotham
+			descLbl.TextSize = 12
+			descLbl.TextColor3 = Color3.fromRGB(180, 185, 200)
+			descLbl.TextXAlignment = Enum.TextXAlignment.Left
+			descLbl.TextWrapped = true
+			descLbl.Text = item.Desc
+			descLbl.Parent = row
 
-		local isOwned = (localData.Gamepasses and localData.Gamepasses[item.PerkKey])
-			or (localData.TestPerks and localData.TestPerks[item.PerkKey])
+			local testBtn = Instance.new("TextButton")
+			testBtn.Size = UDim2.new(0, 180, 0, 42)
+			testBtn.Position = UDim2.new(1, -180, 0.5, -21)
+			testBtn.Font = Enum.Font.GothamBold
+			testBtn.TextSize = 11
+			addCorner(testBtn, 8)
 
-		if isOwned then
-			testBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
-			testBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-			testBtn.Text = "АКТИВЕН (ТЕСТ ВКЛ)"
-		else
-			testBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
-			testBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-			testBtn.Text = "ТЕСТ БЕСПЛАТНО"
+			if item.Type == "Perk" then
+				local isOwned = (localData.Gamepasses and localData.Gamepasses[item.PerkKey])
+					or (localData.TestPerks and localData.TestPerks[item.PerkKey])
+
+				if isOwned then
+					testBtn.BackgroundColor3 = Color3.fromRGB(16, 185, 129)
+					testBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+					testBtn.Text = "АКТИВЕН (ТЕСТ ВКЛ)"
+				else
+					testBtn.BackgroundColor3 = Color3.fromRGB(37, 99, 235)
+					testBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+					testBtn.Text = string.format("КУПИТЬ %s (ТЕСТ)", item.Price)
+				end
+
+				testBtn.MouseButton1Click:Connect(function()
+					SoundEffects.Play("Click")
+					ToggleTestPerkEvent:FireServer(item.PerkKey)
+				end)
+			else
+				testBtn.BackgroundColor3 = Color3.fromRGB(245, 158, 11)
+				testBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+				testBtn.Text = string.format("КУПИТЬ %s (ТЕСТ)", item.Price)
+
+				testBtn.MouseButton1Click:Connect(function()
+					SoundEffects.Play("Coin")
+					PurchaseProductFunc:InvokeServer(item.ProductKey)
+				end)
+			end
+
+			testBtn.Parent = row
+			row.Parent = shopScroll
 		end
-
-		testBtn.MouseButton1Click:Connect(function()
-			SoundEffects.Play("Click")
-			ToggleTestPerkEvent:FireServer(item.PerkKey)
-		end)
-
-		testBtn.Parent = row
-		row.Parent = shopScroll
 	end
 
-	shopScroll.CanvasSize = UDim2.new(0, 0, 0, shopLayout.AbsoluteContentSize.Y + 20)
+	shopScroll.CanvasSize = UDim2.new(0, 0, 0, shopLayout.AbsoluteContentSize.Y + 24)
 end
 
 --------------------------------------------------------------------------------
--- 9. SETTINGS WINDOW
+-- 11. SETTINGS WINDOW (WITH SOUND VOLUME & MUTE CONTROLS)
 --------------------------------------------------------------------------------
 
-local setWindow, setContent = createModal("⚙️ НАСТРОЙКИ", 440, 240)
+local setWindow, setContent = createModal("⚙️ НАСТРОЙКИ", 460, 260)
 
 local setFastBtn = Instance.new("TextButton")
 setFastBtn.Size = UDim2.new(1, 0, 0, 44)
-setFastBtn.Position = UDim2.new(0, 0, 0, 12)
+setFastBtn.Position = UDim2.new(0, 0, 0, 10)
 setFastBtn.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
 setFastBtn.Font = Enum.Font.GothamBold
 setFastBtn.TextSize = 14
@@ -992,14 +1263,26 @@ addCorner(setFastBtn, 8)
 addStroke(setFastBtn, Color3.fromRGB(45, 55, 75), 1)
 setFastBtn.Parent = setContent
 
+local setSoundBtn = Instance.new("TextButton")
+setSoundBtn.Size = UDim2.new(1, 0, 0, 44)
+setSoundBtn.Position = UDim2.new(0, 0, 0, 64)
+setSoundBtn.BackgroundColor3 = Color3.fromRGB(24, 28, 40)
+setSoundBtn.Font = Enum.Font.GothamBold
+setSoundBtn.TextSize = 14
+setSoundBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
+setSoundBtn.Text = "🔊 Звуки Игры: ВКЛ (Мягкие)"
+addCorner(setSoundBtn, 8)
+addStroke(setSoundBtn, Color3.fromRGB(45, 55, 75), 1)
+setSoundBtn.Parent = setContent
+
 local setInfo = Instance.new("TextLabel")
 setInfo.Size = UDim2.new(1, 0, 0, 44)
-setInfo.Position = UDim2.new(0, 0, 0, 72)
+setInfo.Position = UDim2.new(0, 0, 0, 120)
 setInfo.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
 setInfo.Font = Enum.Font.GothamMedium
 setInfo.TextSize = 13
 setInfo.TextColor3 = Color3.fromRGB(180, 185, 200)
-setInfo.Text = "Авто-удаление и продажу можно настроить в Инвентаре."
+setInfo.Text = "Авто-продажу и экипировку можно настроить в Инвентаре."
 addCorner(setInfo, 8)
 setInfo.Parent = setContent
 
@@ -1017,8 +1300,20 @@ setFastBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
+setSoundBtn.MouseButton1Click:Connect(function()
+	local isMuted = SoundEffects.ToggleMute()
+	if isMuted then
+		setSoundBtn.Text = "🔇 Звуки Игры: ВЫКЛЮЧЕНЫ"
+		setSoundBtn.TextColor3 = Color3.fromRGB(248, 113, 113)
+	else
+		setSoundBtn.Text = "🔊 Звуки Игры: ВКЛ (Мягкие)"
+		setSoundBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
+		SoundEffects.Play("Click")
+	end
+end)
+
 --------------------------------------------------------------------------------
--- 10. CS2-STYLE DYNAMIC HORIZONTAL CASE OPENING ROULETTE
+-- 12. CS2-STYLE DYNAMIC HORIZONTAL CASE OPENING ROULETTE
 --------------------------------------------------------------------------------
 
 local rouletteContainer = Instance.new("Frame")
@@ -1039,7 +1334,6 @@ rSizeConstraint.MaxSize = Vector2.new(880, 180)
 rSizeConstraint.MinSize = Vector2.new(340, 150)
 rSizeConstraint.Parent = rouletteContainer
 
--- Moving Tape of Cards
 local rouletteTape = Instance.new("Frame")
 rouletteTape.Name = "Tape"
 rouletteTape.Size = UDim2.new(0, 10000, 1, 0)
@@ -1047,7 +1341,6 @@ rouletteTape.Position = UDim2.new(0, 0, 0, 0)
 rouletteTape.BackgroundTransparency = 1
 rouletteTape.Parent = rouletteContainer
 
--- Center Selector Pointer Needle (Vertical Golden Line + Arrows)
 local needleLine = Instance.new("Frame")
 needleLine.Name = "Needle"
 needleLine.AnchorPoint = Vector2.new(0.5, 0)
@@ -1076,7 +1369,7 @@ addCorner(needleBottom, 4)
 needleBottom.Parent = rouletteContainer
 
 --------------------------------------------------------------------------------
--- 11. REVEAL POPUP WITH EXPLICIT EQUIP & SELL BUTTONS
+-- 13. REVEAL POPUP WITH EXPLICIT EQUIP & SELL BUTTONS
 --------------------------------------------------------------------------------
 
 local cutsceneOverlay = Instance.new("Frame")
@@ -1148,7 +1441,6 @@ cardDesc.TextWrapped = true
 cardDesc.Text = "Aura lore description..."
 cardDesc.Parent = revealCard
 
--- ACTION BUTTON 1: ЭКИПИРОВАТЬ
 local cardEquipBtn = Instance.new("TextButton")
 cardEquipBtn.Size = UDim2.new(1, 0, 0, 44)
 cardEquipBtn.Position = UDim2.new(0, 0, 1, -128)
@@ -1160,7 +1452,6 @@ cardEquipBtn.Text = "⚔️ ЭКИПИРОВАТЬ СЕЙЧАС"
 addCorner(cardEquipBtn, 10)
 cardEquipBtn.Parent = revealCard
 
--- ACTION BUTTON 2: ПРОДАТЬ ЗА МОНЕТЫ
 local cardSellBtn = Instance.new("TextButton")
 cardSellBtn.Size = UDim2.new(0.48, 0, 0, 42)
 cardSellBtn.Position = UDim2.new(0, 0, 1, -74)
@@ -1172,7 +1463,6 @@ cardSellBtn.Text = "💰 ПРОДАТЬ (+50)"
 addCorner(cardSellBtn, 10)
 cardSellBtn.Parent = revealCard
 
--- ACTION BUTTON 3: В ИНВЕНТАРЬ
 local cardCollectBtn = Instance.new("TextButton")
 cardCollectBtn.Size = UDim2.new(0.48, 0, 0, 42)
 cardCollectBtn.Position = UDim2.new(0.52, 0, 1, -74)
@@ -1228,14 +1518,13 @@ cardCollectBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------------------------------------------------
--- 12. RUN CS2 CASE ROULETTE ANIMATION
+-- 14. RUN CS2 CASE ROULETTE (WITH GENTLE, SOFT MECHANICAL TICKS)
 --------------------------------------------------------------------------------
 
 local function runCS2Roulette(winningAura, onFinished)
 	rouletteContainer.Visible = true
 	rStroke.Color = winningAura.Color
 
-	-- Clear old cards
 	for _, child in ipairs(rouletteTape:GetChildren()) do
 		child:Destroy()
 	end
@@ -1243,7 +1532,7 @@ local function runCS2Roulette(winningAura, onFinished)
 	local CARD_WIDTH = 120
 	local CARD_GAP = 10
 	local PITCH = CARD_WIDTH + CARD_GAP
-	local WIN_INDEX = 34 -- Winning card position in the strip
+	local WIN_INDEX = 34
 	local TOTAL_CARDS = 44
 
 	local allAuras = AuraConfig.RollableAuras
@@ -1301,11 +1590,10 @@ local function runCS2Roulette(winningAura, onFinished)
 		table.insert(cardsList, card)
 	end
 
-	-- Calculate exact landing position so Card WIN_INDEX is centered on needle
 	local containerWidth = rouletteContainer.AbsoluteSize.X
 	local centerOffset = containerWidth / 2
 	local cardCenterInTape = (WIN_INDEX - 1) * PITCH + 20 + (CARD_WIDTH / 2)
-	local randomJitter = math.random(-20, 20) -- realistic CS2 slight needle offset
+	local randomJitter = math.random(-20, 20)
 	local targetTapeX = -(cardCenterInTape - centerOffset + randomJitter)
 
 	rouletteTape.Position = UDim2.new(0, 0, 0, 0)
@@ -1316,7 +1604,6 @@ local function runCS2Roulette(winningAura, onFinished)
 		Position = UDim2.new(0, targetTapeX, 0, 0)
 	})
 
-	-- Play satisfying ticking sound as cards pass the needle
 	local lastCardIndex = -1
 	local conn
 	conn = RunService.RenderStepped:Connect(function()
@@ -1325,7 +1612,8 @@ local function runCS2Roulette(winningAura, onFinished)
 		local currentCard = math.floor(passedDist / PITCH) + 1
 		if currentCard ~= lastCardIndex and currentCard >= 1 and currentCard <= TOTAL_CARDS then
 			lastCardIndex = currentCard
-			SoundEffects.Play("Tick", 0.6, 1.2)
+			-- Soft, gentle tick sound that never hurts the ears!
+			SoundEffects.Play("Tick", 0.15, 1.2)
 		end
 	end)
 
@@ -1333,7 +1621,6 @@ local function runCS2Roulette(winningAura, onFinished)
 	tween.Completed:Connect(function()
 		if conn then conn:Disconnect() end
 
-		-- Needle flash & sound
 		needleLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		TweenService:Create(needleLine, TweenInfo.new(0.3), { BackgroundColor3 = Color3.fromRGB(250, 204, 21) }):Play()
 
@@ -1356,7 +1643,7 @@ local function runCS2Roulette(winningAura, onFinished)
 end
 
 --------------------------------------------------------------------------------
--- 13. GLOBAL SERVER BANNER
+-- 15. GLOBAL SERVER BANNER
 --------------------------------------------------------------------------------
 
 local banner = Instance.new("Frame")
@@ -1398,7 +1685,7 @@ GlobalAnnouncementEvent.OnClientEvent:Connect(function(info)
 end)
 
 --------------------------------------------------------------------------------
--- 14. ROLL EXECUTION WITH CS2 ROULETTE
+-- 16. ROLL TRIGGER & BUTTON EVENTS
 --------------------------------------------------------------------------------
 
 local function doRoll()
@@ -1503,7 +1790,7 @@ ProximityPromptService.PromptTriggered:Connect(function(prompt, player)
 end)
 
 --------------------------------------------------------------------------------
--- 15. DATA SYNCHRONIZATION
+-- 17. DATA SYNCHRONIZATION
 --------------------------------------------------------------------------------
 
 DataSyncEvent.OnClientEvent:Connect(function(data)
@@ -1515,7 +1802,14 @@ DataSyncEvent.OnClientEvent:Connect(function(data)
 	luckLabel.Text = string.format("🍀 Luck: x%.1f", localData.CurrentLuck or 1.0)
 	coinsLabel.Text = string.format("🪙 %s", AuraConfig.FormatNumber(localData.Coins or 0))
 
-	if localData.PotionExpiry and localData.PotionExpiry > os.time() then
+	-- Check active potions
+	if localData.MegaPotionExpiry and localData.MegaPotionExpiry > os.time() then
+		local remaining = localData.MegaPotionExpiry - os.time()
+		local mins = math.floor(remaining / 60)
+		local secs = remaining % 60
+		potionLabel.Text = string.format("⏳ 5x Mega: %02d:%02d", mins, secs)
+		potionLabel.TextColor3 = Color3.fromRGB(6, 182, 212)
+	elseif localData.PotionExpiry and localData.PotionExpiry > os.time() then
 		local remaining = localData.PotionExpiry - os.time()
 		local mins = math.floor(remaining / 60)
 		local secs = remaining % 60
@@ -1547,4 +1841,4 @@ DataSyncEvent.OnClientEvent:Connect(function(data)
 	if shopWindow.Visible then refreshShopUI() end
 end)
 
-print("[Sols RNG] CS2 Roulette Case Opening & Pro GUI initialized!")
+print("[Sols RNG] Full CS2 Roulette, Soft Audio & Massive Donation Shop loaded!")

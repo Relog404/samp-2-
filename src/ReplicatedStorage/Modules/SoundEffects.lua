@@ -1,21 +1,25 @@
 -- SoundEffects.lua
--- Audio manager for Sol's RNG game.
+-- Soft, pleasant, non-fatiguing audio controller for Sol's RNG game.
 
 local SoundEffects = {}
 
 local SOUND_IDS = {
-	Click = "rbxasset://sounds/electronicpingshort.wav",
-	Tick = "rbxasset://sounds/action_footstep_plastic.mp3",  -- CS2 Roulette card tick
-	Spin = "rbxasset://sounds/action_swim.mp3",              -- Whoosh sound
-	RevealCommon = "rbxasset://sounds/snap.mp3",
-	RevealRare = "rbxassetid://9114221192",                 -- Magical high bell chime
-	RevealLegendary = "rbxassetid://9114220524",            -- Dramatic fanfare
-	RevealMythic = "rbxassetid://9114222384",               -- Celestial blast / angelic chord
-	RevealGodly = "rbxassetid://9114223175",                -- Deep cosmic thunder resonance
-	Craft = "rbxassetid://9114221580",                      -- Anvil clang & magical burst
+	Click = "rbxasset://sounds/button_press.mp3",
+	Tick = "rbxasset://sounds/clickfast.wav",              -- Soft, satisfying subtle mechanical tick
+	Spin = "rbxasset://sounds/uianimation.mp3",           -- Smooth soft whoosh
+	RevealCommon = "rbxasset://sounds/button_press.mp3",
+	RevealRare = "rbxasset://sounds/electronicpingshort.wav",
+	RevealLegendary = "rbxassetid://9114220524",         -- Melodic fanfare
+	RevealMythic = "rbxassetid://9114222384",            -- Celestial choir
+	RevealGodly = "rbxassetid://9114223175",             -- Cosmic blast
+	Craft = "rbxassetid://9114221580",                  -- Anvil chime
 	Equip = "rbxasset://sounds/uianimation.mp3",
 	Coin = "rbxasset://sounds/electronicpingshort.wav",
 }
+
+-- Master Volume: 1.0 (Full), 0.5 (Half), 0.0 (Muted)
+SoundEffects.MasterVolume = 0.5
+SoundEffects.IsMuted = false
 
 local soundFolder = nil
 
@@ -37,13 +41,26 @@ local function getSoundFolder()
 end
 
 function SoundEffects.Play(soundKey, volume, playbackSpeed)
+	if SoundEffects.IsMuted or SoundEffects.MasterVolume <= 0 then
+		return
+	end
+
 	local assetId = SOUND_IDS[soundKey] or SOUND_IDS.Click
 	local folder = getSoundFolder()
 
 	local sound = Instance.new("Sound")
 	sound.SoundId = assetId
-	sound.Volume = volume or 0.8
-	sound.PlaybackSpeed = playbackSpeed or 1.0
+
+	-- Calculate soft, pleasant volume that never hurts the ears
+	local baseVol = volume or 0.35
+	if soundKey == "Tick" then
+		baseVol = 0.15 -- Very gentle and subtle tick for the CS2 roulette
+	elseif soundKey == "Coin" then
+		baseVol = 0.25
+	end
+
+	sound.Volume = baseVol * SoundEffects.MasterVolume
+	sound.PlaybackSpeed = playbackSpeed or (soundKey == "Coin" and 1.4 or 1.0)
 	sound.PlayOnRemove = false
 	sound.Parent = folder
 
@@ -53,12 +70,16 @@ function SoundEffects.Play(soundKey, volume, playbackSpeed)
 
 	sound:Play()
 
-	-- Safety cleanup
-	task.delay(5, function()
+	task.delay(4, function()
 		if sound and sound.Parent then
 			sound:Destroy()
 		end
 	end)
+end
+
+function SoundEffects.ToggleMute()
+	SoundEffects.IsMuted = not SoundEffects.IsMuted
+	return SoundEffects.IsMuted
 end
 
 return SoundEffects
