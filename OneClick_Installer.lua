@@ -3699,32 +3699,41 @@ topLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 topLayout.Padding = UDim.new(0, 16)
 topLayout.Parent = topHud
 
-local function createTopStatPill(icon, defaultText, color)
+local function createTopStatPill(iconAsset, defaultText, color)
 	local pill = Instance.new("Frame")
-	pill.Size = UDim2.new(0, 130, 0, 32)
+	pill.Size = UDim2.new(0, 134, 0, 32)
 	pill.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
 	pill.BackgroundTransparency = 0.4
 	addCorner(pill, 8)
 	addStroke(pill, Color3.fromRGB(35, 42, 60), 1)
 
+	local iconImg = Instance.new("ImageLabel")
+	iconImg.Size = UDim2.new(0, 18, 0, 18)
+	iconImg.Position = UDim2.new(0, 8, 0.5, -9)
+	iconImg.BackgroundTransparency = 1
+	iconImg.Image = iconAsset
+	iconImg.ImageColor3 = color
+	iconImg.Parent = pill
+
 	local label = Instance.new("TextLabel")
-	label.Size = UDim2.new(1, 0, 1, 0)
+	label.Size = UDim2.new(1, -32, 1, 0)
+	label.Position = UDim2.new(0, 28, 0, 0)
 	label.BackgroundTransparency = 1
 	label.Font = Enum.Font.GothamBold
-	label.TextSize = 13
+	label.TextSize = 12
 	label.TextColor3 = color
-	label.Text = icon .. " " .. defaultText
-	label.TextXAlignment = Enum.TextXAlignment.Center
+	label.Text = defaultText
+	label.TextXAlignment = Enum.TextXAlignment.Left
 	label.Parent = pill
 
 	pill.Parent = topHud
 	return label, pill
 end
 
-local rollsLabel, rollsPill = createTopStatPill("ROL", "Rolls: 0", Color3.fromRGB(220, 225, 240))
-local luckLabel, luckPill = createTopStatPill("LCK", "Luck: x1.0", Color3.fromRGB(74, 222, 128))
-local coinsLabel, coinsPill = createTopStatPill("COI", "Coins: 100", Color3.fromRGB(250, 204, 21))
-local potionLabel, potionPill = createTopStatPill("POT", "Pot: None", Color3.fromRGB(56, 189, 248))
+local rollsLabel, rollsPill = createTopStatPill("rbxasset://textures/particles/sparkles_main.dds", "Роллы: 0", Color3.fromRGB(220, 225, 240))
+local luckLabel, luckPill = createTopStatPill("rbxasset://textures/ui/InspectMenu/ico_favorite.png", "Удача: x1.0", Color3.fromRGB(74, 222, 128))
+local coinsLabel, coinsPill = createTopStatPill("rbxasset://textures/ui/Emotes/EmotesWheelCenter.png", "Монеты: 100", Color3.fromRGB(250, 204, 21))
+local potionLabel, potionPill = createTopStatPill("rbxassetid://241594432", "Зелье: Нет", Color3.fromRGB(56, 189, 248))
 
 --------------------------------------------------------------------------------
 -- 2. TOP-RIGHT SPECIAL OFFER WIDGET (STARTER PACK PROMOTION)
@@ -3795,7 +3804,7 @@ rightLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 rightLayout.Padding = UDim.new(0, 8)
 rightLayout.Parent = rightDonateBar
 
-local function createQuickDonatePill(icon, title, color, onClick)
+local function createQuickDonatePill(iconAsset, title, color, onClick)
 	local btn = Instance.new("TextButton")
 	btn.Size = UDim2.new(1, 0, 0, 38)
 	btn.BackgroundColor3 = Color3.fromRGB(18, 22, 32)
@@ -3803,13 +3812,23 @@ local function createQuickDonatePill(icon, title, color, onClick)
 	addCorner(btn, 10)
 	local stroke = addStroke(btn, color, 1.5)
 
+	local iconImg = Instance.new("ImageLabel")
+	iconImg.Size = UDim2.new(0, 18, 0, 18)
+	iconImg.Position = UDim2.new(0, 8, 0.5, -9)
+	iconImg.BackgroundTransparency = 1
+	iconImg.Image = iconAsset
+	iconImg.ImageColor3 = color
+	iconImg.Parent = btn
+
 	local lbl = Instance.new("TextLabel")
-	lbl.Size = UDim2.new(1, 0, 1, 0)
+	lbl.Size = UDim2.new(1, -32, 1, 0)
+	lbl.Position = UDim2.new(0, 30, 0, 0)
 	lbl.BackgroundTransparency = 1
 	lbl.Font = Enum.Font.GothamBlack
-	lbl.TextSize = 11
+	lbl.TextSize = 10
 	lbl.TextColor3 = color
-	lbl.Text = icon .. " " .. title
+	lbl.Text = title
+	lbl.TextXAlignment = Enum.TextXAlignment.Left
 	lbl.Parent = btn
 
 	btn.MouseEnter:Connect(function()
@@ -3830,27 +3849,27 @@ end
 
 local toggleShopModal = nil
 
-createQuickDonatePill("R$", "ДОНАТ", Color3.fromRGB(168, 85, 247), function()
+createQuickDonatePill("rbxasset://textures/ui/InspectMenu/ico_favorite.png", "МАГАЗИН", Color3.fromRGB(168, 85, 247), function()
 	if toggleShopModal then toggleShopModal() end
 end)
 
-createQuickDonatePill("2X", "x2 LUCK", Color3.fromRGB(74, 222, 128), function()
+createQuickDonatePill("rbxasset://textures/particles/sparkles_main.dds", "x2 УДАЧА", Color3.fromRGB(74, 222, 128), function()
 	ToggleTestPerkEvent:FireServer("X2Luck")
 end)
 
-createQuickDonatePill("VIP", "VIP", Color3.fromRGB(245, 158, 11), function()
+createQuickDonatePill("rbxassetid://258127006", "VIP СТАТУС", Color3.fromRGB(245, 158, 11), function()
 	ToggleTestPerkEvent:FireServer("VIP")
 end)
 
-createQuickDonatePill("AUT", "AUTO-ROLL", Color3.fromRGB(250, 204, 21), function()
+createQuickDonatePill("rbxasset://textures/ui/Emotes/EmotesWheelCenter.png", "АВТО-РОЛЛ", Color3.fromRGB(250, 204, 21), function()
 	ToggleTestPerkEvent:FireServer("AutoRoll")
 end)
 
-createQuickDonatePill("POT", "x5 ЗЕЛЬЕ", Color3.fromRGB(6, 182, 212), function()
+createQuickDonatePill("rbxassetid://241594432", "x5 ЗЕЛЬЕ", Color3.fromRGB(6, 182, 212), function()
 	PurchaseProductFunc:InvokeServer("MegaPotion")
 end)
 
-createQuickDonatePill("+COIN", "+50K МОНЕТ", Color3.fromRGB(251, 191, 36), function()
+createQuickDonatePill("rbxasset://textures/ui/Emotes/EmotesWheelCenter.png", "+50K МОНЕТ", Color3.fromRGB(251, 191, 36), function()
 	PurchaseProductFunc:InvokeServer("CoinPack50k")
 end)
 
@@ -3887,24 +3906,34 @@ rollGrad.Color = ColorSequence.new({
 rollGrad.Rotation = 45
 rollGrad.Parent = rollButton
 
+local rollIcon = Instance.new("ImageLabel")
+rollIcon.Size = UDim2.new(0, 32, 0, 32)
+rollIcon.Position = UDim2.new(0, 16, 0.5, -16)
+rollIcon.BackgroundTransparency = 1
+rollIcon.Image = "rbxasset://textures/particles/sparkles_main.dds"
+rollIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+rollIcon.Parent = rollButton
+
 local rollTitle = Instance.new("TextLabel")
-rollTitle.Size = UDim2.new(1, 0, 0, 30)
-rollTitle.Position = UDim2.new(0, 0, 0, 10)
+rollTitle.Size = UDim2.new(1, -56, 0, 28)
+rollTitle.Position = UDim2.new(0, 52, 0, 10)
 rollTitle.BackgroundTransparency = 1
 rollTitle.Font = Enum.Font.GothamBlack
-rollTitle.TextSize = 22
+rollTitle.TextSize = 20
 rollTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 rollTitle.Text = "КРУТИТЬ [ ROLL ]"
+rollTitle.TextXAlignment = Enum.TextXAlignment.Left
 rollTitle.Parent = rollButton
 
 local rollSub = Instance.new("TextLabel")
-rollSub.Size = UDim2.new(1, 0, 0, 18)
-rollSub.Position = UDim2.new(0, 0, 0, 40)
+rollSub.Size = UDim2.new(1, -56, 0, 18)
+rollSub.Position = UDim2.new(0, 52, 0, 38)
 rollSub.BackgroundTransparency = 1
 rollSub.Font = Enum.Font.GothamBold
 rollSub.TextSize = 11
 rollSub.TextColor3 = Color3.fromRGB(147, 197, 253)
 rollSub.Text = "[ ПРОБЕЛ / КЛИК ]"
+rollSub.TextXAlignment = Enum.TextXAlignment.Left
 rollSub.Parent = rollButton
 
 -- Interactive spring animations
@@ -4002,45 +4031,66 @@ dockLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 dockLayout.Padding = UDim.new(0, 8)
 dockLayout.Parent = leftDock
 
-local function createDockButton(name, labelText, tooltipText)
+local function createDockButton(name, iconAsset, tooltipText)
 	local btn = Instance.new("TextButton")
 	btn.Name = name .. "Btn"
 	btn.Size = UDim2.new(0, 48, 0, 48)
 	btn.BackgroundColor3 = Color3.fromRGB(20, 24, 36)
-	btn.Font = Enum.Font.GothamBlack
-	btn.TextSize = 12
-	btn.TextColor3 = Color3.fromRGB(220, 225, 240)
-	btn.Text = labelText
+	btn.Text = ""
 	addCorner(btn, 10)
 	local stroke = addStroke(btn, Color3.fromRGB(45, 55, 78), 1.2)
+
+	local iconImg = Instance.new("ImageLabel")
+	iconImg.Size = UDim2.new(0, 26, 0, 26)
+	iconImg.Position = UDim2.new(0.5, -13, 0.5, -13)
+	iconImg.BackgroundTransparency = 1
+	iconImg.Image = iconAsset
+	iconImg.ImageColor3 = Color3.fromRGB(210, 220, 240)
+	iconImg.Parent = btn
+
+	local tooltip = Instance.new("TextLabel")
+	tooltip.Size = UDim2.new(0, 110, 0, 28)
+	tooltip.Position = UDim2.new(1, 10, 0.5, -14)
+	tooltip.BackgroundColor3 = Color3.fromRGB(15, 18, 28)
+	tooltip.Font = Enum.Font.GothamBold
+	tooltip.TextSize = 10
+	tooltip.TextColor3 = Color3.fromRGB(240, 245, 255)
+	tooltip.Text = tooltipText
+	tooltip.Visible = false
+	tooltip.ZIndex = 20
+	addCorner(tooltip, 6)
+	addStroke(tooltip, Color3.fromRGB(56, 189, 248), 1)
+	tooltip.Parent = btn
 
 	btn.MouseEnter:Connect(function()
 		TweenService:Create(btn, TweenInfo.new(0.15), {
 			BackgroundColor3 = Color3.fromRGB(37, 99, 235),
 			Size = UDim2.new(0, 52, 0, 52)
 		}):Play()
-		btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+		iconImg.ImageColor3 = Color3.fromRGB(255, 255, 255)
 		stroke.Color = Color3.fromRGB(96, 165, 250)
+		tooltip.Visible = true
 	end)
 	btn.MouseLeave:Connect(function()
 		TweenService:Create(btn, TweenInfo.new(0.15), {
 			BackgroundColor3 = Color3.fromRGB(20, 24, 36),
 			Size = UDim2.new(0, 48, 0, 48)
 		}):Play()
-		btn.TextColor3 = Color3.fromRGB(220, 225, 240)
+		iconImg.ImageColor3 = Color3.fromRGB(210, 220, 240)
 		stroke.Color = Color3.fromRGB(45, 55, 78)
+		tooltip.Visible = false
 	end)
 
 	btn.Parent = leftDock
 	return btn
 end
 
-local navInventoryBtn = createDockButton("Inventory", "INV", "Инвентарь")
-local navUpgraderBtn = createDockButton("Upgrader", "UPG", "Апгрейдер Аур")
-local navPvPBtn = createDockButton("PvP", "PVP", "Батлы Аур")
-local navCraftingBtn = createDockButton("Crafting", "CRF", "Кузница Крафта")
-local navShopBtn = createDockButton("Shop", "SHP", "Магазин Доната")
-local navSettingsBtn = createDockButton("Settings", "SET", "Настройки")
+local navInventoryBtn = createDockButton("Inventory", "rbxasset://textures/ui/TopBar/inventoryOff.png", "Инвентарь")
+local navUpgraderBtn = createDockButton("Upgrader", "rbxasset://textures/ui/Emotes/EmotesWheelCenter.png", "Апгрейдер Аур")
+local navPvPBtn = createDockButton("PvP", "rbxasset://textures/ui/InspectMenu/ico_equipped.png", "Арена Батлов")
+local navCraftingBtn = createDockButton("Crafting", "rbxasset://textures/particles/sparkles_main.dds", "Кузница Крафта")
+local navShopBtn = createDockButton("Shop", "rbxasset://textures/ui/InspectMenu/ico_favorite.png", "Магазин Доната")
+local navSettingsBtn = createDockButton("Settings", "rbxasset://textures/ui/Settings/MenuBarIcons/GameSettingsTab.png", "Настройки")
 
 --------------------------------------------------------------------------------
 -- 6. BOTTOM-LEFT EQUIPPED AURA SHOWCASE CARD
@@ -5291,16 +5341,32 @@ skillLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 skillLayout.Padding = UDim.new(0, 12)
 skillLayout.Parent = skillsBar
 
-local function createSkillButton(index, name, cdTime, color)
+local function createSkillButton(index, iconAsset, name, cdTime, color)
 	local btn = Instance.new("TextButton")
 	btn.Size = UDim2.new(0, 145, 1, 0)
 	btn.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
-	btn.Font = Enum.Font.GothamBlack
-	btn.TextSize = 12
-	btn.TextColor3 = color
-	btn.Text = name
+	btn.Text = ""
 	addCorner(btn, 10)
 	local strk = addStroke(btn, color, 1.5)
+
+	local iconImg = Instance.new("ImageLabel")
+	iconImg.Size = UDim2.new(0, 22, 0, 22)
+	iconImg.Position = UDim2.new(0, 8, 0.5, -11)
+	iconImg.BackgroundTransparency = 1
+	iconImg.Image = iconAsset
+	iconImg.ImageColor3 = color
+	iconImg.Parent = btn
+
+	local lbl = Instance.new("TextLabel")
+	lbl.Size = UDim2.new(1, -36, 1, 0)
+	lbl.Position = UDim2.new(0, 34, 0, 0)
+	lbl.BackgroundTransparency = 1
+	lbl.Font = Enum.Font.GothamBlack
+	lbl.TextSize = 11
+	lbl.TextColor3 = color
+	lbl.Text = name
+	lbl.TextXAlignment = Enum.TextXAlignment.Left
+	lbl.Parent = btn
 
 	btn.MouseButton1Click:Connect(function()
 		local now = os.clock()
@@ -5320,9 +5386,9 @@ local function createSkillButton(index, name, cdTime, color)
 	return btn
 end
 
-createSkillButton(1, "[1] УДАР АУРЫ", 1.2, Color3.fromRGB(56, 189, 248))
-createSkillButton(2, "[2] ВЗРЫВ СТИХИИ", 3.5, Color3.fromRGB(245, 158, 11))
-createSkillButton(3, "[3] УЛЬТИМЕЙТ", 7.0, Color3.fromRGB(250, 204, 21))
+createSkillButton(1, "rbxasset://textures/ui/InspectMenu/ico_equipped.png", "[1] УДАР АУРЫ", 1.2, Color3.fromRGB(56, 189, 248))
+createSkillButton(2, "rbxasset://textures/particles/fire_main.dds", "[2] ВЗРЫВ СТИХИИ", 3.5, Color3.fromRGB(245, 158, 11))
+createSkillButton(3, "rbxasset://textures/particles/sparkles_main.dds", "[3] УЛЬТИМЕЙТ", 7.0, Color3.fromRGB(250, 204, 21))
 
 -- Incoming Duel Challenge Popup
 local challengePopup = Instance.new("Frame")
@@ -6671,32 +6737,41 @@ topLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 topLayout.Padding = UDim.new(0, 16)
 topLayout.Parent = topHud
 
-local function createTopStatPill(icon, defaultText, color)
+local function createTopStatPill(iconAsset, defaultText, color)
 	local pill = Instance.new("Frame")
-	pill.Size = UDim2.new(0, 130, 0, 32)
+	pill.Size = UDim2.new(0, 134, 0, 32)
 	pill.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
 	pill.BackgroundTransparency = 0.4
 	addCorner(pill, 8)
 	addStroke(pill, Color3.fromRGB(35, 42, 60), 1)
 
+	local iconImg = Instance.new("ImageLabel")
+	iconImg.Size = UDim2.new(0, 18, 0, 18)
+	iconImg.Position = UDim2.new(0, 8, 0.5, -9)
+	iconImg.BackgroundTransparency = 1
+	iconImg.Image = iconAsset
+	iconImg.ImageColor3 = color
+	iconImg.Parent = pill
+
 	local label = Instance.new("TextLabel")
-	label.Size = UDim2.new(1, 0, 1, 0)
+	label.Size = UDim2.new(1, -32, 1, 0)
+	label.Position = UDim2.new(0, 28, 0, 0)
 	label.BackgroundTransparency = 1
 	label.Font = Enum.Font.GothamBold
-	label.TextSize = 13
+	label.TextSize = 12
 	label.TextColor3 = color
-	label.Text = icon .. " " .. defaultText
-	label.TextXAlignment = Enum.TextXAlignment.Center
+	label.Text = defaultText
+	label.TextXAlignment = Enum.TextXAlignment.Left
 	label.Parent = pill
 
 	pill.Parent = topHud
 	return label, pill
 end
 
-local rollsLabel, rollsPill = createTopStatPill("ROL", "Rolls: 0", Color3.fromRGB(220, 225, 240))
-local luckLabel, luckPill = createTopStatPill("LCK", "Luck: x1.0", Color3.fromRGB(74, 222, 128))
-local coinsLabel, coinsPill = createTopStatPill("COI", "Coins: 100", Color3.fromRGB(250, 204, 21))
-local potionLabel, potionPill = createTopStatPill("POT", "Pot: None", Color3.fromRGB(56, 189, 248))
+local rollsLabel, rollsPill = createTopStatPill("rbxasset://textures/particles/sparkles_main.dds", "Роллы: 0", Color3.fromRGB(220, 225, 240))
+local luckLabel, luckPill = createTopStatPill("rbxasset://textures/ui/InspectMenu/ico_favorite.png", "Удача: x1.0", Color3.fromRGB(74, 222, 128))
+local coinsLabel, coinsPill = createTopStatPill("rbxasset://textures/ui/Emotes/EmotesWheelCenter.png", "Монеты: 100", Color3.fromRGB(250, 204, 21))
+local potionLabel, potionPill = createTopStatPill("rbxassetid://241594432", "Зелье: Нет", Color3.fromRGB(56, 189, 248))
 
 --------------------------------------------------------------------------------
 -- 2. TOP-RIGHT SPECIAL OFFER WIDGET (STARTER PACK PROMOTION)
@@ -6767,7 +6842,7 @@ rightLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 rightLayout.Padding = UDim.new(0, 8)
 rightLayout.Parent = rightDonateBar
 
-local function createQuickDonatePill(icon, title, color, onClick)
+local function createQuickDonatePill(iconAsset, title, color, onClick)
 	local btn = Instance.new("TextButton")
 	btn.Size = UDim2.new(1, 0, 0, 38)
 	btn.BackgroundColor3 = Color3.fromRGB(18, 22, 32)
@@ -6775,13 +6850,23 @@ local function createQuickDonatePill(icon, title, color, onClick)
 	addCorner(btn, 10)
 	local stroke = addStroke(btn, color, 1.5)
 
+	local iconImg = Instance.new("ImageLabel")
+	iconImg.Size = UDim2.new(0, 18, 0, 18)
+	iconImg.Position = UDim2.new(0, 8, 0.5, -9)
+	iconImg.BackgroundTransparency = 1
+	iconImg.Image = iconAsset
+	iconImg.ImageColor3 = color
+	iconImg.Parent = btn
+
 	local lbl = Instance.new("TextLabel")
-	lbl.Size = UDim2.new(1, 0, 1, 0)
+	lbl.Size = UDim2.new(1, -32, 1, 0)
+	lbl.Position = UDim2.new(0, 30, 0, 0)
 	lbl.BackgroundTransparency = 1
 	lbl.Font = Enum.Font.GothamBlack
-	lbl.TextSize = 11
+	lbl.TextSize = 10
 	lbl.TextColor3 = color
-	lbl.Text = icon .. " " .. title
+	lbl.Text = title
+	lbl.TextXAlignment = Enum.TextXAlignment.Left
 	lbl.Parent = btn
 
 	btn.MouseEnter:Connect(function()
@@ -6802,27 +6887,27 @@ end
 
 local toggleShopModal = nil
 
-createQuickDonatePill("R$", "ДОНАТ", Color3.fromRGB(168, 85, 247), function()
+createQuickDonatePill("rbxasset://textures/ui/InspectMenu/ico_favorite.png", "МАГАЗИН", Color3.fromRGB(168, 85, 247), function()
 	if toggleShopModal then toggleShopModal() end
 end)
 
-createQuickDonatePill("2X", "x2 LUCK", Color3.fromRGB(74, 222, 128), function()
+createQuickDonatePill("rbxasset://textures/particles/sparkles_main.dds", "x2 УДАЧА", Color3.fromRGB(74, 222, 128), function()
 	ToggleTestPerkEvent:FireServer("X2Luck")
 end)
 
-createQuickDonatePill("VIP", "VIP", Color3.fromRGB(245, 158, 11), function()
+createQuickDonatePill("rbxassetid://258127006", "VIP СТАТУС", Color3.fromRGB(245, 158, 11), function()
 	ToggleTestPerkEvent:FireServer("VIP")
 end)
 
-createQuickDonatePill("AUT", "AUTO-ROLL", Color3.fromRGB(250, 204, 21), function()
+createQuickDonatePill("rbxasset://textures/ui/Emotes/EmotesWheelCenter.png", "АВТО-РОЛЛ", Color3.fromRGB(250, 204, 21), function()
 	ToggleTestPerkEvent:FireServer("AutoRoll")
 end)
 
-createQuickDonatePill("POT", "x5 ЗЕЛЬЕ", Color3.fromRGB(6, 182, 212), function()
+createQuickDonatePill("rbxassetid://241594432", "x5 ЗЕЛЬЕ", Color3.fromRGB(6, 182, 212), function()
 	PurchaseProductFunc:InvokeServer("MegaPotion")
 end)
 
-createQuickDonatePill("+COIN", "+50K МОНЕТ", Color3.fromRGB(251, 191, 36), function()
+createQuickDonatePill("rbxasset://textures/ui/Emotes/EmotesWheelCenter.png", "+50K МОНЕТ", Color3.fromRGB(251, 191, 36), function()
 	PurchaseProductFunc:InvokeServer("CoinPack50k")
 end)
 
@@ -6859,24 +6944,34 @@ rollGrad.Color = ColorSequence.new({
 rollGrad.Rotation = 45
 rollGrad.Parent = rollButton
 
+local rollIcon = Instance.new("ImageLabel")
+rollIcon.Size = UDim2.new(0, 32, 0, 32)
+rollIcon.Position = UDim2.new(0, 16, 0.5, -16)
+rollIcon.BackgroundTransparency = 1
+rollIcon.Image = "rbxasset://textures/particles/sparkles_main.dds"
+rollIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+rollIcon.Parent = rollButton
+
 local rollTitle = Instance.new("TextLabel")
-rollTitle.Size = UDim2.new(1, 0, 0, 30)
-rollTitle.Position = UDim2.new(0, 0, 0, 10)
+rollTitle.Size = UDim2.new(1, -56, 0, 28)
+rollTitle.Position = UDim2.new(0, 52, 0, 10)
 rollTitle.BackgroundTransparency = 1
 rollTitle.Font = Enum.Font.GothamBlack
-rollTitle.TextSize = 22
+rollTitle.TextSize = 20
 rollTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 rollTitle.Text = "КРУТИТЬ [ ROLL ]"
+rollTitle.TextXAlignment = Enum.TextXAlignment.Left
 rollTitle.Parent = rollButton
 
 local rollSub = Instance.new("TextLabel")
-rollSub.Size = UDim2.new(1, 0, 0, 18)
-rollSub.Position = UDim2.new(0, 0, 0, 40)
+rollSub.Size = UDim2.new(1, -56, 0, 18)
+rollSub.Position = UDim2.new(0, 52, 0, 38)
 rollSub.BackgroundTransparency = 1
 rollSub.Font = Enum.Font.GothamBold
 rollSub.TextSize = 11
 rollSub.TextColor3 = Color3.fromRGB(147, 197, 253)
 rollSub.Text = "[ ПРОБЕЛ / КЛИК ]"
+rollSub.TextXAlignment = Enum.TextXAlignment.Left
 rollSub.Parent = rollButton
 
 -- Interactive spring animations
@@ -6974,45 +7069,66 @@ dockLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 dockLayout.Padding = UDim.new(0, 8)
 dockLayout.Parent = leftDock
 
-local function createDockButton(name, labelText, tooltipText)
+local function createDockButton(name, iconAsset, tooltipText)
 	local btn = Instance.new("TextButton")
 	btn.Name = name .. "Btn"
 	btn.Size = UDim2.new(0, 48, 0, 48)
 	btn.BackgroundColor3 = Color3.fromRGB(20, 24, 36)
-	btn.Font = Enum.Font.GothamBlack
-	btn.TextSize = 12
-	btn.TextColor3 = Color3.fromRGB(220, 225, 240)
-	btn.Text = labelText
+	btn.Text = ""
 	addCorner(btn, 10)
 	local stroke = addStroke(btn, Color3.fromRGB(45, 55, 78), 1.2)
+
+	local iconImg = Instance.new("ImageLabel")
+	iconImg.Size = UDim2.new(0, 26, 0, 26)
+	iconImg.Position = UDim2.new(0.5, -13, 0.5, -13)
+	iconImg.BackgroundTransparency = 1
+	iconImg.Image = iconAsset
+	iconImg.ImageColor3 = Color3.fromRGB(210, 220, 240)
+	iconImg.Parent = btn
+
+	local tooltip = Instance.new("TextLabel")
+	tooltip.Size = UDim2.new(0, 110, 0, 28)
+	tooltip.Position = UDim2.new(1, 10, 0.5, -14)
+	tooltip.BackgroundColor3 = Color3.fromRGB(15, 18, 28)
+	tooltip.Font = Enum.Font.GothamBold
+	tooltip.TextSize = 10
+	tooltip.TextColor3 = Color3.fromRGB(240, 245, 255)
+	tooltip.Text = tooltipText
+	tooltip.Visible = false
+	tooltip.ZIndex = 20
+	addCorner(tooltip, 6)
+	addStroke(tooltip, Color3.fromRGB(56, 189, 248), 1)
+	tooltip.Parent = btn
 
 	btn.MouseEnter:Connect(function()
 		TweenService:Create(btn, TweenInfo.new(0.15), {
 			BackgroundColor3 = Color3.fromRGB(37, 99, 235),
 			Size = UDim2.new(0, 52, 0, 52)
 		}):Play()
-		btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+		iconImg.ImageColor3 = Color3.fromRGB(255, 255, 255)
 		stroke.Color = Color3.fromRGB(96, 165, 250)
+		tooltip.Visible = true
 	end)
 	btn.MouseLeave:Connect(function()
 		TweenService:Create(btn, TweenInfo.new(0.15), {
 			BackgroundColor3 = Color3.fromRGB(20, 24, 36),
 			Size = UDim2.new(0, 48, 0, 48)
 		}):Play()
-		btn.TextColor3 = Color3.fromRGB(220, 225, 240)
+		iconImg.ImageColor3 = Color3.fromRGB(210, 220, 240)
 		stroke.Color = Color3.fromRGB(45, 55, 78)
+		tooltip.Visible = false
 	end)
 
 	btn.Parent = leftDock
 	return btn
 end
 
-local navInventoryBtn = createDockButton("Inventory", "INV", "Инвентарь")
-local navUpgraderBtn = createDockButton("Upgrader", "UPG", "Апгрейдер Аур")
-local navPvPBtn = createDockButton("PvP", "PVP", "Батлы Аур")
-local navCraftingBtn = createDockButton("Crafting", "CRF", "Кузница Крафта")
-local navShopBtn = createDockButton("Shop", "SHP", "Магазин Доната")
-local navSettingsBtn = createDockButton("Settings", "SET", "Настройки")
+local navInventoryBtn = createDockButton("Inventory", "rbxasset://textures/ui/TopBar/inventoryOff.png", "Инвентарь")
+local navUpgraderBtn = createDockButton("Upgrader", "rbxasset://textures/ui/Emotes/EmotesWheelCenter.png", "Апгрейдер Аур")
+local navPvPBtn = createDockButton("PvP", "rbxasset://textures/ui/InspectMenu/ico_equipped.png", "Арена Батлов")
+local navCraftingBtn = createDockButton("Crafting", "rbxasset://textures/particles/sparkles_main.dds", "Кузница Крафта")
+local navShopBtn = createDockButton("Shop", "rbxasset://textures/ui/InspectMenu/ico_favorite.png", "Магазин Доната")
+local navSettingsBtn = createDockButton("Settings", "rbxasset://textures/ui/Settings/MenuBarIcons/GameSettingsTab.png", "Настройки")
 
 --------------------------------------------------------------------------------
 -- 6. BOTTOM-LEFT EQUIPPED AURA SHOWCASE CARD
@@ -8263,16 +8379,32 @@ skillLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 skillLayout.Padding = UDim.new(0, 12)
 skillLayout.Parent = skillsBar
 
-local function createSkillButton(index, name, cdTime, color)
+local function createSkillButton(index, iconAsset, name, cdTime, color)
 	local btn = Instance.new("TextButton")
 	btn.Size = UDim2.new(0, 145, 1, 0)
 	btn.BackgroundColor3 = Color3.fromRGB(20, 24, 34)
-	btn.Font = Enum.Font.GothamBlack
-	btn.TextSize = 12
-	btn.TextColor3 = color
-	btn.Text = name
+	btn.Text = ""
 	addCorner(btn, 10)
 	local strk = addStroke(btn, color, 1.5)
+
+	local iconImg = Instance.new("ImageLabel")
+	iconImg.Size = UDim2.new(0, 22, 0, 22)
+	iconImg.Position = UDim2.new(0, 8, 0.5, -11)
+	iconImg.BackgroundTransparency = 1
+	iconImg.Image = iconAsset
+	iconImg.ImageColor3 = color
+	iconImg.Parent = btn
+
+	local lbl = Instance.new("TextLabel")
+	lbl.Size = UDim2.new(1, -36, 1, 0)
+	lbl.Position = UDim2.new(0, 34, 0, 0)
+	lbl.BackgroundTransparency = 1
+	lbl.Font = Enum.Font.GothamBlack
+	lbl.TextSize = 11
+	lbl.TextColor3 = color
+	lbl.Text = name
+	lbl.TextXAlignment = Enum.TextXAlignment.Left
+	lbl.Parent = btn
 
 	btn.MouseButton1Click:Connect(function()
 		local now = os.clock()
@@ -8292,9 +8424,9 @@ local function createSkillButton(index, name, cdTime, color)
 	return btn
 end
 
-createSkillButton(1, "[1] УДАР АУРЫ", 1.2, Color3.fromRGB(56, 189, 248))
-createSkillButton(2, "[2] ВЗРЫВ СТИХИИ", 3.5, Color3.fromRGB(245, 158, 11))
-createSkillButton(3, "[3] УЛЬТИМЕЙТ", 7.0, Color3.fromRGB(250, 204, 21))
+createSkillButton(1, "rbxasset://textures/ui/InspectMenu/ico_equipped.png", "[1] УДАР АУРЫ", 1.2, Color3.fromRGB(56, 189, 248))
+createSkillButton(2, "rbxasset://textures/particles/fire_main.dds", "[2] ВЗРЫВ СТИХИИ", 3.5, Color3.fromRGB(245, 158, 11))
+createSkillButton(3, "rbxasset://textures/particles/sparkles_main.dds", "[3] УЛЬТИМЕЙТ", 7.0, Color3.fromRGB(250, 204, 21))
 
 -- Incoming Duel Challenge Popup
 local challengePopup = Instance.new("Frame")
